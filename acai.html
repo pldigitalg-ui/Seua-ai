@@ -1,18 +1,18 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Seu Açaí — Açaí</title>
-  <link rel="stylesheet" href="CSS/estilo.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Açaí • Seu Açaí</title>
+  <link rel="stylesheet" href="css/estilo.css">
 </head>
 <body>
 
 <div class="topbar">
   <div class="nav">
     <div class="brand">
-      <b data-brand-name>Seu Açaí</b>
-      <span data-brand-slogan></span>
+      <b data-marca-nome>Seu Açaí</b>
+      <span data-marca-slogan></span>
     </div>
 
     <div class="navlinks">
@@ -25,77 +25,40 @@
     </div>
 
     <div class="right">
-      <span class="badge" data-open-badge>—</span>
-      <button class="cartbtn" data-open-cart>
+      <span class="badge" data-badge-aberto>—</span>
+      <button class="cartbtn" data-open-carrinho>
         Carrinho
-        <span class="cartbadge" data-cart-badge>0</span>
+        <span class="cartbadge" data-carrinho-badge>0</span>
       </button>
     </div>
   </div>
 </div>
 
 <div class="container">
-  <div class="hero">
-    <div class="heroCard">
-      <h1>Açaí</h1>
-      <p class="muted" data-brand-address></p>
-
-      <div class="ctaRow">
-        <a class="btn" href="#" data-open-cart>Finalizar pedido</a>
-        <a class="btn ghost" data-brand-instagram target="_blank">Instagram</a>
-      </div>
-    </div>
-
-    <div class="heroCard">
-      <h3 style="margin:0 0 10px">Modo do pedido</h3>
-      <div class="modeRow">
-        <div class="pill active" data-mode="delivery">Entrega</div>
-        <div class="pill" data-mode="pickup">Retirada</div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div style="display:grid; gap:10px">
-        <input class="input" data-customer-name placeholder="Seu nome" />
-        <input class="input" data-customer-phone placeholder="Telefone (opcional)" />
-        <input class="input" data-customer-address placeholder="Endereço (obrigatório para entrega)" />
-        <select data-payment>
-          <option>Pix</option>
-          <option>Cartão</option>
-          <option>Dinheiro</option>
-        </select>
-
-        <div style="display:flex; gap:10px">
-          <input class="input" data-coupon placeholder="Cupom (opcional)" />
-          <button class="btn ghost" data-apply-coupon>Aplicar</button>
-        </div>
-
-        <textarea class="textarea" data-order-notes placeholder="Observações gerais do pedido"></textarea>
-        <button class="btn" data-checkout>Enviar no WhatsApp</button>
-      </div>
-    </div>
+  <div class="sectionTitle">
+    <h2>Açaí</h2>
+    <span class="muted small">Escolha tamanho + adicionais + calda</span>
   </div>
 
   <div class="grid" data-grid></div>
 
   <div class="footer">
-    <div>© <span data-brand-name></span> • <span class="muted" data-brand-address></span></div>
+    © <span data-marca-nome></span> • <span class="muted" data-marca-endereco></span>
   </div>
 </div>
 
-<!-- Drawer Carrinho -->
-<div class="drawer" data-cart-drawer>
+<div class="drawer" data-drawer>
   <div class="drawer__head">
     <b>Seu carrinho</b>
-    <button class="iconbtn" data-close-cart>✕</button>
+    <button class="iconbtn" data-close-carrinho>✕</button>
   </div>
   <div class="drawer__body">
-    <div data-cart-list></div>
+    <div data-carrinho-lista></div>
   </div>
   <div class="drawer__foot">
-    <div data-cart-summary></div>
+    <div data-carrinho-resumo></div>
     <div style="height:10px"></div>
-    <button class="btn" data-checkout>Enviar no WhatsApp</button>
+    <button class="btn" data-finalizar>Enviar no WhatsApp</button>
   </div>
 </div>
 
@@ -104,6 +67,7 @@
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
 <script>
-  const PAGE_KEY = "acai";
-  window.ACAI_APP.render(PAGE_KEY);
+  ACAI.iniciar("acai");
 </script>
+</body>
+</html>
