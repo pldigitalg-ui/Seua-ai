@@ -1,14 +1,174 @@
-<link rel="stylesheet" href="css/style.css">
-    <nav>
-        <div><strong>Seu Açaí</strong></div>
-        <div>
-            <a href="index.html">Início</a>
-            <a href="acai.html">Açaí</a>
-            <a href="bebidas.html">Bebidas</a>
-            <a href="combos.html">Combos</a>
-            <a href="sorvetes.html">Sorvetes</a>
-            <a href="contato.html">Contato</a>
-        </div>
-    </nav>
-</header>
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Seu Açaí</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
 
+<div class="topbar">
+  <div class="nav">
+    <div class="brand">
+      <b data-brand-name>Seu Açaí</b>
+      <span data-brand-slogan></span>
+    </div>
+
+    <div class="navlinks">
+      <a class="pill active" href="index.html">Início</a>
+      <a class="pill" href="acai.html">Açaí</a>
+      <a class="pill" href="bebidas.html">Bebidas</a>
+      <a class="pill" href="combos.html">Combos</a>
+      <a class="pill" href="sorvetes.html">Sorvetes</a>
+      <a class="pill" href="contato.html">Contato</a>
+    </div>
+
+    <div class="right">
+      <span class="badge" data-open-badge>—</span>
+      <button class="cartbtn" data-open-cart>
+        Carrinho
+        <span class="cartbadge" data-cart-badge>0</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="hero">
+    <div class="heroCard">
+      <h1 data-brand-name>Seu Açaí</h1>
+      <p class="muted" data-brand-address></p>
+
+      <div class="ctaRow">
+        <a class="btn" href="acai.html">Montar meu Açaí</a>
+        <a class="btn ghost" data-brand-instagram target="_blank">Instagram</a>
+      </div>
+    </div>
+
+    <div class="heroCard">
+      <h3 style="margin:0 0 10px">Peça pelo WhatsApp</h3>
+      <p class="muted">Monte seu pedido e finalize pelo WhatsApp com cálculo automático.</p>
+      <div style="height:12px"></div>
+      <a class="btn" href="acai.html">Começar Pedido</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>© <span data-brand-name></span></div>
+  </div>
+</div>
+
+<div class="drawer" data-cart-drawer>
+  <div class="drawer__head">
+    <b>Seu carrinho</b>
+    <button class="iconbtn" data-close-cart>✕</button>
+  </div>
+  <div class="drawer__body">
+    <div data-cart-list></div>
+  </div>
+  <div class="drawer__foot">
+    <div data-cart-summary></div>
+    <div style="height:10px"></div>
+    <button class="btn" data-checkout>Enviar no WhatsApp</button>
+  </div>
+</div>
+
+<div class="toast" data-toast></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  const PAGE_KEY = "combos";
+  window.ACAI_APP.render(PAGE_KEY);
+</script>
+
+</body>
+</html>
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Seu Açaí</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="topbar">
+  <div class="nav">
+    <div class="brand">
+      <b data-brand-name>Seu Açaí</b>
+      <span data-brand-slogan></span>
+    </div>
+
+    <div class="navlinks">
+      <a class="pill active" href="index.html">Início</a>
+      <a class="pill" href="acai.html">Açaí</a>
+      <a class="pill" href="bebidas.html">Bebidas</a>
+      <a class="pill" href="combos.html">Combos</a>
+      <a class="pill" href="sorvetes.html">Sorvetes</a>
+      <a class="pill" href="contato.html">Contato</a>
+    </div>
+
+    <div class="right">
+      <span class="badge" data-open-badge>—</span>
+      <button class="cartbtn" data-open-cart>
+        Carrinho
+        <span class="cartbadge" data-cart-badge>0</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="hero">
+    <div class="heroCard">
+      <h1 data-brand-name>Seu Açaí</h1>
+      <p class="muted" data-brand-address></p>
+
+      <div class="ctaRow">
+        <a class="btn" href="acai.html">Montar meu Açaí</a>
+        <a class="btn ghost" data-brand-instagram target="_blank">Instagram</a>
+      </div>
+    </div>
+
+    <div class="heroCard">
+      <h3 style="margin:0 0 10px">Peça pelo WhatsApp</h3>
+      <p class="muted">Monte seu pedido e finalize pelo WhatsApp com cálculo automático.</p>
+      <div style="height:12px"></div>
+      <a class="btn" href="acai.html">Começar Pedido</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>© <span data-brand-name></span></div>
+  </div>
+</div>
+
+<div class="drawer" data-cart-drawer>
+  <div class="drawer__head">
+    <b>Seu carrinho</b>
+    <button class="iconbtn" data-close-cart>✕</button>
+  </div>
+  <div class="drawer__body">
+    <div data-cart-list></div>
+  </div>
+  <div class="drawer__foot">
+    <div data-cart-summary></div>
+    <div style="height:10px"></div>
+    <button class="btn" data-checkout>Enviar no WhatsApp</button>
+  </div>
+</div>
+
+<div class="toast" data-toast></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  const PAGE_KEY = "combos";
+  window.ACAI_APP.render(PAGE_KEY);
+</script>
+
+</body>
+</html>
