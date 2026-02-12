@@ -1,1 +1,166 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pedido — Impressão</title>
+  <style>
+    /* Cupom estilo 80mm (impressora térmica) */
+    body{ margin:0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; background:#fff; color:#000; }
+    .paper{
+      width: 80mm;
+      max-width: 80mm;
+      margin: 0 auto;
+      padding: 10px 10px 16px;
+    }
+    .center{ text-align:center; }
+    .b{ font-weight:900; }
+    .muted{ color:#333; }
+    .line{ border-top:1px dashed #000; margin:10px 0; }
+    .row{ display:flex; justify-content:space-between; gap:10px; }
+    .small{ font-size:12px; }
+    .big{ font-size:14px; }
+    .items{ margin-top:8px; }
+    .it{ margin:6px 0; }
+    .it .name{ font-weight:900; }
+    .it .sub{ font-size:11px; color:#222; margin-top:2px; }
+    .actions{ width: min(520px, 92%); margin: 12px auto 20px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+    button{
+      border:1px solid #000; background:#fff; padding:10px 12px; border-radius:10px;
+      font-weight:900; cursor:pointer;
+    }
+    @media print{
+      .actions{ display:none; }
+      body{ background:#fff; }
+    }
+  </style>
+</head>
+<body>
+  <div class="actions">
+    <button onclick="window.print()">🖨️ Imprimir</button>
+    <button onclick="downloadTxt()">⬇️ Baixar .TXT</button>
+    <button onclick="window.close()">✕ Fechar</button>
+  </div>
+
+  <div class="paper" id="paper">
+    <div class="center b big" id="brand">LP Grill</div>
+    <div class="center small muted" id="when"></div>
+    <div class="line"></div>
+
+    <div class="small">
+      <div class="row"><span class="b">Cliente</span><span id="name">—</span></div>
+      <div class="row"><span class="b">Telefone</span><span id="phone">—</span></div>
+      <div class="row"><span class="b">Endereço</span><span id="address">—</span></div>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="b">ITENS</div>
+    <div class="items" id="items"></div>
+
+    <div class="line"></div>
+
+    <div class="small">
+      <div class="row"><span class="b">Subtotal</span><span id="subtotal">R$ 0,00</span></div>
+      <div class="row"><span class="b">Taxa</span><span id="fee">R$ 0,00</span></div>
+      <div class="row big"><span class="b">TOTAL</span><span class="b" id="total">R$ 0,00</span></div>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="small">
+      <div class="b">Observações</div>
+      <div id="notes" class="muted">—</div>
+    </div>
+
+    <div class="line"></div>
+    <div class="center small muted">Obrigado! ✅</div>
+  </div>
+
+  <script>
+    function money(v){
+      try { return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v); }
+      catch { return `R$ ${Number(v).toFixed(2)}`.replace(".",","); }
+    }
+    function esc(s){ return String(s ?? ""); }
+
+    function getData(){
+      try{
+        const raw = localStorage.getItem("lpgrill_last_order_print_v1");
+        return raw ? JSON.parse(raw) : null;
+      }catch(e){ return null; }
+    }
+
+    function render(){
+      const data = getData();
+      const now = new Date();
+      document.getElementById("when").textContent =
+        now.toLocaleDateString("pt-BR") + " " + now.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+
+      if(!data){
+        document.getElementById("items").innerHTML = '<div class="it">Nenhum pedido encontrado.</div>';
+        return;
+      }
+
+      document.getElementById("brand").textContent = data.brand || "LP Grill";
+      document.getElementById("name").textContent = data.name || "—";
+      document.getElementById("phone").textContent = data.phone || "—";
+      document.getElementById("address").textContent = data.address || "—";
+      document.getElementById("notes").textContent = data.notes || "—";
+
+      const itemsEl = document.getElementById("items");
+      itemsEl.innerHTML = (data.items || []).map(it => `
+        <div class="it">
+          <div class="row">
+            <span class="name">${esc(it.qty)}x ${esc(it.name)}</span>
+            <span class="b">${money(it.qty * it.price)}</span>
+          </div>
+          ${it.desc ? `<div class="sub">${esc(it.desc)}</div>` : ``}
+        </div>
+      `).join("");
+
+      document.getElementById("subtotal").textContent = money(data.subtotal || 0);
+      document.getElementById("fee").textContent = money(data.fee || 0);
+      document.getElementById("total").textContent = money((data.subtotal||0) + (data.fee||0));
+    }
+
+    function downloadTxt(){
+      const data = getData();
+      if(!data){ alert("Sem pedido para salvar."); return; }
+
+      const lines = [];
+      lines.push(`${data.brand || "LP Grill"}`);
+      lines.push(`DATA: ${new Date().toLocaleString("pt-BR")}`);
+      lines.push("");
+      lines.push(`Cliente: ${data.name || "-"}`);
+      lines.push(`Telefone: ${data.phone || "-"}`);
+      lines.push(`Endereço: ${data.address || "-"}`);
+      lines.push("");
+      lines.push("ITENS:");
+      (data.items||[]).forEach(it=>{
+        lines.push(`- ${it.qty}x ${it.name} (${money(it.price)}) = ${money(it.qty*it.price)}`);
+        if(it.desc) lines.push(`  * ${it.desc}`);
+      });
+      lines.push("");
+      lines.push(`Subtotal: ${money(data.subtotal||0)}`);
+      if((data.fee||0)>0) lines.push(`Taxa: ${money(data.fee||0)}`);
+      lines.push(`TOTAL: ${money((data.subtotal||0)+(data.fee||0))}`);
+      lines.push("");
+      if(data.notes) lines.push(`Obs: ${data.notes}`);
+
+      const blob = new Blob([lines.join("\n")], {type:"text/plain;charset=utf-8"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `pedido-${Date.now()}.txt`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    render();
+
+    // opcional: auto-print (tira se não quiser)
+    setTimeout(()=>window.print(), 300);
+  </script>
+</body>
+</html>
 
