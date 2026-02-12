@@ -85,4 +85,267 @@
       <span class="cart-t">Carrinho</span>
       <span class="cart-badge" id="cart-badge">0</span>
     `;
-    document.body.appendChil
+    document.body.appendChild(fab);
+
+    const modal = document.createElement("div");
+    modal.id = "cart-modal";
+    modal.className = "modal hidden";
+    modal.innerHTML = `
+      <div class="modal__backdrop" data-close="1"></div>
+      <div class="modal__panel" role="dialog" aria-modal="true" aria-label="Carrinho">
+        <div class="modal__head">
+          <div>
+            <h3>Seu carrinho</h3>
+            <p class="muted">Clique em finalizar e mande tudo certinho no WhatsApp.</p>
+          </div>
+          <button class="icon-btn" type="button" data-close="1" aria-label="Fechar">✕</button>
+        </div>
+
+        <div class="modal__body">
+          <div id="cart-empty" class="empty">
+            <div class="empty__emoji">🧾</div>
+            <div class="empty__title">Carrinho vazio</div>
+            <div class="empty__sub">Toque em um item para adicionar.</div>
+          </div>
+
+          <div id="cart-list" class="cart-list"></div>
+
+          <div class="form-grid">
+            <div>
+              <label class="label">Nome (opcional)</label>
+              <input id="ck-name" class="input" placeholder="Seu nome" />
+            </div>
+            <div>
+              <label class="label">Telefone (opcional)</label>
+              <input id="ck-phone" class="input" placeholder="(31) 9xxxx-xxxx" />
+            </div>
+            <div class="col-2">
+              <label class="label">Endereço / Retirada</label>
+              <input id="ck-address" class="input" placeholder="Rua, número, bairro, referência..." />
+            </div>
+            <div class="col-2">
+              <label class="label">Observações</label>
+              <textarea id="ck-notes" class="textarea" rows="3" placeholder="Ex: sem gelo, pouco granola..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal__footer">
+          <div class="total">
+            <span class="muted">Total</span>
+            <strong id="cart-total">R$ 0,00</strong>
+          </div>
+          <button id="btn-finalizar" class="btn btn-chrome" type="button">
+            Finalizar o pedido
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    fab.addEventListener("click", () => openModal(true));
+    modal.addEventListener("click", (e) => { if (e.target?.dataset?.close) openModal(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") openModal(false); });
+
+    $("#btn-finalizar").addEventListener("click", finalizeWhatsApp);
+
+    updateBadge();
+    renderCart();
+  }
+
+  function openModal(open){
+    const modal = $("#cart-modal");
+    if (!modal) return;
+    modal.classList.toggle("hidden", !open);
+    document.body.classList.toggle("no-scroll", open);
+  }
+
+  function updateBadge(){
+    const b = $("#cart-badge");
+    if (b) b.textContent = String(cartCount());
+  }
+
+  function renderCart(){
+    const list = $("#cart-list");
+    const empty = $("#cart-empty");
+    const totalEl = $("#cart-total");
+    if (!list || !empty || !totalEl) return;
+
+    totalEl.textContent = money(cartTotal() + (cfg().deliveryFee || 0));
+
+    if (cart.length === 0){
+      empty.classList.remove("hidden");
+      list.innerHTML = "";
+      return;
+    }
+
+    empty.classList.add("hidden");
+    list.innerHTML = cart.map(it => `
+      <div class="cart-item">
+        <div class="cart-item__main">
+          <div class="cart-item__title">${esc(it.name)}</div>
+          <div class="cart-item__sub">${esc(it.desc || "")}</div>
+        </div>
+        <div class="cart-item__right">
+          <div class="cart-item__price">${money(it.price)}</div>
+          <div class="qty">
+            <button class="qty__btn" data-dec="${esc(it.id)}" type="button">−</button>
+            <span class="qty__num">${it.qty}</span>
+            <button class="qty__btn" data-inc="${esc(it.id)}" type="button">+</button>
+          </div>
+          <button class="link danger" data-rm="${esc(it.id)}" type="button">remover</button>
+        </div>
+      </div>
+    `).join("");
+
+    $$("[data-dec]", list).forEach(b => b.addEventListener("click", ()=>dec(b.dataset.dec)));
+    $$("[data-inc]", list).forEach(b => b.addEventListener("click", ()=>inc(b.dataset.inc)));
+    $$("[data-rm]", list).forEach(b => b.addEventListener("click", ()=>rm(b.dataset.rm)));
+  }
+
+  function finalizeWhatsApp(){
+    if (cart.length === 0){ toast("Seu carrinho está vazio."); return; }
+
+    const name = ($("#ck-name")?.value || "").trim();
+    const phone = ($("#ck-phone")?.value || "").trim();
+    const address = ($("#ck-address")?.value || "").trim();
+    const notes = ($("#ck-notes")?.value || "").trim();
+
+    const lines = [];
+    lines.push(`Olá! Quero finalizar um pedido no ${cfg().brand}:`);
+    lines.push("");
+
+    cart.forEach(it => lines.push(`• ${it.qty}x ${it.name} — ${money(it.qty * it.price)}`));
+
+    const subtotal = cartTotal();
+    const taxa = cfg().deliveryFee || 0;
+    lines.push("");
+    lines.push(`Subtotal: ${money(subtotal)}`);
+    if (taxa > 0) lines.push(`Taxa: ${money(taxa)}`);
+    lines.push(`Total: ${money(subtotal + taxa)}`);
+
+    if (name) lines.push(`\nNome: ${name}`);
+    if (phone) lines.push(`Telefone: ${phone}`);
+    if (address) lines.push(`Endereço/Retirada: ${address}`);
+    if (notes) lines.push(`Obs: ${notes}`);
+
+    const url = `https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`;
+    window.open(url, "_blank");
+  }
+
+  // =====================
+  // HOME: 7 AÇAÍ + MONTE (cards clicáveis)
+  // =====================
+  function mountHomeAcai(){
+    const grid = $("#home-acai-grid");
+    if (!grid || !window.CATALOG?.home_acai) return;
+
+    grid.innerHTML = window.CATALOG.home_acai.map(p => {
+      const hasPrice = typeof p.price === "number";
+      const priceHtml = hasPrice ? `<div class="price">${money(p.price)}</div>` : `<div class="price ghost">Personalizar</div>`;
+      const badge = p.badge ? `<span class="badge">${esc(p.badge)}</span>` : "";
+      const link = p.link ? `data-link="${esc(p.link)}"` : "";
+      return `
+        <article class="cardx" data-home-card="1" data-id="${esc(p.id)}" ${link}>
+          <div class="thumb" style="background-image:url('${esc(p.img)}')">
+            <span class="thumb__fallback">Imagem</span>
+          </div>
+          <div class="cardx__body">
+            <div class="title-row">
+              <h3>${esc(p.name)}</h3>
+              ${badge}
+            </div>
+            <p>${esc(p.desc)}</p>
+            <div class="bottom-row">
+              ${priceHtml}
+              <div class="tap">Toque para ${p.link ? "abrir" : "adicionar"}</div>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    $$('[data-home-card="1"]', grid).forEach(card => {
+      card.addEventListener("click", () => {
+        const link = card.dataset.link;
+        const id = card.dataset.id;
+
+        // se for “Monte seu açaí” -> vai para a página
+        if (link) { window.location.href = link; return; }
+
+        // senão adiciona item direto ao carrinho
+        const p = window.CATALOG.home_acai.find(x => x.id === id);
+        if (!p || typeof p.price !== "number") return;
+        addItem({ id: p.id, name: p.name, desc: p.desc, price: p.price });
+      });
+    });
+  }
+
+  // =====================
+  // CATALOG PAGES: cards com imagens clicáveis
+  // =====================
+  function mountCatalog(){
+    const root = document.querySelector("[data-catalog]");
+    if (!root || !window.CATALOG?.categories) return;
+
+    const catId = root.getAttribute("data-catalog");
+    const cat = window.CATALOG.categories.find(c => c.id === catId);
+    if (!cat) return;
+
+    const grid = $("#catalog-grid", root);
+    if (!grid) return;
+
+    grid.innerHTML = cat.items.map(it => `
+      <article class="cardx" data-add-card="1" data-id="${esc(it.id)}">
+        <div class="thumb" style="background-image:url('${esc(it.img || "")}')">
+          <span class="thumb__fallback">Imagem</span>
+        </div>
+        <div class="cardx__body">
+          <div class="title-row">
+            <h3>${esc(it.name)}</h3>
+            ${it.badge ? `<span class="badge">${esc(it.badge)}</span>` : ""}
+          </div>
+          <p>${esc(it.desc || "")}</p>
+          <div class="bottom-row">
+            <div class="price">${money(it.price)}</div>
+            <div class="tap">Clique no card para adicionar</div>
+          </div>
+        </div>
+      </article>
+    `).join("");
+
+    $$("[data-add-card='1']", grid).forEach(card => {
+      card.addEventListener("click", () => {
+        const id = card.dataset.id;
+        const it = cat.items.find(x => x.id === id);
+        if (!it) return;
+        addItem({ id: it.id, name: it.name, desc: it.desc, price: it.price });
+      });
+    });
+  }
+
+  // =====================
+  // TOAST
+  // =====================
+  let toastTimer = null;
+  function toast(msg){
+    let el = $("#toast");
+    if (!el){
+      el = document.createElement("div");
+      el.id = "toast";
+      el.className = "toast hidden";
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.classList.remove("hidden");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>el.classList.add("hidden"), 1600);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    ensureFloatingWhats();
+    ensureCartUI();
+    mountHomeAcai();
+    mountCatalog();
+  });
+})();
