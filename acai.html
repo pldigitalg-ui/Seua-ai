@@ -1,1 +1,51 @@
+<div class="container">
+    <h2>Monte seu Açaí</h2>
 
+    <div class="card">
+        <h3>Tamanho</h3>
+        <select id="tamanho">
+            <option value="300ml - R$12">300ml - R$12</option>
+            <option value="500ml - R$18">500ml - R$18</option>
+            <option value="700ml - R$24">700ml - R$24</option>
+        </select>
+    </div>
+
+    <div class="card">
+        <h3>Adicionais</h3>
+        <label><input type="checkbox" value="Leite Ninho"> Leite Ninho</label><br>
+        <label><input type="checkbox" value="Granola"> Granola</label><br>
+        <label><input type="checkbox" value="Morango"> Morango</label><br>
+        <label><input type="checkbox" value="Nutella"> Nutella</label>
+    </div>
+
+    <div class="card">
+        <h3>Seus Dados</h3>
+        <input type="text" id="nome" placeholder="Seu nome"><br><br>
+        <input type="text" id="endereco" placeholder="Endereço para entrega">
+    </div>
+
+    <button class="btn" onclick="enviarPedido()">Fazer Pedido</button>
+</div>
+
+<script>
+function enviarPedido() {
+    let tamanho = document.getElementById("tamanho").value;
+    let nome = document.getElementById("nome").value;
+    let endereco = document.getElementById("endereco").value;
+
+    let adicionais = [];
+    document.querySelectorAll("input[type=checkbox]:checked").forEach(item => {
+        adicionais.push(item.value);
+    });
+
+    let mensagem = `🍧 *NOVO PEDIDO*%0A%0A` +
+                   `👤 Nome: ${nome}%0A` +
+                   `📍 Endereço: ${endereco}%0A%0A` +
+                   `🥣 Tamanho: ${tamanho}%0A` +
+                   `➕ Adicionais: ${adicionais.join(", ")}`;
+
+    let numero = "553198832407";
+
+    window.open(`https://wa.me/${numero}?text=${mensagem}`, "_blank");
+}
+</script>
