@@ -1,7 +1,7 @@
 // js/acai-data.js
 window.ACAI_RULES = {
   freeIncluded: 3,
-  extraFee: 4.00, // acima de 3 adicionais = +4,00 por adicional extra
+  extraFee: 4.00
 };
 
 window.ACAI_MENU = {
@@ -11,7 +11,6 @@ window.ACAI_MENU = {
     { id: "700", label: "700ml", price: 22.90 },
     { id: "1l",  label: "1 Litro", price: 29.90 }
   ],
-
   fruits: [
     { id: "banana", label: "Banana" },
     { id: "morango", label: "Morango" },
@@ -20,7 +19,6 @@ window.ACAI_MENU = {
     { id: "abacaxi", label: "Abacaxi" },
     { id: "uva", label: "Uva" }
   ],
-
   addOns: [
     { id: "granola", label: "Granola" },
     { id: "leite_cond", label: "Leite condensado" },
