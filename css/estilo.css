@@ -389,3 +389,117 @@ textarea{min-height:86px;resize:vertical}
   .hero__in{grid-template-columns:1fr}
   .hero__img{height: 220px}
 }
+/* ===========================
+   FIX: BOTÕES FIXOS + ÍCONES
+   Cole no FINAL do css/estilo.css
+   =========================== */
+
+.fab-wrap{
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 999;
+  display: grid;
+  gap: 10px;
+}
+
+/* Botão flutuante padrão (FAB) */
+.fab{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(10,10,16,.86);
+  backdrop-filter: blur(10px);
+  color: var(--text);
+  box-shadow: 0 18px 44px rgba(0,0,0,.40);
+  cursor: pointer;
+  user-select: none;
+}
+.fab:hover{border-color: rgba(167,139,250,.50)}
+.fab:active{transform: scale(.99)}
+
+/* Ícones desenhados em CSS (sem imagem externa) */
+.ico{
+  width: 20px;
+  height: 20px;
+  display:inline-block;
+}
+
+/* Carrinho (desenho simples) */
+.ico-cart{
+  position: relative;
+  border: 2px solid rgba(246,246,251,.92);
+  border-radius: 6px;
+  transform: translateY(1px);
+}
+.ico-cart:before{
+  content:"";
+  position:absolute;
+  left:2px; right:2px;
+  top:-6px;
+  height: 10px;
+  border:2px solid rgba(246,246,251,.92);
+  border-bottom:0;
+  border-radius: 10px 10px 0 0;
+  opacity:.95;
+}
+.ico-cart:after{
+  content:"";
+  position:absolute;
+  left:4px;
+  bottom:-7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 99px;
+  background: rgba(246,246,251,.92);
+  box-shadow: 10px 0 0 rgba(246,246,251,.92);
+}
+
+/* WhatsApp (círculo + detalhe) */
+.fab--wa{
+  border-color: rgba(34,197,94,.35);
+  background: rgba(10,10,16,.86);
+  color: #d7ffe5;
+}
+.ico-wa{
+  position: relative;
+  border-radius: 99px;
+  background: rgba(34,197,94,.22);
+  border: 2px solid rgba(34,197,94,.55);
+}
+.ico-wa:before{
+  content:"";
+  position:absolute;
+  inset: 4px 5px 5px 4px;
+  border: 2px solid rgba(34,197,94,.80);
+  border-right: 0;
+  border-top: 0;
+  border-radius: 12px;
+  transform: rotate(-25deg);
+  opacity:.9;
+}
+.ico-wa:after{
+  content:"";
+  position:absolute;
+  left: 2px;
+  bottom: -3px;
+  width: 8px;
+  height: 8px;
+  background: rgba(34,197,94,.22);
+  border-left: 2px solid rgba(34,197,94,.55);
+  border-bottom: 2px solid rgba(34,197,94,.55);
+  transform: rotate(35deg);
+  border-radius: 2px;
+}
+
+/* Texto menor no celular (pra não tampar) */
+@media (max-width: 520px){
+  .fab span.txt{display:none}
+}
+
+/* Garantir espaço para os botões flutuantes */
+.container{padding-bottom: 170px;}
+
