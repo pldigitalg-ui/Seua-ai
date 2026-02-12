@@ -1,102 +1,51 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Entrega • Seu Açaí</title>
-  <link rel="stylesheet" href="css/estilo.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#070712" />
+  <title>LP Grill — Entrega</title>
+  <link rel="stylesheet" href="css/estilo.css" />
 </head>
 <body>
-  
-<!-- AÇÕES FIXAS (aparece em todas as páginas) -->
-<div class="fab-wrap">
-
-  <!-- Finalizar pedido: abre o carrinho -->
-  <button class="fab" data-open-carrinho>
-    <i class="ico ico-cart"></i>
-    <span class="txt">Finalizar pedido</span>
-  </button>
-
-  <!-- WhatsApp: abre direto no WhatsApp com mensagem curta -->
-  <a class="fab fab--wa" href="#" data-whats-fab>
-    <i class="ico ico-wa"></i>
-    <span class="txt">WhatsApp</span>
-  </a>
-
-</div>
-
-<div class="topbar">
-  <div class="nav">
-    <div class="brand">
-      <b data-marca-nome>Seu Açaí</b>
-      <span data-marca-slogan></span>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="index.html">
+        <img src="LOGO.PNG" alt="LP Grill" onerror="this.style.display='none'">
+        <span class="t"><strong>LP Grill Açaí</strong><span>Açaí cremoso • Entrega rápida</span></span>
+      </a>
+      <nav class="menu">
+        <a href="index.html">Início</a>
+        <a href="acai.html">Açaí</a>
+        <a href="bebidas.html">Bebidas</a>
+        <a href="combos.html">Combos</a>
+        <a href="sorvetes.html">Sorvetes</a>
+        <a href="hamburguer.html">Hambúrguer</a>
+        <a href="contato.html">Contato</a>
+      </nav>
     </div>
+  </header>
 
-    <div class="navlinks">
-      <a class="pill" href="index.html">Início</a>
-      <a class="pill" href="acai.html">Açaí</a>
-      <a class="pill" href="bebidas.html">Bebidas</a>
-      <a class="pill" href="combos.html">Combos</a>
-      <a class="pill" href="sorvetes.html">Sorvetes</a>
-      <a class="pill" href="contato.html">Contato</a>
-    </div>
-
-    <div class="right">
-      <span class="badge" data-badge-aberto>—</span>
-      <button class="cartbtn" data-open-carrinho>
-        Carrinho
-        <span class="cartbadge" data-carrinho-badge>0</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<div class="container">
-  <div class="hero" style="grid-template-columns:1fr;">
-    <div class="card">
+  <main class="container section">
+    <div class="hero-card">
       <h1>Entrega</h1>
-      <p class="muted">Taxa e regras configuráveis em <b>js/data.js</b>.</p>
-      <div class="divider"></div>
-      <ul class="muted" style="margin:0;padding-left:18px;line-height:1.8">
-        <li>Taxa padrão: <b>R$ 6,00</b> (exemplo)</li>
-        <li>Frete grátis acima de <b>R$ 60,00</b> (exemplo)</li>
-        <li>Retirada no local disponível</li>
-      </ul>
-      <div class="divider"></div>
-      <div class="ctaRow">
-        <a class="btn" href="acai.html">Montar pedido</a>
-        <button class="btn ghost" data-open-carrinho>Ver carrinho</button>
+      <p class="muted">Informe seu endereço no carrinho antes de finalizar no WhatsApp.</p>
+
+      <div class="chips">
+        <span class="chip">🚚 Entrega rápida</span>
+        <span class="chip">📍 Endereço no carrinho</span>
+        <span class="chip">✅ Confirmação no WhatsApp</span>
+      </div>
+
+      <div class="hero-actions" style="margin-top:12px;">
+        <a class="btn btn-purple" href="index.html">Voltar ao início</a>
+        <a class="btn btn-outline" href="acai.html#monte">Monte seu açaí</a>
       </div>
     </div>
-  </div>
+  </main>
 
-  <div class="footer">
-    © <span data-marca-nome></span> • <span class="muted" data-marca-endereco></span>
-  </div>
-</div>
-
-<div class="drawer" data-drawer>
-  <div class="drawer__head">
-    <b>Seu carrinho</b>
-    <button class="iconbtn" data-close-carrinho>✕</button>
-  </div>
-  <div class="drawer__body">
-    <div data-carrinho-lista></div>
-  </div>
-  <div class="drawer__foot">
-    <div data-carrinho-resumo></div>
-    <div style="height:10px"></div>
-    <button class="btn" data-finalizar>Enviar no WhatsApp</button>
-  </div>
-</div>
-
-<div class="toast" data-toast></div>
-
-<script src="js/data.js"></script>
-<script src="js/app.js"></script>
-<script>
-  ACAI.iniciar(null);
-</script>
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
-
