@@ -1,142 +1,75 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LP Grill Açaí</title>
-
-<link rel="stylesheet" href="css/estilo.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#070712" />
+  <title>LP Grill — Açaí & Pedidos</title>
+  <link rel="stylesheet" href="css/estilo.css" />
 </head>
-
 <body>
 
-<!-- HEADER -->
-<header class="topbar">
-  <div class="topbar__in">
-    <div class="brand">
-      <img src="assets/img/logo.png" alt="LP Grill Açaí" class="brand__logo">
-      <div class="brand__txt">
-        <b>LP Grill Açaí</b>
-        <small>Açaí cremoso • Entrega rápida</small>
-      </div>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="index.html">
+        <img src="LOGO.PNG" alt="LP Grill" onerror="this.style.display='none'">
+        <span class="t">
+          <strong>LP Grill Açaí</strong>
+          <span>Açaí cremoso • Entrega rápida</span>
+        </span>
+      </a>
+
+      <nav class="menu">
+        <a class="active" href="index.html">Início</a>
+        <a href="acai.html">Açaí</a>
+        <a href="bebidas.html">Bebidas</a>
+        <a href="combos.html">Combos</a>
+        <a href="sorvetes.html">Sorvetes</a>
+        <a href="hamburguer.html">Hambúrguer</a>
+        <a href="contato.html">Contato</a>
+      </nav>
     </div>
+  </header>
 
-    <nav class="nav">
-      <a class="pill active" href="index.html">Início</a>
-      <a class="pill" href="acai.html">Açaí</a>
-      <a class="pill" href="bebidas.html">Bebidas</a>
-      <a class="pill" href="combos.html">Combos</a>
-      <a class="pill" href="sorvetes.html">Sorvetes</a>
-      <a class="pill" href="hamburguer.html">Hambúrguer</a>
-      <a class="pill" href="contato.html">Contato</a>
-    </nav>
-  </div>
-</header>
+  <main class="container">
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="hero-card">
+          <h1>Monte seu açaí do seu jeito</h1>
+          <p>Escolha tamanho, adicionais e finalize no WhatsApp em segundos. Layout premium, rápido e sem confusão.</p>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero__in">
+          <div class="hero-actions">
+            <a class="btn btn-purple" href="acai.html#monte">Monte seu açaí</a>
+            <a class="btn btn-outline" href="combos.html">Ver combos</a>
+          </div>
 
-    <div class="hero__copy">
-      <h1>Monte seu açaí do seu jeito 🍧</h1>
-      <p>Escolha tamanho, adicionais e finalize no WhatsApp em segundos.</p>
-
-      <div class="hero__cta">
-        <a class="btn btn--ok" href="acai.html">Começar pedido</a>
-        <a class="btn" href="combos.html">Ver combos</a>
-      </div>
-
-      <div class="hero__badges">
-        <span class="badge">🕒 Entrega rápida</span>
-        <span class="badge">💳 Pix / Dinheiro</span>
-        <span class="badge">⭐ Mais pedidos do dia</span>
-      </div>
-    </div>
-
-    <div class="hero__art">
-      <img src="assets/img/hero-acai.jpg" class="hero__img" alt="Açaí">
-    </div>
-
-  </div>
-</section>
-
-<!-- DESTAQUES -->
-<section class="container">
-  <h2>Destaques</h2>
-
-  <div class="grid">
-
-    <div class="card">
-      <div class="product__top">
-        <div>
-          <div class="product__title">Açaí 500ml</div>
-          <div class="product__desc">O mais pedido da casa</div>
+          <div class="chips">
+            <span class="chip">🚚 Entrega rápida</span>
+            <span class="chip">💳 Pix / Dinheiro</span>
+            <span class="chip">⭐ Mais pedidos do dia</span>
+          </div>
         </div>
-        <div class="price">R$ 18,90</div>
-      </div>
-      <a class="btn btn--ok" href="acai.html">Montar agora</a>
-    </div>
 
-    <div class="card">
-      <div class="product__top">
-        <div>
-          <div class="product__title">Combo 1</div>
-          <div class="product__desc">Açaí 500ml + bebida</div>
+        <div class="hero-visual">
+          <div class="panel">
+            <strong>Regra de adicionais</strong>
+            <span>Até <b>3 adicionais</b> inclusos no açaí. Acima disso, o sistema aplica automaticamente <b>+R$ 4,00</b> por adicional extra.</span>
+          </div>
         </div>
-        <div class="price">R$ 22,90</div>
       </div>
-      <a class="btn btn--ok" href="combos.html">Ver combo</a>
-    </div>
+    </section>
 
-    <div class="card">
-      <div class="product__top">
-        <div>
-          <div class="product__title">Hambúrguer Clássico</div>
-          <div class="product__desc">Pão, carne, queijo e molho</div>
-        </div>
-        <div class="price">R$ 18,90</div>
-      </div>
-      <a class="btn btn--ok" href="hamburguer.html">Ver hambúrguer</a>
-    </div>
+    <section class="section">
+      <h2>Destaques</h2>
+      <div id="highlights" class="highlights"></div>
+    </section>
 
-  </div>
-</section>
+    <section class="section">
+      <h2>Atalho rápido</h2>
+      <p class="muted">Quer pedir direto? Use o carrinho (🛒) no canto inferior e finalize no WhatsApp.</p>
+    </section>
+  </main>
 
-<!-- CARRINHO (Drawer lateral) -->
-<div class="drawer" data-drawer>
-  <div class="drawer__head">
-    <b>Seu carrinho</b>
-    <button class="iconbtn" data-close-carrinho>✕</button>
-  </div>
-
-  <div class="drawer__body">
-    <div data-carrinho-lista></div>
-  </div>
-
-  <div class="drawer__foot">
-    <div data-carrinho-resumo></div>
-    <button class="btn btn--ok" data-finalizar>Enviar no WhatsApp</button>
-  </div>
-</div>
-
-<!-- BOTÕES FIXOS -->
-<div class="fab-wrap">
-
-  <button class="fab" data-open-carrinho>
-    <i class="ico ico-cart"></i>
-    <span class="txt">Finalizar pedido</span>
-  </button>
-
-  <a class="fab fab--wa" href="#" data-whats-fab>
-    <i class="ico ico-wa"></i>
-    <span class="txt">WhatsApp</span>
-  </a>
-
-</div>
-
-<!-- SCRIPTS NO FINAL -->
-<script src="js/data.js"></script>
-<script src="js/app.js"></script>
-
-</body>
-</html>
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="
