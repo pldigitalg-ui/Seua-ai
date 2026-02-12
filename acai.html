@@ -1,51 +1,111 @@
-<div class="container">
-    <h2>Monte seu Açaí</h2>
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Seu Açaí — Açaí</title>
+  <link rel="stylesheet" href="CSS/estilo.css" />
+</head>
+<body>
 
-    <div class="card">
-        <h3>Tamanho</h3>
-        <select id="tamanho">
-            <option value="300ml - R$12">300ml - R$12</option>
-            <option value="500ml - R$18">500ml - R$18</option>
-            <option value="700ml - R$24">700ml - R$24</option>
-        </select>
+<div class="topbar">
+  <div class="nav">
+    <div class="brand">
+      <b data-brand-name>Seu Açaí</b>
+      <span data-brand-slogan></span>
     </div>
 
-    <div class="card">
-        <h3>Adicionais</h3>
-        <label><input type="checkbox" value="Leite Ninho"> Leite Ninho</label><br>
-        <label><input type="checkbox" value="Granola"> Granola</label><br>
-        <label><input type="checkbox" value="Morango"> Morango</label><br>
-        <label><input type="checkbox" value="Nutella"> Nutella</label>
+    <div class="navlinks">
+      <a class="pill" href="index.html">Início</a>
+      <a class="pill active" href="acai.html">Açaí</a>
+      <a class="pill" href="bebidas.html">Bebidas</a>
+      <a class="pill" href="combos.html">Combos</a>
+      <a class="pill" href="sorvetes.html">Sorvetes</a>
+      <a class="pill" href="contato.html">Contato</a>
     </div>
 
-    <div class="card">
-        <h3>Seus Dados</h3>
-        <input type="text" id="nome" placeholder="Seu nome"><br><br>
-        <input type="text" id="endereco" placeholder="Endereço para entrega">
+    <div class="right">
+      <span class="badge" data-open-badge>—</span>
+      <button class="cartbtn" data-open-cart>
+        Carrinho
+        <span class="cartbadge" data-cart-badge>0</span>
+      </button>
     </div>
-
-    <button class="btn" onclick="enviarPedido()">Fazer Pedido</button>
+  </div>
 </div>
 
+<div class="container">
+  <div class="hero">
+    <div class="heroCard">
+      <h1>Açaí</h1>
+      <p class="muted" data-brand-address></p>
+
+      <div class="ctaRow">
+        <a class="btn" href="#" data-open-cart>Finalizar pedido</a>
+        <a class="btn ghost" data-brand-instagram target="_blank">Instagram</a>
+      </div>
+    </div>
+
+    <div class="heroCard">
+      <h3 style="margin:0 0 10px">Modo do pedido</h3>
+      <div class="modeRow">
+        <div class="pill active" data-mode="delivery">Entrega</div>
+        <div class="pill" data-mode="pickup">Retirada</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div style="display:grid; gap:10px">
+        <input class="input" data-customer-name placeholder="Seu nome" />
+        <input class="input" data-customer-phone placeholder="Telefone (opcional)" />
+        <input class="input" data-customer-address placeholder="Endereço (obrigatório para entrega)" />
+        <select data-payment>
+          <option>Pix</option>
+          <option>Cartão</option>
+          <option>Dinheiro</option>
+        </select>
+
+        <div style="display:flex; gap:10px">
+          <input class="input" data-coupon placeholder="Cupom (opcional)" />
+          <button class="btn ghost" data-apply-coupon>Aplicar</button>
+        </div>
+
+        <textarea class="textarea" data-order-notes placeholder="Observações gerais do pedido"></textarea>
+        <button class="btn" data-checkout>Enviar no WhatsApp</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" data-grid></div>
+
+  <div class="footer">
+    <div>© <span data-brand-name></span> • <span class="muted" data-brand-address></span></div>
+  </div>
+</div>
+
+<!-- Drawer Carrinho -->
+<div class="drawer" data-cart-drawer>
+  <div class="drawer__head">
+    <b>Seu carrinho</b>
+    <button class="iconbtn" data-close-cart>✕</button>
+  </div>
+  <div class="drawer__body">
+    <div data-cart-list></div>
+  </div>
+  <div class="drawer__foot">
+    <div data-cart-summary></div>
+    <div style="height:10px"></div>
+    <button class="btn" data-checkout>Enviar no WhatsApp</button>
+  </div>
+</div>
+
+<div class="toast" data-toast></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
 <script>
-function enviarPedido() {
-    let tamanho = document.getElementById("tamanho").value;
-    let nome = document.getElementById("nome").value;
-    let endereco = document.getElementById("endereco").value;
-
-    let adicionais = [];
-    document.querySelectorAll("input[type=checkbox]:checked").forEach(item => {
-        adicionais.push(item.value);
-    });
-
-    let mensagem = `🍧 *NOVO PEDIDO*%0A%0A` +
-                   `👤 Nome: ${nome}%0A` +
-                   `📍 Endereço: ${endereco}%0A%0A` +
-                   `🥣 Tamanho: ${tamanho}%0A` +
-                   `➕ Adicionais: ${adicionais.join(", ")}`;
-
-    let numero = "553198832407";
-
-    window.open(`https://wa.me/${numero}?text=${mensagem}`, "_blank");
-}
+  const PAGE_KEY = "acai";
+  window.ACAI_APP.render(PAGE_KEY);
 </script>
+</body>
+</html>
