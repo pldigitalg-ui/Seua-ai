@@ -1,5 +1,73 @@
-<script>
-  const PAGE_KEY = "combos";
-  window.ACAI_APP.render(PAGE_KEY);
-</script>
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Combos • Seu Açaí</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
 
+<div class="topbar">
+  <div class="nav">
+    <div class="brand">
+      <b data-marca-nome>Seu Açaí</b>
+      <span data-marca-slogan></span>
+    </div>
+
+    <div class="navlinks">
+      <a class="pill" href="index.html">Início</a>
+      <a class="pill" href="acai.html">Açaí</a>
+      <a class="pill" href="bebidas.html">Bebidas</a>
+      <a class="pill active" href="combos.html">Combos</a>
+      <a class="pill" href="sorvetes.html">Sorvetes</a>
+      <a class="pill" href="contato.html">Contato</a>
+    </div>
+
+    <div class="right">
+      <span class="badge" data-badge-aberto>—</span>
+      <button class="cartbtn" data-open-carrinho>
+        Carrinho
+        <span class="cartbadge" data-carrinho-badge>0</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="sectionTitle">
+    <h2>Combos</h2>
+    <span class="muted small">Promoções e mais vendidos</span>
+  </div>
+
+  <div class="grid" data-grid></div>
+
+  <div class="footer">
+    © <span data-marca-nome></span> • <span class="muted" data-marca-endereco></span>
+  </div>
+</div>
+
+<div class="drawer" data-drawer>
+  <div class="drawer__head">
+    <b>Seu carrinho</b>
+    <button class="iconbtn" data-close-carrinho>✕</button>
+  </div>
+  <div class="drawer__body">
+    <div data-carrinho-lista></div>
+  </div>
+  <div class="drawer__foot">
+    <div data-carrinho-resumo></div>
+    <div style="height:10px"></div>
+    <button class="btn" data-finalizar>Enviar no WhatsApp</button>
+  </div>
+</div>
+
+<div class="toast" data-toast></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  ACAI.iniciar("combos");
+</script>
+</body>
+</html>
