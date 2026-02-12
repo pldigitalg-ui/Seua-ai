@@ -391,8 +391,7 @@ textarea{min-height:86px;resize:vertical}
 }
 /* ===========================
    FIX: BOTÕES FIXOS + ÍCONES
-   Cole no FINAL do css/estilo.css
-   =========================== */
+     =========================== */
 
 .fab-wrap{
   position: fixed;
