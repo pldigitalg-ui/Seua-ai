@@ -203,34 +203,49 @@
     $$("[data-rm]", list).forEach(b => b.addEventListener("click", ()=>rm(b.dataset.rm)));
   }
 
-  function finalizeWhatsApp(){
-    if (cart.length === 0){ toast("Seu carrinho está vazio."); return; }
+function finalizeWhatsApp(){
+  if (cart.length === 0){ toast("Seu carrinho está vazio."); return; }
 
-    const name = ($("#ck-name")?.value || "").trim();
-    const phone = ($("#ck-phone")?.value || "").trim();
-    const address = ($("#ck-address")?.value || "").trim();
-    const notes = ($("#ck-notes")?.value || "").trim();
+  const name = ($("#ck-name")?.value || "").trim();
+  const phone = ($("#ck-phone")?.value || "").trim();
+  const address = ($("#ck-address")?.value || "").trim();
+  const notes = ($("#ck-notes")?.value || "").trim();
 
-    const lines = [];
-    lines.push(`Olá! Quero finalizar um pedido no ${cfg().brand}:`);
-    lines.push("");
+  const subtotal = cartTotal();
+  const fee = cfg().deliveryFee || 0;
 
-    cart.forEach(it => lines.push(`• ${it.qty}x ${it.name} — ${money(it.qty * it.price)}`));
+  // 1) salva para impressão (pedido.html)
+  const printPayload = {
+    brand: cfg().brand,
+    name, phone, address, notes,
+    items: cart.map(it => ({ id: it.id, name: it.name, desc: it.desc, price: it.price, qty: it.qty })),
+    subtotal,
+    fee
+  };
+  localStorage.setItem("lpgrill_last_order_print_v1", JSON.stringify(printPayload));
 
-    const subtotal = cartTotal();
-    const taxa = cfg().deliveryFee || 0;
-    lines.push("");
-    lines.push(`Subtotal: ${money(subtotal)}`);
-    if (taxa > 0) lines.push(`Taxa: ${money(taxa)}`);
-    lines.push(`Total: ${money(subtotal + taxa)}`);
+  // 2) monta mensagem WhatsApp
+  const lines = [];
+  lines.push(`Olá! Quero finalizar um pedido no ${cfg().brand}:`);
+  lines.push("");
 
-    if (name) lines.push(`\nNome: ${name}`);
-    if (phone) lines.push(`Telefone: ${phone}`);
-    if (address) lines.push(`Endereço/Retirada: ${address}`);
-    if (notes) lines.push(`Obs: ${notes}`);
+  cart.forEach(it => lines.push(`• ${it.qty}x ${it.name} — ${money(it.qty * it.price)}`));
 
-    const url = `https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`;
-    window.open(url, "_blank");
+  lines.push("");
+  lines.push(`Subtotal: ${money(subtotal)}`);
+  if (fee > 0) lines.push(`Taxa: ${money(fee)}`);
+  lines.push(`Total: ${money(subtotal + fee)}`);
+
+  if (name) lines.push(`\nNome: ${name}`);
+  if (phone) lines.push(`Telefone: ${phone}`);
+  if (address) lines.push(`Endereço/Retirada: ${address}`);
+  if (notes) lines.push(`Obs: ${notes}`);
+
+  // 3) abre impressão em nova aba + abre WhatsApp
+  window.open("pedido.html", "_blank");
+  window.open(`https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
+}
+
   }
 
   // =====================
