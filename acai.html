@@ -10,6 +10,50 @@
   
   <!-- AÇÕES FIXAS (aparece em todas as páginas) -->
 <div class="fab-wrap">
+<section class="builder" id="monte">
+  <div class="container">
+    <div class="builder-head">
+      <h1>Monte seu açaí</h1>
+      <p>Escolha tamanho, frutas e adicionais. Finalize no WhatsApp em segundos.</p>
+      <small id="acai-info" class="builder-info"></small>
+    </div>
+
+    <div id="acai-builder" class="builder-grid">
+      <div class="card">
+        <h2>1) Tamanho</h2>
+        <div id="acai-sizes" class="opts"></div>
+      </div>
+
+      <div class="card">
+        <h2>2) Frutas <span class="mini">(até 3 grátis)</span></h2>
+        <div id="acai-fruits" class="opts"></div>
+      </div>
+
+      <div class="card">
+        <h2>3) Complementos <span class="mini">(até 2 inclusos)</span></h2>
+        <div id="acai-extras" class="opts"></div>
+      </div>
+
+      <div class="card checkout">
+        <h2>Finalizar</h2>
+
+        <label class="label">Observações (opcional)</label>
+        <textarea id="acai-notes" class="textarea" rows="3" placeholder="Ex: sem leite condensado, pouco granola..."></textarea>
+
+        <div class="total-row">
+          <span>Total estimado</span>
+          <strong id="acai-total">R$ 0,00</strong>
+        </div>
+
+        <button id="acai-send" class="btn btn-whats" type="button" disabled>
+          Finalizar no WhatsApp
+        </button>
+
+        <p class="hint">O valor final pode variar conforme disponibilidade e promoções.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
   <!-- Finalizar pedido: abre o carrinho -->
   <button class="fab" data-open-carrinho>
