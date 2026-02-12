@@ -237,3 +237,73 @@ textarea{min-height:86px;resize:vertical}
   .hero{grid-template-columns:1fr}
   .grid{grid-template-columns:1fr}
 }
+/* ===========================
+   UPGRADE NÍVEL 11 (UI PREMIUM)
+   Cole no FINAL do css/estilo.css
+   =========================== */
+
+:root{
+  --glass: rgba(255,255,255,.06);
+  --glass2: rgba(255,255,255,.09);
+}
+
+/* deixa tudo mais “app” */
+.container{padding-bottom:140px}
+.card{background: linear-gradient(180deg, var(--panel), rgba(18,18,28,.78));}
+.pill{transition:.18s ease; user-select:none}
+.btn{transition:.18s ease; transform: translateZ(0)}
+.btn:active{transform: scale(.98)}
+.input, select, textarea{
+  transition:.15s ease;
+}
+.input:focus, select:focus, textarea:focus{
+  border-color: rgba(167,139,250,.55);
+  box-shadow: 0 0 0 3px rgba(139,92,246,.14);
+}
+
+/* grid mais “loja” */
+.grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width: 1020px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width: 720px){ .grid{grid-template-columns:1fr} }
+
+/* cards de produto mais bonitos */
+.card .product__top{align-items:flex-start}
+.product__title{letter-spacing:.2px}
+.price{
+  padding:8px 10px;
+  background: var(--glass);
+  border:1px solid var(--line);
+  border-radius:12px;
+}
+
+/* drawer mais premium */
+.drawer{
+  background: rgba(8,8,14,.92);
+  backdrop-filter: blur(10px);
+}
+.drawer__head b{font-size:15px}
+.cartline{gap:14px}
+.cartline__price{min-width:150px}
+
+/* botão WhatsApp flutuante */
+.wa-float{
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 250;
+  display: inline-flex;
+  align-items:center;
+  gap:10px;
+  padding: 12px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(34,197,94,.35);
+  background: rgba(10,10,16,.85);
+  color: #d7ffe5;
+  box-shadow: 0 18px 44px rgba(0,0,0,.35);
+}
+.wa-float:hover{border-color:rgba(34,197,94,.6)}
+.wa-dot{
+  width:10px;height:10px;border-radius:99px;
+  background: var(--ok);
+  box-shadow: 0 0 0 6px rgba(34,197,94,.12);
+}
