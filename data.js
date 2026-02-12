@@ -1,4 +1,4 @@
-// js/data.js
+2/ js/data.js
 window.SITE = {
   brand: {
     name: "Seu Açaí",
