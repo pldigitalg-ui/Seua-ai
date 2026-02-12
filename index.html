@@ -3,73 +3,70 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#070712" />
-  <title>LP Grill — Açaí & Pedidos</title>
+  <meta name="theme-color" content="#FFFFFF" />
+  <title>LP Grill — Açaí</title>
   <link rel="stylesheet" href="css/estilo.css" />
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="container nav">
-      <a class="brand" href="index.html">
-        <img src="LOGO.PNG" alt="LP Grill" onerror="this.style.display='none'">
-        <span class="t">
-          <strong>LP Grill Açaí</strong>
-          <span>Açaí cremoso • Entrega rápida</span>
-        </span>
-      </a>
+<header class="topbar">
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <img src="LOGO.PNG" alt="LP Grill" onerror="this.style.display='none'">
+      <span class="t">
+        <strong>LP Grill Açaí</strong>
+        <span>Pedidos rápidos • WhatsApp</span>
+      </span>
+    </a>
 
-      <nav class="menu">
-        <a class="active" href="index.html">Início</a>
-        <a href="acai.html">Açaí</a>
-        <a href="bebidas.html">Bebidas</a>
-        <a href="combos.html">Combos</a>
-        <a href="sorvetes.html">Sorvetes</a>
-        <a href="hamburguer.html">Hambúrguer</a>
-        <a href="contato.html">Contato</a>
-      </nav>
-    </div>
-  </header>
+    <nav class="menu">
+      <a class="active" href="index.html">Início</a>
+      <a href="acai.html">Açaí</a>
+      <a href="bebidas.html">Bebidas</a>
+      <a href="combos.html">Combos</a>
+      <a href="sorvetes.html">Sorvetes</a>
+      <a href="hamburguer.html">Hambúrguer</a>
+      <a href="contato.html">Contato</a>
+    </nav>
+  </div>
+</header>
 
-  <main class="container">
-    <section class="hero">
-      <div class="hero-grid">
-        <div class="hero-card">
-          <h1>Monte seu açaí do seu jeito</h1>
-          <p>Escolha tamanho, adicionais e finalize no WhatsApp em segundos. Layout premium, rápido e sem confusão.</p>
+<main class="container">
+  <section class="hero">
+    <div class="hero-box">
+      <div>
+        <h1>Escolha seu açaí</h1>
+        <p>Toque em um card para adicionar ao carrinho. Quer personalizar? Clique em <b>Monte seu Açaí</b>.</p>
 
-          <div class="hero-actions">
-            <a class="btn btn-purple" href="acai.html#monte">Monte seu açaí</a>
-            <a class="btn btn-outline" href="combos.html">Ver combos</a>
-          </div>
-
-          <div class="chips">
-            <span class="chip">🚚 Entrega rápida</span>
-            <span class="chip">💳 Pix / Dinheiro</span>
-            <span class="chip">⭐ Mais pedidos do dia</span>
-          </div>
+        <div class="hero-actions">
+          <a class="btn btn-chrome" href="acai.html#monte">Monte seu Açaí</a>
+          <a class="btn btn-outline" href="bebidas.html">Ver bebidas</a>
         </div>
 
-        <div class="hero-visual">
-          <div class="panel">
-            <strong>Regra de adicionais</strong>
-            <span>Até <b>3 adicionais</b> inclusos no açaí. Acima disso, o sistema aplica automaticamente <b>+R$ 4,00</b> por adicional extra.</span>
-          </div>
+        <div class="chiprow">
+          <span class="chip">✅ Texto grande e legível</span>
+          <span class="chip">🛒 Carrinho em todas as páginas</span>
+          <span class="chip">💬 WhatsApp flutuante</span>
         </div>
       </div>
-    </section>
 
-    <section class="section">
-      <h2>Destaques</h2>
-      <div id="highlights" class="highlights"></div>
-    </section>
+      <div class="muted" style="font-weight:950; text-align:right;">
+        WhatsApp<br>
+        <span style="color:#0B0B12;">+55 31 99806-4556</span>
+      </div>
+    </div>
+  </section>
 
-    <section class="section">
-      <h2>Atalho rápido</h2>
-      <p class="muted">Quer pedir direto? Use o carrinho (🛒) no canto inferior e finalize no WhatsApp.</p>
-    </section>
-  </main>
+  <section class="section">
+    <h2 style="font-weight:980;">Açaís em destaque</h2>
+    <p class="muted" style="margin-top:6px;">7 opções prontas + 1 opção de personalização.</p>
 
-  <script src="js/config.js"></script>
-  <script src="js/data.js"></script>
-  <script src="
+    <div id="home-acai-grid" class="grid" style="margin-top:12px;"></div>
+  </section>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
