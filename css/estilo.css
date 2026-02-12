@@ -501,3 +501,91 @@ textarea{min-height:86px;resize:vertical}
 
 /* Garantir espaço para os botões flutuantes */
 .container{padding-bottom: 220px;}
+/* =========================
+   MONTE SEU AÇAÍ (BUILDER)
+   ========================= */
+.builder{ padding: 28px 0; }
+.builder .container{ width:min(1100px, 92%); margin: 0 auto; }
+.builder-head h1{ margin: 0 0 6px; font-size: 28px; }
+.builder-head p{ margin: 0 0 8px; opacity: .85; }
+.builder-info{ display:block; opacity:.85; margin-top: 6px; }
+
+.builder-grid{
+  margin-top: 18px;
+  display:grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 14px;
+}
+.builder-grid .card{
+  grid-column: span 6;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px;
+  padding: 14px;
+}
+.builder-grid .checkout{ grid-column: span 6; }
+
+@media (max-width: 920px){
+  .builder-grid .card{ grid-column: span 12; }
+}
+
+.card h2{ margin: 0 0 10px; font-size: 16px; }
+.card .mini{ font-size: 12px; opacity: .8; margin-left: 6px; }
+
+.opts{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 520px){
+  .opts{ grid-template-columns: 1fr; }
+}
+
+.opt{
+  display:grid;
+  grid-template-columns: 18px 1fr auto;
+  gap: 10px;
+  align-items:center;
+  padding: 10px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.12);
+  cursor:pointer;
+}
+.opt:hover{ transform: translateY(-1px); }
+.opt input{ accent-color: #22c55e; }
+
+.opt-title{ font-size: 14px; }
+.opt-price{ font-size: 13px; opacity: .9; white-space: nowrap; }
+
+.label{ display:block; margin: 8px 0 6px; opacity:.85; font-size: 13px; }
+.textarea{
+  width:100%;
+  border-radius: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.18);
+  color: inherit;
+  outline: none;
+}
+.total-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+.btn-whats{
+  width:100%;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 0;
+  cursor:pointer;
+  font-weight: 700;
+}
+.btn-whats:disabled{ opacity: .55; cursor:not-allowed; }
+
+.hint{ margin: 10px 0 0; opacity:.75; font-size: 12px; }
+
