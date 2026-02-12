@@ -1,196 +1,152 @@
 // js/acai-builder.js
 (function () {
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
-  const money = (value) => {
+  function money(v) {
     try {
-      return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+      return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
     } catch {
-      return `R$ ${value.toFixed(2)}`.replace(".", ",");
+      return `R$ ${Number(v).toFixed(2)}`.replace(".", ",");
     }
-  };
-
-  function createOption(type, groupName, item) {
-    const wrap = document.createElement("label");
-    wrap.className = "opt";
-
-    const input = document.createElement("input");
-    input.type = type;
-    input.name = groupName;
-    input.value = item.id;
-    input.dataset.price = (item.price ?? 0);
-    input.dataset.extraPrice = (item.extraPrice ?? 0);
-
-    const title = document.createElement("span");
-    title.className = "opt-title";
-    title.textContent = item.label;
-
-    const price = document.createElement("span");
-    price.className = "opt-price";
-    const p = (item.price ?? 0);
-    if (type === "radio") {
-      price.textContent = money(item.price);
-    } else if ((item.price ?? 0) > 0) {
-      price.textContent = `+ ${money(item.price)}`;
-    } else {
-      price.textContent = "";
-    }
-
-    wrap.appendChild(input);
-    wrap.appendChild(title);
-    wrap.appendChild(price);
-    return wrap;
   }
 
-  function initAcaiBuilder() {
+  function init() {
     const root = $("#acai-builder");
-    if (!root || !window.ACAI_DATA || !window.APP_CONFIG) return;
+    if (!root || !window.ACAI_MENU || !window.ACAI_RULES || !window.APP_CONFIG) return;
 
+    // targets
     const sizesBox = $("#acai-sizes", root);
     const fruitsBox = $("#acai-fruits", root);
-    const extrasBox = $("#acai-extras", root);
-
-    // Render sizes (radio)
-    window.ACAI_DATA.sizes.forEach((s, idx) => {
-      const node = createOption("radio", "acai-size", s);
-      if (idx === 1) node.querySelector("input").checked = true; // default 500ml
-      sizesBox.appendChild(node);
-    });
-
-    // Render fruits (checkbox)
-    window.ACAI_DATA.fruits.forEach((f) => {
-      const node = createOption("checkbox", "acai-fruit", f);
-      node.querySelector("input").dataset.kind = "fruit";
-      fruitsBox.appendChild(node);
-    });
-
-    // Render extras (checkbox)
-    window.ACAI_DATA.extras.forEach((e) => {
-      const node = createOption("checkbox", "acai-extra", e);
-      node.querySelector("input").dataset.kind = "extra";
-      extrasBox.appendChild(node);
-    });
-
-    const fruitsLimit = window.APP_CONFIG.limits.fruitsFree ?? 3;
-    const extrasIncluded = window.APP_CONFIG.limits.extrasIncluded ?? 2;
-
-    const info = $("#acai-info", root);
+    const addonsBox = $("#acai-addons", root);
     const totalEl = $("#acai-total", root);
-    const btn = $("#acai-send", root);
+    const includedEl = $("#acai-included", root);
+    const btnAdd = $("#acai-add-cart", root);
+    const btnWhats = $("#acai-whats", root);
     const notes = $("#acai-notes", root);
 
-    function getSelectedSize() {
-      const sel = $('input[name="acai-size"]:checked', root);
-      if (!sel) return null;
-      const id = sel.value;
-      const size = window.ACAI_DATA.sizes.find(s => s.id === id);
-      return size || null;
-    }
-
-    function getChecked(kind) {
-      return $$(`input[type="checkbox"][data-kind="${kind}"]:checked`, root);
-    }
-
-    function enforceFruitLimit() {
-      const checked = getChecked("fruit");
-      const over = checked.length - fruitsLimit;
-      // Se passou do limite, cobra extra por fruta excedente (não bloqueia, só calcula)
-      return Math.max(0, over);
-    }
-
-    function enforceExtrasIncluded() {
-      const checked = getChecked("extra");
-      const over = checked.length - extrasIncluded;
-      return Math.max(0, over);
-    }
-
-    function computeTotal() {
-      const size = getSelectedSize();
-      if (!size) return { total: 0, size, fruits: [], extras: [], fruitOver: 0, extraOver: 0 };
-
-      const fruitsChecked = getChecked("fruit");
-      const extrasChecked = getChecked("extra");
-
-      const fruitOver = enforceFruitLimit();
-      const extraOver = enforceExtrasIncluded();
-
-      // Preço base
-      let total = size.price;
-
-      // Frutas: até X grátis, excedente cobra extraPrice por fruta (usa extraPrice do item)
-      const fruits = fruitsChecked.map(input => input.value);
-      if (fruitOver > 0) {
-        // cobra apenas as últimas excedentes (mas na prática é quantidade excedente)
-        const perFruit = 2.00;
-        total += fruitOver * perFruit;
-      }
-
-      // Extras: até Y inclusos, excedente cobra price do item
-      const extras = extrasChecked.map(input => input.value);
-      if (extraOver > 0) {
-        // cobra os mais caros? (melhor: cobra todos e dá "desconto" nos Y primeiros)
-        // Aqui: soma todos e "desconta" os Y mais baratos => fica justo pro cliente
-        const prices = extrasChecked.map(i => Number(i.dataset.price || 0)).sort((a,b)=>a-b);
-        const sumAll = prices.reduce((a,b)=>a+b,0);
-        const discount = prices.slice(0, Math.min(extrasIncluded, prices.length)).reduce((a,b)=>a+b,0);
-        total += (sumAll - discount);
-      } else {
-        // Se não passou do incluso, não cobra nada
-        total += 0;
-      }
-
-      return { total, size, fruits, extras, fruitOver, extraOver };
-    }
-
-    function labelFromId(list, id) {
-      const it = list.find(x => x.id === id);
-      return it ? it.label : id;
-    }
-
-    function updateUI() {
-      const { total, size, fruits, extras, fruitOver, extraOver } = computeTotal();
-
-      const fruitsText = fruits.length
-        ? fruits.map(id => labelFromId(window.ACAI_DATA.fruits, id)).join(", ")
-        : "Nenhuma";
-
-      const extrasText = extras.length
-        ? extras.map(id => labelFromId(window.ACAI_DATA.extras, id)).join(", ")
-        : "Nenhum";
-
-      let warning = `✅ Frutas grátis: até ${fruitsLimit} | ✅ Extras inclusos: até ${extrasIncluded}`;
-      if (fruitOver > 0) warning += ` • ⚠️ +${fruitOver} fruta(s) extra (cobrado)`;
-      if (extraOver > 0) warning += ` • ⚠️ +${extraOver} extra(s) cobrado(s)`;
-
-      info.textContent = warning;
-      totalEl.textContent = money(total);
-
-      btn.disabled = !size;
-      btn.dataset.payload = JSON.stringify({ size: size?.label, fruits: fruitsText, extras: extrasText, total });
-      btn.dataset.message = [
-        `Olá! Quero montar meu açaí no ${window.APP_CONFIG.storeName}:`,
-        `Tamanho: ${size?.label || "-"}`,
-        `Frutas: ${fruitsText}`,
-        `Complementos: ${extrasText}`,
-        notes.value?.trim() ? `Observações: ${notes.value.trim()}` : null,
-        `Total estimado: ${money(total)}`
-      ].filter(Boolean).join("\n");
-    }
-
-    root.addEventListener("change", updateUI);
-    notes.addEventListener("input", updateUI);
-
-    btn.addEventListener("click", () => {
-      const msg = btn.dataset.message || "";
-      const wa = window.APP_CONFIG.whatsapp || "";
-      const url = `https://wa.me/${wa}?text=${encodeURIComponent(msg)}`;
-      window.open(url, "_blank");
+    // render
+    window.ACAI_MENU.sizes.forEach(s => {
+      const row = document.createElement("label");
+      row.className = "opt";
+      row.innerHTML = `
+        <input type="radio" name="acai-size" value="${s.id}" ${s.default ? "checked" : ""}>
+        <span class="opt-title">${s.label}</span>
+        <span class="opt-price">${money(s.price)}</span>
+      `;
+      sizesBox.appendChild(row);
     });
 
-    updateUI();
+    window.ACAI_MENU.fruits.forEach(f => {
+      const row = document.createElement("label");
+      row.className = "opt";
+      row.innerHTML = `
+        <input type="checkbox" data-kind="extra" data-label="${f.label}" value="${f.id}">
+        <span class="opt-title">${f.label}</span>
+        <span class="opt-price"></span>
+      `;
+      fruitsBox.appendChild(row);
+    });
+
+    window.ACAI_MENU.addOns.forEach(a => {
+      const row = document.createElement("label");
+      row.className = "opt";
+      row.innerHTML = `
+        <input type="checkbox" data-kind="extra" data-label="${a.label}" value="${a.id}">
+        <span class="opt-title">${a.label}</span>
+        <span class="opt-price"></span>
+      `;
+      addonsBox.appendChild(row);
+    });
+
+    function getSize() {
+      const sel = $('input[name="acai-size"]:checked', root);
+      const id = sel ? sel.value : null;
+      return window.ACAI_MENU.sizes.find(s => s.id === id) || window.ACAI_MENU.sizes[0];
+    }
+
+    function getExtrasLabels() {
+      return $$('input[type="checkbox"][data-kind="extra"]:checked', root)
+        .map(i => i.dataset.label);
+    }
+
+    function compute() {
+      const size = getSize();
+      const extras = getExtrasLabels();
+      const free = window.ACAI_RULES.freeIncluded;
+      const extraCount = Math.max(0, extras.length - free);
+      const extraFee = extraCount * window.ACAI_RULES.extraFee;
+      const total = size.price + extraFee;
+      return { size, extras, extraCount, extraFee, total };
+    }
+
+    function update() {
+      const { extras, extraCount, total } = compute();
+      includedEl.textContent = `✅ Até ${window.ACAI_RULES.freeIncluded} adicionais inclusos • Acima disso: +${money(window.ACAI_RULES.extraFee)} por adicional`;
+      totalEl.textContent = money(total);
+      btnAdd.disabled = false;
+      btnWhats.disabled = false;
+      // label warning
+      $("#acai-warning", root).textContent =
+        extraCount > 0 ? `⚠️ ${extraCount} adicional(is) extra → acréscimo aplicado automaticamente.` : "";
+    }
+
+    function buildMessage() {
+      const { size, extras, total } = compute();
+      const lines = [];
+      lines.push(`Olá! Quero montar um açaí no ${window.APP_CONFIG.brand}:`);
+      lines.push(`Tamanho: ${size.label}`);
+      lines.push(`Adicionais: ${extras.length ? extras.join(", ") : "Nenhum"}`);
+      if (notes.value.trim()) lines.push(`Obs: ${notes.value.trim()}`);
+      lines.push(`Total estimado: ${money(total)}`);
+      return lines.join("\n");
+    }
+
+    function addToCart() {
+      // Usa o carrinho do app.js (localStorage)
+      const { size, extras, total } = compute();
+
+      const id = `acai-${size.id}-${extras.sort().join("-") || "sem"}`;
+      const desc = `Adicionais: ${extras.length ? extras.join(", ") : "Nenhum"}`;
+      const item = { id, name: `Açaí ${size.label}`, desc, price: Number(total.toFixed(2)) };
+
+      // adiciona no carrinho (mesma chave do app.js)
+      try {
+        const LS_KEY = "lpgrill_cart_v1";
+        const raw = localStorage.getItem(LS_KEY);
+        const cart = raw ? JSON.parse(raw) : [];
+        const found = cart.find(x => x.id === item.id);
+        if (found) found.qty += 1;
+        else cart.push({ ...item, qty: 1 });
+        localStorage.setItem(LS_KEY, JSON.stringify(cart));
+        // força recarregar badge sem depender do app.js (mas funciona quando app.js está na página)
+        const badge = document.querySelector("#cart-badge");
+        if (badge) {
+          const count = cart.reduce((a,b)=>a+(b.qty||0),0);
+          badge.textContent = String(count);
+        }
+        // feedback
+        const t = document.querySelector("#toast");
+        if (t) { t.textContent = "Adicionado ao carrinho ✅"; t.classList.remove("hidden"); setTimeout(()=>t.classList.add("hidden"),1400); }
+        else alert("Adicionado ao carrinho ✅");
+      } catch {
+        alert("Não foi possível adicionar ao carrinho.");
+      }
+    }
+
+    function sendWhats() {
+      const wa = window.APP_CONFIG.whatsapp;
+      const url = `https://wa.me/${wa}?text=${encodeURIComponent(buildMessage())}`;
+      window.open(url, "_blank");
+    }
+
+    root.addEventListener("change", update);
+    notes.addEventListener("input", update);
+    btnAdd.addEventListener("click", addToCart);
+    btnWhats.addEventListener("click", sendWhats);
+
+    update();
   }
 
-  document.addEventListener("DOMContentLoaded", initAcaiBuilder);
+  document.addEventListener("DOMContentLoaded", init);
 })();
-
