@@ -1,408 +1,365 @@
 // js/app.js
-(function () {
-  const money = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-  const qs = (s, el=document) => el.querySelector(s);
-  const qsa = (s, el=document) => [...el.querySelectorAll(s)];
+(function(){
+  const $ = (s, el=document) => el.querySelector(s);
+  const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+  const money = (v) => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
-  const STORAGE_KEY = "acai_cart_v1";
-
-  const state = {
-    cart: loadCart(),
-    coupon: null,
-    mode: "delivery" // delivery | pickup
+  const KEY = "acai_carrinho_v2";
+  const estado = {
+    carrinho: carregar(),
+    cupom: null,
+    modo: "entrega" // entrega | retirada
   };
 
-  function loadCart() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-    catch { return []; }
+  function carregar(){
+    try{ return JSON.parse(localStorage.getItem(KEY)) || []; }
+    catch{ return []; }
   }
-  function saveCart() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.cart));
-  }
+  function salvar(){ localStorage.setItem(KEY, JSON.stringify(estado.carrinho)); }
 
-  function isOpenNow() {
-    const cfg = window.SITE?.hours?.open;
-    if (!cfg) return true;
-
+  function agoraAberto(){
+    const cfg = window.SITE?.horario?.aberto;
+    if(!cfg) return true;
     const now = new Date();
-    const day = now.getDay();
-    const range = cfg[day];
-    if (!range) return false;
-
-    const [start, end] = range;
-    const toMin = (hhmm) => {
-      const [h,m] = hhmm.split(":").map(Number);
-      return h*60+m;
-    };
+    const d = now.getDay();
+    const range = cfg[d];
+    if(!range) return false;
+    const [ini, fim] = range;
+    const toMin = (hhmm)=>{ const [h,m]=hhmm.split(":").map(Number); return h*60+m; };
     const cur = now.getHours()*60 + now.getMinutes();
-    return cur >= toMin(start) && cur <= toMin(end);
+    return cur >= toMin(ini) && cur <= toMin(fim);
   }
 
-  function cartAdd(item, extra = {}) {
-    // extra: { addons:[], syrups:[], notes:"" }
-    const line = {
-      id: cryptoRandomId(),
-      itemId: item.id,
-      name: item.name,
-      basePrice: item.price,
-      qty: 1,
-      addons: extra.addons || [],
-      syrups: extra.syrups || [],
-      notes: extra.notes || ""
-    };
-    state.cart.push(line);
-    saveCart();
-    renderCart();
-    toast("Adicionado ao carrinho ✅");
+  function uid(){ return Math.random().toString(16).slice(2)+Date.now().toString(16); }
+  function esc(s=""){ return String(s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+
+  function totalLinha(l){
+    const a = (l.adicionais||[]).reduce((s,x)=>s+(x.preco||0),0);
+    const c = (l.caldas||[]).reduce((s,x)=>s+(x.preco||0),0);
+    return (l.precoBase + a + c) * l.qtd;
+  }
+  function subtotal(){ return estado.carrinho.reduce((s,l)=>s+totalLinha(l),0); }
+
+  function taxaEntrega(sub){
+    const p = window.SITE?.pedido;
+    if(estado.modo==="retirada") return 0;
+    if(!p) return 0;
+    if(p.freteGratisAcima!=null && sub>=p.freteGratisAcima) return 0;
+    return p.taxaEntrega || 0;
   }
 
-  function cartRemove(lineId) {
-    state.cart = state.cart.filter(x => x.id !== lineId);
-    saveCart();
-    renderCart();
+  function desconto(sub){
+    if(!estado.cupom) return 0;
+    const pct = window.SITE?.cupons?.[estado.cupom];
+    if(!pct) return 0;
+    return sub * pct;
   }
 
-  function cartQty(lineId, delta) {
-    const it = state.cart.find(x => x.id === lineId);
-    if (!it) return;
-    it.qty = Math.max(1, it.qty + delta);
-    saveCart();
-    renderCart();
+  function totais(){
+    const sub = subtotal();
+    const taxa = taxaEntrega(sub);
+    const desc = desconto(sub);
+    const tot = Math.max(0, sub + taxa - desc);
+    return { sub, taxa, desc, tot };
   }
 
-  function lineTotal(line) {
-    const addonsTotal = (line.addons || []).reduce((s,a)=>s+(a.price||0),0);
-    const syrupsTotal = (line.syrups || []).reduce((s,a)=>s+(a.price||0),0);
-    const unit = line.basePrice + addonsTotal + syrupsTotal;
-    return unit * line.qty;
+  function toast(msg){
+    const t = $("[data-toast]");
+    if(!t) return alert(msg);
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(t._t);
+    t._t = setTimeout(()=>t.classList.remove("show"), 2200);
   }
 
-  function cartSubtotal() {
-    return state.cart.reduce((s,l)=>s+lineTotal(l),0);
-  }
+  function renderTopo(){
+    const m = window.SITE?.marca;
+    if(!m) return;
 
-  function deliveryFee(subtotal) {
-    const cfg = window.SITE?.checkout;
-    if (state.mode === "pickup") return 0;
-    if (!cfg) return 0;
-    if (cfg.freeDeliveryOver != null && subtotal >= cfg.freeDeliveryOver) return 0;
-    return cfg.deliveryFee || 0;
-  }
+    const n = $("[data-marca-nome]");
+    const s = $("[data-marca-slogan]");
+    const e = $("[data-marca-endereco]");
+    const ig = $("[data-marca-instagram]");
 
-  function applyCoupon(subtotal) {
-    if (!state.coupon) return 0;
-    const pct = window.SITE?.coupons?.[state.coupon];
-    if (!pct) return 0;
-    return subtotal * pct;
-  }
+    if(n) n.textContent = m.nome;
+    if(s) s.textContent = m.slogan;
+    if(e) e.textContent = `${m.endereco} • ${m.cidade}`;
+    if(ig) ig.href = m.instagram || "#";
 
-  function totals() {
-    const sub = cartSubtotal();
-    const fee = deliveryFee(sub);
-    const disc = applyCoupon(sub);
-    const total = Math.max(0, sub + fee - disc);
-    return { sub, fee, disc, total };
-  }
-
-  function renderHeader() {
-    const b = window.SITE?.brand;
-    if (!b) return;
-
-    const nameEl = qs("[data-brand-name]");
-    const slogEl = qs("[data-brand-slogan]");
-    const addrEl = qs("[data-brand-address]");
-    const instaEl = qs("[data-brand-instagram]");
-
-    if (nameEl) nameEl.textContent = b.name;
-    if (slogEl) slogEl.textContent = b.slogan;
-    if (addrEl) addrEl.textContent = `${b.address} • ${b.city}`;
-    if (instaEl) instaEl.href = b.instagram || "#";
-
-    const badge = qs("[data-open-badge]");
-    if (badge) {
-      const open = isOpenNow();
-      badge.textContent = open ? "ABERTO AGORA" : "FECHADO";
-      badge.classList.toggle("ok", open);
-      badge.classList.toggle("warn", !open);
+    const b = $("[data-badge-aberto]");
+    if(b){
+      const ok = agoraAberto();
+      b.textContent = ok ? "ABERTO AGORA" : "FECHADO";
+      b.classList.toggle("ok", ok);
+      b.classList.toggle("warn", !ok);
     }
   }
 
-  function renderCatalog(pageKey) {
-    const cat = window.SITE?.catalog?.[pageKey];
-    const grid = qs("[data-grid]");
-    if (!cat || !grid) return;
+  function addItem(item, extra={}){
+    estado.carrinho.push({
+      id: uid(),
+      itemId: item.id,
+      nome: item.nome,
+      precoBase: item.preco,
+      qtd: 1,
+      adicionais: extra.adicionais || [],
+      caldas: extra.caldas || [],
+      obs: extra.obs || ""
+    });
+    salvar();
+    renderCarrinho();
+    toast("Adicionado ao carrinho ✅");
+  }
+
+  function remover(id){
+    estado.carrinho = estado.carrinho.filter(x=>x.id!==id);
+    salvar(); renderCarrinho();
+  }
+  function qtd(id, delta){
+    const it = estado.carrinho.find(x=>x.id===id);
+    if(!it) return;
+    it.qtd = Math.max(1, it.qtd + delta);
+    salvar(); renderCarrinho();
+  }
+
+  function renderProdutos(chave){
+    const grid = $("[data-grid]");
+    const cat = window.SITE?.catalogo?.[chave];
+    if(!grid || !cat) return;
 
     grid.innerHTML = "";
 
-    // Cards
-    (cat.items || []).forEach(item => {
+    (cat.itens||[]).forEach(prod=>{
       const card = document.createElement("div");
-      card.className = "card product";
+      card.className = "card";
+
+      const isAcai = chave==="acai";
+      const adicionais = isAcai ? (cat.adicionais||[]) : [];
+      const caldas = isAcai ? (cat.caldas||[]) : [];
 
       card.innerHTML = `
         <div class="product__top">
           <div>
-            <h3 class="product__title">${escapeHtml(item.name)}</h3>
-            ${item.desc ? `<p class="muted">${escapeHtml(item.desc)}</p>` : ""}
+            <h3 class="product__title">${esc(prod.nome)}</h3>
+            ${prod.desc ? `<p class="muted">${esc(prod.desc)}</p>` : ``}
           </div>
-          <div class="price">${money(item.price)}</div>
+          <div class="price">${money(prod.preco)}</div>
         </div>
 
-        ${pageKey === "acai" ? renderAcaiOptions(cat) : ""}
+        ${isAcai ? `
+          <div class="divider"></div>
 
-        <div class="product__actions">
-          <button class="btn" data-add>Adicionar</button>
-        </div>
+          <div class="small muted" style="margin-bottom:8px">Adicionais</div>
+          <div class="chips">
+            ${adicionais.map(a=>`
+              <label class="chip">
+                <input type="checkbox" data-add value="${esc(a.id)}" data-nome="${esc(a.nome)}" data-preco="${a.preco}">
+                <span>${esc(a.nome)} ${a.preco ? `<b>+${money(a.preco)}</b>`:""}</span>
+              </label>
+            `).join("")}
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="small muted" style="margin-bottom:8px">Calda</div>
+          <div class="chips">
+            ${caldas.map((c,i)=>`
+              <label class="chip">
+                <input type="radio" name="calda-${prod.id}" ${i===0?"checked":""}
+                  data-calda value="${esc(c.id)}" data-nome="${esc(c.nome)}" data-preco="${c.preco}">
+                <span>${esc(c.nome)}</span>
+              </label>
+            `).join("")}
+          </div>
+
+          <div class="divider"></div>
+          <textarea class="input" data-obs placeholder="Observações (opcional)"></textarea>
+        ` : ``}
+
+        <div class="divider"></div>
+        <button class="btn" data-add-btn>Adicionar</button>
       `;
 
-      qs("[data-add]", card).addEventListener("click", () => {
-        if (pageKey === "acai") {
-          const addons = qsa('input[type="checkbox"][data-addon]:checked', card).map(i => ({
-            id: i.value,
-            name: i.dataset.name,
-            price: Number(i.dataset.price || 0)
-          }));
-          const syrup = qsa('input[type="radio"][name^="syrup-"]:checked', card).map(i => ({
-            id: i.value,
-            name: i.dataset.name,
-            price: Number(i.dataset.price || 0)
-          }));
-          const notes = (qs("[data-notes]", card)?.value || "").trim();
-          cartAdd(item, { addons, syrups: syrup, notes });
-        } else {
-          cartAdd(item);
-        }
+      $("[data-add-btn]", card).addEventListener("click", ()=>{
+        if(!isAcai) return addItem(prod);
+
+        const adds = $$('input[type="checkbox"][data-add]:checked', card).map(i=>({
+          id:i.value, nome:i.dataset.nome, preco:Number(i.dataset.preco||0)
+        }));
+        const calda = $$('input[type="radio"][data-calda]:checked', card).map(i=>({
+          id:i.value, nome:i.dataset.nome, preco:Number(i.dataset.preco||0)
+        }));
+        const obs = ($("[data-obs]", card)?.value || "").trim();
+
+        addItem(prod, { adicionais:adds, caldas:calda, obs });
       });
 
       grid.appendChild(card);
     });
   }
 
-  function renderAcaiOptions(cat) {
-    const addons = cat.addons || [];
-    const syrups = cat.syrups || [];
-    const groupId = cryptoRandomId();
+  function renderCarrinho(){
+    const badge = $("[data-carrinho-badge]");
+    if(badge) badge.textContent = String(estado.carrinho.reduce((s,l)=>s+l.qtd,0));
 
-    return `
-      <div class="divider"></div>
-      <div class="opts">
-        <div class="opts__col">
-          <h4>Adicionais</h4>
-          <div class="chips">
-            ${addons.map(a => `
-              <label class="chip">
-                <input type="checkbox" data-addon value="${escapeHtml(a.id)}" data-name="${escapeHtml(a.name)}" data-price="${a.price}">
-                <span>${escapeHtml(a.name)} ${a.price ? `<b>+${money(a.price)}</b>` : ""}</span>
-              </label>
-            `).join("")}
-          </div>
-        </div>
+    const list = $("[data-carrinho-lista]");
+    const sum = $("[data-carrinho-resumo]");
+    if(!list || !sum) return;
 
-        <div class="opts__col">
-          <h4>Calda</h4>
-          <div class="chips">
-            <label class="chip">
-              <input type="radio" name="syrup-${groupId}" checked value="" data-name="Sem calda" data-price="0">
-              <span>Sem calda</span>
-            </label>
-            ${syrups.map(s => `
-              <label class="chip">
-                <input type="radio" name="syrup-${groupId}" value="${escapeHtml(s.id)}" data-name="${escapeHtml(s.name)}" data-price="${s.price}">
-                <span>${escapeHtml(s.name)}</span>
-              </label>
-            `).join("")}
-          </div>
-        </div>
-
-        <div class="opts__col">
-          <h4>Observações</h4>
-          <textarea class="textarea" data-notes placeholder="Ex: sem banana, pouco leite em pó..."></textarea>
-        </div>
-      </div>
-    `;
-  }
-
-  function renderCart() {
-    const list = qs("[data-cart-list]");
-    const sum = qs("[data-cart-summary]");
-    const badge = qs("[data-cart-badge]");
-
-    if (badge) badge.textContent = String(state.cart.reduce((s,l)=>s+l.qty,0));
-
-    if (!list || !sum) return;
-
-    if (state.cart.length === 0) {
+    if(estado.carrinho.length===0){
       list.innerHTML = `<div class="empty">Seu carrinho está vazio.</div>`;
       sum.innerHTML = "";
       return;
     }
 
-    list.innerHTML = state.cart.map(line => {
-      const addonsTxt = (line.addons || []).map(a => a.name).join(", ");
-      const syrupsTxt = (line.syrups || []).map(s => s.name).join(", ");
+    list.innerHTML = estado.carrinho.map(l=>{
+      const adds = (l.adicionais||[]).map(a=>a.nome).join(", ");
+      const cal = (l.caldas||[]).map(c=>c.nome).join(", ");
+      const extra = [
+        adds ? `+ ${esc(adds)}` : "",
+        cal ? `Calda: ${esc(cal)}` : "",
+        l.obs ? `Obs: ${esc(l.obs)}` : ""
+      ].filter(Boolean).join("<br>");
+
       return `
         <div class="cartline">
-          <div class="cartline__main">
-            <div class="cartline__title">${escapeHtml(line.name)}</div>
-            <div class="muted small">
-              ${addonsTxt ? `+ ${escapeHtml(addonsTxt)}<br>` : ""}
-              ${syrupsTxt ? `Calda: ${escapeHtml(syrupsTxt)}<br>` : ""}
-              ${line.notes ? `Obs: ${escapeHtml(line.notes)}` : ""}
-            </div>
+          <div>
+            <div class="cartline__title">${esc(l.nome)}</div>
+            ${extra ? `<div class="muted small" style="margin-top:6px">${extra}</div>`:""}
           </div>
-          <div class="cartline__right">
-            <div class="cartline__price">${money(lineTotal(line))}</div>
+          <div class="cartline__price">
+            ${money(totalLinha(l))}
             <div class="qty">
-              <button class="iconbtn" data-qminus>−</button>
-              <span>${line.qty}</span>
-              <button class="iconbtn" data-qplus>+</button>
-              <button class="iconbtn danger" title="Remover" data-remove>✕</button>
+              <button class="iconbtn" data-m>-</button>
+              <span>${l.qtd}</span>
+              <button class="iconbtn" data-p>+</button>
+              <button class="iconbtn danger" data-r title="Remover">✕</button>
             </div>
           </div>
         </div>
       `;
     }).join("");
 
-    qsa("[data-qminus]", list).forEach((btn, idx) => {
-      btn.addEventListener("click", () => cartQty(state.cart[idx].id, -1));
-    });
-    qsa("[data-qplus]", list).forEach((btn, idx) => {
-      btn.addEventListener("click", () => cartQty(state.cart[idx].id, +1));
-    });
-    qsa("[data-remove]", list).forEach((btn, idx) => {
-      btn.addEventListener("click", () => cartRemove(state.cart[idx].id));
-    });
+    // bind
+    $$("[data-m]", list).forEach((b,i)=>b.addEventListener("click",()=>qtd(estado.carrinho[i].id,-1)));
+    $$("[data-p]", list).forEach((b,i)=>b.addEventListener("click",()=>qtd(estado.carrinho[i].id,+1)));
+    $$("[data-r]", list).forEach((b,i)=>b.addEventListener("click",()=>remover(estado.carrinho[i].id)));
 
-    const t = totals();
+    const t = totais();
     sum.innerHTML = `
       <div class="sumrow"><span>Subtotal</span><b>${money(t.sub)}</b></div>
-      <div class="sumrow"><span>Entrega/Taxa</span><b>${money(t.fee)}</b></div>
-      ${t.disc ? `<div class="sumrow"><span>Desconto (${state.coupon})</span><b>− ${money(t.disc)}</b></div>` : ""}
-      <div class="sumrow total"><span>Total</span><b>${money(t.total)}</b></div>
+      <div class="sumrow"><span>Taxa/Entrega</span><b>${money(t.taxa)}</b></div>
+      ${t.desc ? `<div class="sumrow"><span>Desconto (${estado.cupom})</span><b>− ${money(t.desc)}</b></div>`:""}
+      <div class="sumrow total"><span>Total</span><b>${money(t.tot)}</b></div>
     `;
   }
 
-  function bindUI() {
-    // Drawer cart
-    const openBtn = qs("[data-open-cart]");
-    const closeBtn = qs("[data-close-cart]");
-    const drawer = qs("[data-cart-drawer]");
-    if (openBtn && drawer) openBtn.addEventListener("click", () => drawer.classList.add("open"));
-    if (closeBtn && drawer) closeBtn.addEventListener("click", () => drawer.classList.remove("open"));
-
-    // Mode toggle delivery/pickup
-    qsa("[data-mode]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        state.mode = btn.dataset.mode;
-        qsa("[data-mode]").forEach(b=>b.classList.toggle("active", b.dataset.mode===state.mode));
-        renderCart();
-      });
-    });
-
-    // Coupon
-    const cupBtn = qs("[data-apply-coupon]");
-    if (cupBtn) {
-      cupBtn.addEventListener("click", () => {
-        const val = (qs("[data-coupon]")?.value || "").trim().toUpperCase();
-        if (!val) { state.coupon = null; toast("Cupom removido."); renderCart(); return; }
-        if (!window.SITE?.coupons?.[val]) { toast("Cupom inválido."); return; }
-        state.coupon = val;
-        toast(`Cupom aplicado: ${val} ✅`);
-        renderCart();
-      });
-    }
-
-    // Checkout WhatsApp
-    const go = qs("[data-checkout]");
-    if (go) go.addEventListener("click", checkoutWhatsApp);
+  function abrirCarrinho(){
+    const d = $("[data-drawer]");
+    if(d) d.classList.add("open");
+  }
+  function fecharCarrinho(){
+    const d = $("[data-drawer]");
+    if(d) d.classList.remove("open");
   }
 
-  function checkoutWhatsApp() {
-    if (state.cart.length === 0) return toast("Carrinho vazio.");
+  function aplicarCupom(){
+    const inp = $("[data-cupom]");
+    const val = (inp?.value || "").trim().toUpperCase();
+    if(!val){
+      estado.cupom = null;
+      toast("Cupom removido.");
+      renderCarrinho();
+      return;
+    }
+    if(!window.SITE?.cupons?.[val]){
+      toast("Cupom inválido.");
+      return;
+    }
+    estado.cupom = val;
+    toast(`Cupom aplicado: ${val} ✅`);
+    renderCarrinho();
+  }
 
-    const open = isOpenNow();
-    if (!open) toast("Estamos fechados agora — mas você pode enviar o pedido mesmo assim.");
+  function modoPedido(novo){
+    estado.modo = novo;
+    $$("[data-modo]").forEach(x=>x.classList.toggle("active", x.dataset.modo===novo));
+    renderCarrinho();
+  }
 
-    const name = (qs("[data-customer-name]")?.value || "").trim();
-    const phone = (qs("[data-customer-phone]")?.value || "").trim();
-    const addr = (qs("[data-customer-address]")?.value || "").trim();
-    const pay = (qs("[data-payment]")?.value || "Pix").trim();
-    const notes = (qs("[data-order-notes]")?.value || "").trim();
+  function finalizarWhats(){
+    if(estado.carrinho.length===0) return toast("Carrinho vazio.");
 
-    if (!name) return toast("Informe seu nome.");
-    if (state.mode === "delivery" && !addr) return toast("Informe o endereço para entrega.");
+    const nome = ($("[data-nome]")?.value || "").trim();
+    const tel = ($("[data-telefone]")?.value || "").trim();
+    const end = ($("[data-endereco]")?.value || "").trim();
+    const pag = ($("[data-pagamento]")?.value || "Pix").trim();
+    const obsGeral = ($("[data-obs-geral]")?.value || "").trim();
 
-    const b = window.SITE?.brand;
-    const t = totals();
+    if(!nome) return toast("Informe seu nome.");
+    if(estado.modo==="entrega" && !end) return toast("Informe o endereço para entrega.");
 
-    const lines = state.cart.map((l, i) => {
-      const addons = (l.addons||[]).map(a=>a.name).join(", ");
-      const syrups = (l.syrups||[]).map(s=>s.name).join(", ");
-      const extra = [
-        addons ? `Adicionais: ${addons}` : "",
-        syrups ? `Calda: ${syrups}` : "",
-        l.notes ? `Obs: ${l.notes}` : ""
-      ].filter(Boolean).join(" | ");
+    const m = window.SITE?.marca;
+    const t = totais();
+    const aberto = agoraAberto();
 
-      return `${i+1}. ${l.qty}x ${l.name} — ${money(lineTotal(l))}${extra ? `\n   (${extra})` : ""}`;
+    const linhas = estado.carrinho.map((l,i)=>{
+      const adds = (l.adicionais||[]).map(a=>a.nome).join(", ");
+      const cal = (l.caldas||[]).map(c=>c.nome).join(", ");
+      const extra = [adds?`Adicionais: ${adds}`:"", cal?`Calda: ${cal}`:"", l.obs?`Obs: ${l.obs}`:""].filter(Boolean).join(" | ");
+      return `${i+1}. ${l.qtd}x ${l.nome} — ${money(totalLinha(l))}${extra?`\n   (${extra})`:""}`;
     }).join("\n");
 
-    const msg =
-`🍧 *NOVO PEDIDO — ${b?.name || "Loja"}*
-${open ? "🟢 *ABERTO AGORA*" : "🟠 *FORA DO HORÁRIO* (vai para fila)"}
+    const pix = window.SITE?.pedido?.chavePix ? `\n🔑 Pix: ${window.SITE.pedido.chavePix}` : "";
 
-👤 *Nome:* ${name}
-📞 *Telefone:* ${phone || "-"}
-🚚 *Modo:* ${state.mode === "delivery" ? "Entrega" : "Retirada"}
-📍 *Endereço:* ${state.mode === "delivery" ? addr : "Retirar na loja"}
-💳 *Pagamento:* ${pay}
-${state.coupon ? `🏷️ *Cupom:* ${state.coupon}` : ""}
+    const msg =
+`🍧 *NOVO PEDIDO — ${m?.nome || "Loja"}*
+${aberto ? "🟢 *ABERTO AGORA*" : "🟠 *FORA DO HORÁRIO* (vai para fila)"}
+
+👤 *Nome:* ${nome}
+📞 *Telefone:* ${tel || "-"}
+🚚 *Modo:* ${estado.modo === "entrega" ? "Entrega" : "Retirada"}
+📍 *Endereço:* ${estado.modo === "entrega" ? end : "Retirar na loja"}
+💳 *Pagamento:* ${pag}
+${estado.cupom ? `🏷️ *Cupom:* ${estado.cupom}` : ""}
 
 🧾 *Itens:*
-${lines}
+${linhas}
 
 ────────────
 Subtotal: ${money(t.sub)}
-Taxa: ${money(t.fee)}
-${t.disc ? `Desconto: − ${money(t.disc)}` : ""}
-✅ *TOTAL: ${money(t.total)}*
+Taxa: ${money(t.taxa)}
+${t.desc ? `Desconto: − ${money(t.desc)}` : ""}
+✅ *TOTAL: ${money(t.tot)}*
 ────────────
-📝 Observações: ${notes || "-"}
+📝 Observações: ${obsGeral || "-"}${pix}`.trim();
 
-${window.SITE?.checkout?.pixKey ? `🔑 Pix: ${window.SITE.checkout.pixKey}` : ""}`.trim();
-
-    const url = `https://wa.me/${b.phoneWhatsapp}?text=${encodeURIComponent(msg)}`;
-    window.open(url, "_blank");
+    window.open(`https://wa.me/${m.whatsapp}?text=${encodeURIComponent(msg)}`, "_blank");
   }
 
-  function toast(text) {
-    const el = qs("[data-toast]");
-    if (!el) return alert(text);
-    el.textContent = text;
-    el.classList.add("show");
-    clearTimeout(el._t);
-    el._t = setTimeout(()=>el.classList.remove("show"), 2200);
+  function bindUI(){
+    // carrinho
+    const openBtns = $$("[data-open-carrinho]");
+    openBtns.forEach(b=>b.addEventListener("click", abrirCarrinho));
+    $("[data-close-carrinho]")?.addEventListener("click", fecharCarrinho);
+
+    // cupom
+    $("[data-aplicar-cupom]")?.addEventListener("click", aplicarCupom);
+
+    // modo
+    $$("[data-modo]").forEach(b=>b.addEventListener("click", ()=>modoPedido(b.dataset.modo)));
+
+    // finalizar
+    $$("[data-finalizar]").forEach(b=>b.addEventListener("click", finalizarWhats));
   }
 
-  function cryptoRandomId() {
-    return Math.random().toString(16).slice(2) + Date.now().toString(16);
-  }
-
-  function escapeHtml(str="") {
-    return String(str).replace(/[&<>"']/g, s => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[s]));
-  }
-
-  // Boot
-  window.ACAI_APP = {
-    render(pageKey) {
-      renderHeader();
-      renderCatalog(pageKey);
+  // API pública
+  window.ACAI = {
+    iniciar(pagina){
+      renderTopo();
       bindUI();
-      renderCart();
-    },
-    renderHeader,
-    renderCart
+      renderCarrinho();
+      if(pagina) renderProdutos(pagina);
+    }
   };
 })();
