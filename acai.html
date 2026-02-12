@@ -43,4 +43,57 @@
         </div>
 
         <div style="text-align:right">
-          <div class="muted" style="fon
+          <div class="muted" style="font-size:12px">WhatsApp</div>
+          <div style="font-weight:900">+55 31 99806-4556</div>
+        </div>
+      </div>
+
+      <div id="acai-builder" class="builder-grid">
+        <div class="card">
+          <h2>1) Tamanho</h2>
+          <div id="acai-sizes" class="opts"></div>
+        </div>
+
+        <div class="card">
+          <h2>2) Frutas</h2>
+          <div id="acai-fruits" class="opts"></div>
+        </div>
+
+        <div class="card">
+          <h2>3) Complementos</h2>
+          <div id="acai-addons" class="opts"></div>
+        </div>
+
+        <div class="card checkout">
+          <h2>Finalizar</h2>
+
+          <label class="label">Observações (opcional)</label>
+          <textarea id="acai-notes" class="textarea" rows="3" placeholder="Ex: pouco granola, sem leite condensado..."></textarea>
+
+          <div class="total-row">
+            <span class="muted">Total estimado</span>
+            <strong id="acai-total">R$ 0,00</strong>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+            <button id="acai-add-cart" class="btn btn-purple" type="button">Adicionar ao carrinho</button>
+            <button id="acai-whats" class="btn btn-outline" type="button">Finalizar no WhatsApp</button>
+          </div>
+
+          <p class="muted" style="font-size:12px; margin-top:10px;">
+            ✅ Até 3 adicionais inclusos. Acima disso: +R$ 4,00 por adicional extra (aplicado automaticamente).
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+
+  <script src="js/acai-data.js"></script>
+  <script src="js/acai-builder.js"></script>
+</body>
+</html>
