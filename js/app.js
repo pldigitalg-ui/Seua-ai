@@ -362,4 +362,25 @@ ${t.desc ? `Desconto: − ${money(t.desc)}` : ""}
       if(pagina) renderProdutos(pagina);
     }
   };
+/* ===========================
+   FIX: WhatsApp flutuante em todas as páginas
+   =========================== */
+(function(){
+  function bindWhatsFab(){
+    const a = document.querySelector("[data-whats-fab]");
+    if(!a) return;
+
+    const numero = window.SITE?.marca?.whatsapp || "553198832407";
+    const nomeLoja = window.SITE?.marca?.nome || "LP Grill Açaí";
+
+    // Mensagem simples: se tiver carrinho, o botão finalizar já envia completo.
+    // Aqui é só "cair no WhatsApp" rápido.
+    const msg = `Olá! Vim pelo site da *${nomeLoja}* e quero fazer um pedido.`;
+    a.href = `https://wa.me/${numero}?text=${encodeURIComponent(msg)}`;
+    a.target = "_blank";
+    a.rel = "noopener";
+  }
+
+  // Tenta sempre, mesmo se a página não for catálogo
+  document.addEventListener("DOMContentLoaded", bindWhatsFab);
 })();
