@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="css/estilo.css" />
 </head>
 <body>
-
 <header class="topbar">
   <div class="container">
     <div class="nav">
@@ -19,10 +18,23 @@
         </div>
       </a>
 
-      <button class="menu-toggle" id="menuToggle" type="button">☰</button>
-      <div class="menu-overlay" id="menuOverlay"></div>
+      <!-- ✅ Botão do menu dentro do topo -->
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu">☰</button>
+    </div>
 
-      <nav class="menu" id="siteMenu">
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <nav class="menu" id="siteMenu">
+      <a class="active" href="index.html">Início</a>
+      <a href="acai.html">Açaí</a>
+      <a href="bebidas.html">Bebidas</a>
+      <a href="combos.html">Combos</a>
+      <a href="contato.html">Contato</a>
+    </nav>
+  </div>
+</header>
+
+  <nav class="menu" id="siteMenu">
         <a class="active" href="index.html">Início</a>
         <a href="acai.html">Açaí</a>
         <a href="bebidas.html">Bebidas</a>
