@@ -2,12 +2,11 @@
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-
-  const cfg = () => window.APP_CONFIG || { whatsapp:"", brand:"LP Grill" };
+  const cfg = () => window.APP_CONFIG || { whatsapp:"", brand:"LP Grill", deliveryFee:0 };
 
   function money(v){
     try { return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v); }
-    catch { return `R$ ${Number(v).toFixed(2)}`.replace(".",","); }
+    catch { return `R$ ${Number(v||0).toFixed(2)}`.replace(".",","); }
   }
   function esc(str){
     return String(str ?? "").replace(/[&<>"']/g, s => ({
@@ -63,6 +62,8 @@
   // =====================
   function ensureFloatingWhats(){
     if ($("#wa-fab")) return;
+    if (!cfg().whatsapp) return; // se vazio, não cria
+
     const a = document.createElement("a");
     a.id = "wa-fab";
     a.className = "wa-fab";
@@ -96,7 +97,7 @@
         <div class="modal__head">
           <div>
             <h3>Seu carrinho</h3>
-            <p class="muted">Clique em finalizar e mande tudo certinho no WhatsApp.</p>
+            <p class="muted">Finalize e envie tudo certinho no WhatsApp.</p>
           </div>
           <button class="icon-btn" type="button" data-close="1" aria-label="Fechar">✕</button>
         </div>
@@ -171,7 +172,8 @@
     const totalEl = $("#cart-total");
     if (!list || !empty || !totalEl) return;
 
-    totalEl.textContent = money(cartTotal() + (cfg().deliveryFee || 0));
+    const fee = cfg().deliveryFee || 0;
+    totalEl.textContent = money(cartTotal() + fee);
 
     if (cart.length === 0){
       empty.classList.remove("hidden");
@@ -203,51 +205,56 @@
     $$("[data-rm]", list).forEach(b => b.addEventListener("click", ()=>rm(b.dataset.rm)));
   }
 
-function finalizeWhatsApp(){
-  if (cart.length === 0){ toast("Seu carrinho está vazio."); return; }
+  function finalizeWhatsApp(){
+    if (cart.length === 0){ toast("Seu carrinho está vazio."); return; }
 
-  const name = ($("#ck-name")?.value || "").trim();
-  const phone = ($("#ck-phone")?.value || "").trim();
-  const address = ($("#ck-address")?.value || "").trim();
-  const notes = ($("#ck-notes")?.value || "").trim();
+    const name = ($("#ck-name")?.value || "").trim();
+    const phone = ($("#ck-phone")?.value || "").trim();
+    const address = ($("#ck-address")?.value || "").trim();
+    const notes = ($("#ck-notes")?.value || "").trim();
 
-  const subtotal = cartTotal();
-  const fee = cfg().deliveryFee || 0;
+    const subtotal = cartTotal();
+    const fee = cfg().deliveryFee || 0;
 
-  // 1) salva para impressão (pedido.html)
-  const printPayload = {
-    brand: cfg().brand,
-    name, phone, address, notes,
-    items: cart.map(it => ({ id: it.id, name: it.name, desc: it.desc, price: it.price, qty: it.qty })),
-    subtotal,
-    fee
-  };
-  localStorage.setItem("lpgrill_last_order_print_v1", JSON.stringify(printPayload));
+    // 1) salva para impressão (pedido.html)
+    const printPayload = {
+      brand: cfg().brand,
+      name, phone, address, notes,
+      items: cart.map(it => ({ id: it.id, name: it.name, desc: it.desc, price: it.price, qty: it.qty })),
+      subtotal,
+      fee,
+      total: Number((subtotal + fee).toFixed(2)),
+      createdAt: new Date().toISOString()
+    };
+    localStorage.setItem("lpgrill_last_order_print_v1", JSON.stringify(printPayload));
 
-  // 2) monta mensagem WhatsApp
-  const lines = [];
-  lines.push(`Olá! Quero finalizar um pedido no ${cfg().brand}:`);
-  lines.push("");
+    // 2) mensagem premium
+    const lines = [];
+    lines.push(`🧾 *PEDIDO - ${cfg().brand}*`);
+    lines.push("");
+    cart.forEach(it => {
+      lines.push(`▪ ${it.qty}x ${it.name}`);
+      if (it.desc) lines.push(`   ${it.desc}`);
+      lines.push(`   ${money(it.qty * it.price)}`);
+    });
 
-  cart.forEach(it => lines.push(`• ${it.qty}x ${it.name} — ${money(it.qty * it.price)}`));
+    lines.push("");
+    lines.push(`💰 Subtotal: ${money(subtotal)}`);
+    if (fee > 0) lines.push(`🚚 Entrega: ${money(fee)}`);
+    lines.push(`💳 Total: *${money(subtotal + fee)}*`);
 
-  lines.push("");
-  lines.push(`Subtotal: ${money(subtotal)}`);
-  if (fee > 0) lines.push(`Taxa: ${money(fee)}`);
-  lines.push(`Total: ${money(subtotal + fee)}`);
+    if (name) lines.push(`\n👤 Nome: ${name}`);
+    if (phone) lines.push(`📞 Telefone: ${phone}`);
+    if (address) lines.push(`📍 Endereço/Retirada: ${address}`);
+    if (notes) lines.push(`📝 Obs: ${notes}`);
 
-  if (name) lines.push(`\nNome: ${name}`);
-  if (phone) lines.push(`Telefone: ${phone}`);
-  if (address) lines.push(`Endereço/Retirada: ${address}`);
-  if (notes) lines.push(`Obs: ${notes}`);
-
-  // 3) abre impressão em nova aba + abre WhatsApp
-  window.open("pedido.html", "_blank");
-  window.open(`https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
-}
+    // 3) abre impressão + WhatsApp
+    window.open("pedido.html", "_blank");
+    window.open(`https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
+  }
 
   // =====================
-  // HOME: 7 AÇAÍ + MONTE (cards clicáveis)
+  // HOME: cards
   // =====================
   function mountHomeAcai(){
     const grid = $("#home-acai-grid");
@@ -283,19 +290,17 @@ function finalizeWhatsApp(){
         const link = card.dataset.link;
         const id = card.dataset.id;
 
-        // se for “Monte seu açaí” -> vai para a página
         if (link) { window.location.href = link; return; }
 
-        // senão adiciona item direto ao carrinho
         const p = window.CATALOG.home_acai.find(x => x.id === id);
         if (!p || typeof p.price !== "number") return;
         addItem({ id: p.id, name: p.name, desc: p.desc, price: p.price });
       });
     });
   }
-  
+
   // =====================
-  // CATALOG PAGES: cards com imagens clicáveis
+  // CATALOG PAGES
   // =====================
   function mountCatalog(){
     const root = document.querySelector("[data-catalog]");
