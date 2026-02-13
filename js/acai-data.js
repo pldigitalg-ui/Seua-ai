@@ -1,4 +1,4 @@
-// js/acai-data.js
+desc: "Açaí cremoso e natural, batido na hora com textura perfeita."
 window.ACAI_RULES = {
   freeIncluded: 3,
   extraFee: 4.00
