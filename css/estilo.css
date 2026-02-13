@@ -622,3 +622,6 @@ p{ margin: 0; }
     position: relative;
   }
 }
+@media (max-width: 860px){
+  #siteMenu{ display:flex !important; }
+}
