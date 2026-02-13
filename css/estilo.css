@@ -45,11 +45,15 @@ body{
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(11,11,18,.08);
 }
+
 .nav{
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
   gap: 14px;
   padding: 12px 0;
 }
+
 .brand{
   display:flex; align-items:center; gap:10px;
   text-decoration:none; color: var(--text);
@@ -64,7 +68,10 @@ body{
 .brand .t strong{ font-size:14px; font-weight: 900; }
 .brand .t span{ font-size:12px; color: var(--muted); font-weight: 700; }
 
-.menu{ display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
+/* MENU DESKTOP */
+.menu{
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end;
+}
 .menu a{
   text-decoration:none;
   color: rgba(11,11,18,.78);
@@ -75,11 +82,73 @@ body{
   border:1px solid rgba(11,11,18,.10);
   background: rgba(255,255,255,.65);
 }
-.menu a:hover{ border-color: rgba(124,58,237,.35); outline:none; }
+.menu a:hover{ border-color: rgba(124,58,237,.35); outline: none; }
 .menu a.active{
   color:#fff;
   border-color: transparent;
   background: linear-gradient(135deg, var(--chrome1), var(--chrome2));
+}
+
+/* =========================
+   MENU MOBILE (☰)
+   ========================= */
+.menu-toggle{
+  display:none;
+  width:44px; height:44px;
+  border-radius: 14px;
+  border:1px solid rgba(11,11,18,.12);
+  background: rgba(255,255,255,.85);
+  font-weight: 980;
+  cursor:pointer;
+}
+
+.menu-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+@media (max-width: 860px){
+  .nav{ align-items:flex-start; }
+
+  .menu-toggle{ display:inline-flex; align-items:center; justify-content:center; }
+
+  /* esconde menu “grande” e vira gaveta */
+  .menu{
+    display:none;
+    position: fixed;
+    top: 72px;
+    left: 12px;
+    right: 12px;
+    z-index: 70;
+    padding: 12px;
+    border-radius: 18px;
+    border: 1px solid rgba(11,11,18,.12);
+    background: rgba(255,255,255,.96);
+    box-shadow: var(--shadow);
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  body.menu-open .menu{ display:flex; }
+
+  /* overlay para fechar */
+  .menu-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index: 65;
+    background: rgba(11,11,18,.35);
+  }
+  body.menu-open .menu-overlay{ display:block; }
+
+  .menu a{
+    display:flex;
+    justify-content:space-between;
+    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
 }
 
 /* =========================
@@ -146,7 +215,6 @@ p{ margin: 0; }
   color: var(--text);
 }
 .btn-outline:hover{ border-color: rgba(124,58,237,.35); }
-
 .btn-chrome{
   color: #fff;
   background: linear-gradient(135deg, var(--chrome1), var(--chrome2));
@@ -156,7 +224,7 @@ p{ margin: 0; }
 .btn:disabled{ opacity:.55; cursor:not-allowed; }
 
 /* =========================
-   CARDS HOME / CATEGORIAS
+   CARDS
    ========================= */
 .grid{
   display:grid;
@@ -180,7 +248,7 @@ p{ margin: 0; }
   box-shadow: 0 22px 55px rgba(17,17,26,.16);
 }
 .thumb{
-  height: 140px;
+  height: 160px;
   background: linear-gradient(135deg, rgba(124,58,237,.20), rgba(255,255,255,.85));
   background-size: cover;
   background-position: center;
@@ -299,12 +367,14 @@ p{ margin: 0; }
   background: rgba(255,255,255,.92);
 }
 .tile input{ display:none; }
-.tile__body{ padding: 12px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
-.tile__title{ font-weight: 980; }
-.tile:has(input:checked){
-  outline: 3px solid rgba(124,58,237,.25);
-  border-color: rgba(124,58,237,.35);
+.tile__body{
+  padding: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
 }
+.tile__title{ font-weight: 980; }
 
 .label{ display:block; font-weight: 950; font-size: 12px; color: rgba(11,11,18,.70); margin: 8px 0 6px; }
 .input,.textarea{
@@ -359,14 +429,6 @@ p{ margin: 0; }
   justify-content:space-between;
   gap: 12px;
 }
-.icon-btn{
-  width: 40px; height: 40px;
-  border-radius: 14px;
-  border: 1px solid rgba(11,11,18,.12);
-  background: rgba(255,255,255,.9);
-  font-weight: 980;
-  cursor:pointer;
-}
 .cart-list{ display:flex; flex-direction:column; gap:10px; margin-bottom: 12px; }
 .cart-item{
   display:flex; justify-content:space-between; gap: 12px;
@@ -379,6 +441,16 @@ p{ margin: 0; }
 .cart-item__sub{ color: rgba(11,11,18,.70); font-weight: 800; font-size: 12px; margin-top:4px; }
 .cart-item__right{ text-align:right; min-width: 160px; display:flex; flex-direction:column; gap:8px; }
 .cart-item__price{ font-weight: 980; }
+
+.icon-btn{
+  width: 40px; height: 40px;
+  border-radius: 14px;
+  border: 1px solid rgba(11,11,18,.12);
+  background: rgba(255,255,255,.9);
+  font-weight: 980;
+  cursor:pointer;
+}
+
 .qty{ display:flex; align-items:center; justify-content:flex-end; gap:8px; }
 .qty__btn{
   width: 36px; height: 36px;
@@ -411,7 +483,6 @@ p{ margin: 0; }
 
 .form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
 .col-2{ grid-column: span 2; }
-
 @media (max-width: 760px){
   .form-grid{ grid-template-columns: 1fr; }
   .col-2{ grid-column: span 1; }
@@ -461,9 +532,6 @@ p{ margin: 0; }
   font-weight: 980;
 }
 
-/* =========================
-   TOAST
-   ========================= */
 .toast{
   position: fixed;
   left: 50%;
@@ -480,19 +548,12 @@ p{ margin: 0; }
 .toast.hidden{ display:none; }
 
 /* ============================= */
-/* MOBILE FIRST OTIMIZADO (FIX)  */
+/* MOBILE FIRST (sheet carrinho) */
 /* ============================= */
 @media (max-width: 768px){
   .container{ width:min(1120px, 92%); margin:0 auto; padding: 16px; }
 
-  .grid{ grid-template-columns: 1fr; gap: 12px; }
-  .cardx{ border-radius: 16px; box-shadow: 0 8px 22px rgba(0,0,0,.08); }
-  .thumb{ height: 160px; border-radius: 16px 16px 0 0; }
-  .cardx__body h3{ font-size: 16px; }
-  .price{ font-weight: 980; font-size: 15px; }
-  .tap{ font-size: 12px; }
-
-  /* carrinho no mobile: vira “sheet” em baixo */
+  /* carrinho vira “sheet” */
   .modal__panel{
     width: 100%;
     margin: 0;
@@ -516,10 +577,8 @@ p{ margin: 0; }
     border-radius: 14px;
   }
 
-  /* botões flutuantes não atrapalharem */
   .cart-fab{ right: 12px; bottom: 12px; }
   .wa-fab{ right: 12px; bottom: 66px; }
 
-  /* espaço para não ficar por baixo dos FABs */
   body{ padding-bottom: 120px; }
 }
