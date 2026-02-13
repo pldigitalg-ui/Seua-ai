@@ -30,35 +30,34 @@ function buildWhatsAppMessage(){
   const cart = getCartFromStorage();
   const total = cartTotal(cart);
 
-  // Se você já tem campos de nome/endereço, podemos puxar aqui pelo id:
-  const nome = (document.querySelector("#nome")?.value || "").trim();
-  const endereco = (document.querySelector("#endereco")?.value || "").trim();
-  const pagamento = (document.querySelector("#pagamento")?.value || "").trim();
-  const obs = (document.querySelector("#obs")?.value || "").trim();
+ const nome = (document.querySelector("#nome")?.value || "").trim();
+const endereco = (document.querySelector("#endereco")?.value || "").trim();
+const pagamento = (document.querySelector("#pagamento")?.value || "").trim();
+const obs = (document.querySelector("#obs")?.value || "").trim();
 
-  let msg = "🍇 *LP Grill Açaí — Pedido*%0A";
-  msg += "-------------------------%0A";
+  let msg = "🍇 LP Grill Açaí — Pedido\n";
+  msg += "-------------------------\n";
 
   if(cart.length === 0){
-    msg += "⚠️ Carrinho vazio.%0A";
+    msg += "⚠️ Carrinho vazio.\n";
   }else{
     cart.forEach((it, i) => {
-      const q = Number(it.qty||1);
-      const p = Number(it.price||0);
+      const q = Number(it.qty || 1);
+      const p = Number(it.price || 0);
       const sub = (q*p).toFixed(2).replace(".", ",");
-      msg += `${i+1}) ${q}x ${it.name} — R$ ${sub}%0A`;
+      msg += `${i+1}) ${q}x ${it.name} — R$ ${sub}\n`;
     });
-    msg += "-------------------------%0A";
-    msg += `💰 *Total:* R$ ${total.toFixed(2).replace(".", ",")}%0A`;
+
+    msg += "-------------------------\n";
+    msg += `💰 Total: R$ ${total.toFixed(2).replace(".", ",")}\n`;
   }
 
-  // Dados do cliente (se tiver campo)
-  if(nome) msg += `%0A👤 Nome: ${encodeURIComponent(nome)}%0A`;
-  if(endereco) msg += `📍 Endereço: ${encodeURIComponent(endereco)}%0A`;
-  if(pagamento) msg += `💳 Pagamento: ${encodeURIComponent(pagamento)}%0A`;
-  if(obs) msg += `📝 Obs: ${encodeURIComponent(obs)}%0A`;
+  if(nome) msg += `\n👤 Nome: ${nome}\n`;
+  if(endereco) msg += `📍 Endereço: ${endereco}\n`;
+  if(pagamento) msg += `💳 Pagamento: ${pagamento}\n`;
+  if(obs) msg += `📝 Obs: ${obs}\n`;
 
-  msg += "%0A✅ Enviado pelo site.";
+  msg += "\n✅ Enviado pelo site.";
 
   return msg;
 }
