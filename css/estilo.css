@@ -619,3 +619,27 @@ p{ margin: 0; }
   
   }
 }
+/* ✅ WhatsApp flutuante */
+.wa-float{
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 9999;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  background: #22c55e;
+  box-shadow: 0 14px 30px rgba(0,0,0,.20);
+}
+
+.wa-float:active{ transform: scale(.98); }
+
+.wa-ico{
+  font-size: 22px;
+  color: #fff;
+  font-weight: 700;
+}
