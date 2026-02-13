@@ -570,3 +570,49 @@ p{ margin: 0; }
     width: 100%;
   }
 }
+
+/* =========================
+   RESTORE MENU FIXO (FINAL)
+   - Remove gaveta/hamburguer
+   - Menu sempre visível
+   - No celular: rolagem horizontal
+   ========================= */
+
+#menuToggle,
+.menu-toggle,
+#menuOverlay,
+.menu-overlay{
+  display:none !important;
+}
+
+/* Menu sempre visível */
+#siteMenu,
+.menu{
+  display:flex !important;
+  position:static !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  gap:8px !important;
+  flex-direction:row !important;
+  align-items:center !important;
+}
+
+/* Mobile: vira “barra” com scroll horizontal */
+@media (max-width: 860px){
+  #siteMenu,
+  .menu{
+    justify-content:flex-start !important;
+    flex-wrap:nowrap !important;
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch;
+    padding:8px 0 !important;
+  }
+
+  #siteMenu a,
+  .menu a{
+    white-space:nowrap !important;
+    flex:0 0 auto !important;
+  }
+}
