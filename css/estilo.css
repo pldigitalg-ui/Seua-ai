@@ -77,7 +77,7 @@ body{
 }
 .menu a:hover{
   border-color: rgba(124,58,237,.35);
-  highlight: none;
+  outline: none;
 }
 .menu a.active{
   color:#fff;
@@ -187,10 +187,10 @@ p{ margin: 0; }
   box-shadow: var(--shadow);
   overflow:hidden;
   cursor:pointer;
-  transition: transform .12s ease, box-shadow .12s ease;
+  transition: transform .18s ease, box-shadow .18s ease;
 }
 .cardx:hover{
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   box-shadow: 0 22px 55px rgba(17,17,26,.16);
 }
 .thumb{
@@ -501,72 +501,43 @@ p{ margin: 0; }
 .toast.hidden{ display:none; }
 
 /* ============================= */
-/* MOBILE FIRST OTIMIZADO */
+/* MOBILE FIRST OTIMIZADO (FIX)  */
 /* ============================= */
-
 @media (max-width: 768px){
+  .container{ width:min(1120px, 92%); margin:0 auto; padding: 16px; }
 
-  .container{
-    padding:16px;
-  }
-
-  .cardx{
-    border-radius:16px;
-    box-shadow:0 8px 22px rgba(0,0,0,.08);
-  }
-
-  .cardx__body h3{
-    font-size:16px;
-  }
-
-  .price{
-    font-weight:700;
-    font-size:15px;
-  }
-
-  .tap{
-    font-size:12px;
-  }
+  .grid{ grid-template-columns: 1fr; gap: 12px; }
+  .cardx{ border-radius: 16px; box-shadow: 0 8px 22px rgba(0,0,0,.08); }
+  .thumb{ height: 150px; border-radius: 16px 16px 0 0; }
+  .cardx__body h3{ font-size: 16px; }
+  .price{ font-weight: 980; font-size: 15px; }
+  .tap{ font-size: 12px; }
 
   .modal__panel{
-    width:100%;
-    max-height:95vh;
-    border-radius:16px 16px 0 0;
+    width: 100%;
+    margin: 0;
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 0; top: auto;
+    max-height: 92vh;
+    border-radius: 18px 18px 0 0;
   }
-
+  .modal__body{ padding: 12px; overflow:auto; max-height: 62vh; }
   .modal__footer{
-    padding:12px;
+    padding: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
-
   #btn-finalizar{
-    font-size:14px;
-    padding:12px;
+    width: 100%;
+    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
   }
 
-  .wa-fab{
-    bottom:85px;
-  }
+  .cart-fab{ right: 12px; bottom: 12px; }
+  .wa-fab{ right: 12px; bottom: 66px; }
 
-  .cart-fab{
-    bottom:20px;
-  }
-
-/* ============================= */
-/* CARD PREMIUM */
-/* ============================= */
-
-.cardx{
-  transition:.25s ease;
+  body{ padding-bottom: 120px; }
 }
-
-.cardx:hover{
-  transform:translateY(-4px);
-  box-shadow:0 16px 35px rgba(0,0,0,.12);
-}
-
-.thumb{
-  background-size:cover;
-  background-position:center;
-  border-radius:14px 14px 0 0;
-}
-
