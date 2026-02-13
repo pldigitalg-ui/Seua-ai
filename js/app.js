@@ -246,8 +246,6 @@ function finalizeWhatsApp(){
   window.open(`https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
 }
 
-  }
-
   // =====================
   // HOME: 7 AÇAÍ + MONTE (cards clicáveis)
   // =====================
@@ -295,7 +293,7 @@ function finalizeWhatsApp(){
       });
     });
   }
-
+  
   // =====================
   // CATALOG PAGES: cards com imagens clicáveis
   // =====================
