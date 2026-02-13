@@ -7,34 +7,42 @@
   <link rel="stylesheet" href="css/estilo.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="container">
-      <div class="nav">
-        <a class="brand" href="index.html">
-          <img src="img/logo.png" alt="LP Grill" />
-          <span class="t"><strong>LP Grill Açaí</strong><span>Combos</span></span>
-        </a>
-        <nav class="menu">
-          <a href="index.html">Início</a>
-          <a href="acai.html">Açaí</a>
-          <a href="bebidas.html">Bebidas</a>
-          <a class="active" href="combos.html">Combos</a>
-          <a href="sorvetes.html">Sorvetes</a>
-          <a href="hambúrguer.html">Hambúrguer</a>
-          <a href="contato.html">Contato</a>
-        </nav>
-      </div>
+
+<header class="topbar">
+  <div class="container">
+    <div class="nav">
+      <a class="brand" href="index.html">
+        <img src="img/logo.png" alt="LP Grill">
+        <div class="t">
+          <strong>LP Grill Açaí</strong>
+          <span>Combos</span>
+        </div>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" type="button">☰</button>
+      <div class="menu-overlay" id="menuOverlay"></div>
+
+      <nav class="menu" id="siteMenu">
+        <a href="index.html">Início</a>
+        <a href="acai.html">Açaí</a>
+        <a href="bebidas.html">Bebidas</a>
+        <a class="active" href="combos.html">Combos</a>
+        <a href="sorvetes.html">Sorvetes</a>
+        <a href="contato.html">Contato</a>
+        <a href="entrega.html">Entrega</a>
+      </nav>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main class="container section" data-catalog="combos">
-    <h2>Combos</h2>
-    <p class="muted" style="margin-top:6px;">Clique em um card para adicionar ao carrinho.</p>
-    <div id="catalog-grid" class="grid" style="margin-top:12px;"></div>
-  </main>
+<main class="container section" data-catalog="combos">
+  <h1 style="font-size:18px; font-weight:980;">Combos</h1>
+  <p class="muted" style="margin-top:6px;">Clique no card para adicionar ao carrinho.</p>
+  <div class="grid" id="catalog-grid" style="margin-top:12px;"></div>
+</main>
 
-  <script src="js/config.js" defer></script>
-  <script src="js/data.js" defer></script>
-  <script src="js/app.js" defer></script>
+<script src="js/app-config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
