@@ -1,74 +1,127 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pedido — Impressão</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>LP Grill — Pedido</title>
+  <link rel="stylesheet" href="css/estilo.css" />
   <style>
-    body{ font-family: Arial, sans-serif; margin: 18px; color:#111; }
-    h1{ margin:0 0 8px; font-size: 18px; }
-    .muted{ color:#555; font-size: 12px; }
-    .box{ border:1px solid #ddd; border-radius:12px; padding:12px; margin-top:12px; }
-    .row{ display:flex; justify-content:space-between; gap:10px; }
-    .items{ margin-top:10px; }
-    .item{ padding:10px 0; border-top:1px dashed #ddd; }
-    .item:first-child{ border-top:0; }
-    .item strong{ display:block; }
-    .tot{ margin-top:10px; border-top:2px solid #111; padding-top:10px; }
-    .btn{ margin-top:12px; padding:10px 12px; border-radius:10px; border:1px solid #111; background:#fff; cursor:pointer; }
+    .print-wrap{ max-width: 820px; margin: 0 auto; padding: 18px; }
+    .paper{
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(11,11,18,.10);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .row{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .small{ font-size:12px; color: rgba(11,11,18,.70); font-weight: 800; }
+    .items{ margin-top: 12px; display:flex; flex-direction:column; gap:10px; }
+    .it{ border:1px solid rgba(11,11,18,.08); border-radius: 16px; padding: 12px; background:#fff; }
+    .it b{ font-weight: 980; }
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 14px; }
     @media print{
-      .no-print{ display:none; }
-      body{ margin:0; }
+      .actions{ display:none; }
+      body{ background:#fff; }
+      .paper{ box-shadow:none; }
     }
   </style>
 </head>
 <body>
-  <h1 id="ttl">Pedido</h1>
-  <div class="muted" id="meta"></div>
 
-  <div class="box" id="client"></div>
-  <div class="box">
+<div class="print-wrap">
+  <div class="paper">
+    <div class="row">
+      <div>
+        <h2 style="margin:0; font-size:18px; font-weight:980;">Comprovante do Pedido</h2>
+        <div class="small" id="brandLine"></div>
+      </div>
+      <div class="small" id="dateLine"></div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div class="small"><b>Cliente</b></div>
+      <div id="custLine" style="font-weight:900;"></div>
+      <div id="addrLine" class="small"></div>
+      <div id="notesLine" class="small"></div>
+    </div>
+
     <div class="items" id="items"></div>
-    <div class="tot" id="totals"></div>
+
+    <div style="margin-top:14px; border-top:1px solid rgba(11,11,18,.10); padding-top:12px;">
+      <div class="row">
+        <div class="small">Subtotal</div>
+        <div style="font-weight:980;" id="subtotal"></div>
+      </div>
+      <div class="row" id="feeRow" style="margin-top:6px; display:none;">
+        <div class="small">Entrega</div>
+        <div style="font-weight:980;" id="fee"></div>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <div style="font-weight:980;">Total</div>
+        <div style="font-weight:980;" id="total"></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-chrome" type="button" onclick="window.print()">Imprimir</button>
+      <a class="btn btn-outline" href="index.html">Voltar</a>
+    </div>
   </div>
+</div>
 
-  <button class="btn no-print" onclick="window.print()">Imprimir</button>
+<script>
+(function(){
+  function money(v){
+    try { return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v); }
+    catch { return `R$ ${Number(v||0).toFixed(2)}`.replace(".",","); }
+  }
 
-  <script>
-    const raw = localStorage.getItem("lpgrill_last_order_print_v1");
-    if (!raw){
-      document.body.innerHTML = "<p>Nenhum pedido encontrado para impressão.</p>";
-    } else {
-      const data = JSON.parse(raw);
-      const money = (v)=> new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v||0);
+  let payload = null;
+  try { payload = JSON.parse(localStorage.getItem("lpgrill_last_order_print_v1") || "null"); } catch { payload=null; }
 
-      document.getElementById("ttl").textContent = `Pedido — ${data.brand || "LP Grill"}`;
-      document.getElementById("meta").textContent = `Gerado em: ${new Date(data.createdAt || Date.now()).toLocaleString("pt-BR")}`;
+  const brandLine = document.getElementById("brandLine");
+  const dateLine  = document.getElementById("dateLine");
+  const custLine  = document.getElementById("custLine");
+  const addrLine  = document.getElementById("addrLine");
+  const notesLine = document.getElementById("notesLine");
+  const itemsBox  = document.getElementById("items");
 
-      const c = [];
-      if (data.name) c.push(`<div><strong>Nome:</strong> ${data.name}</div>`);
-      if (data.phone) c.push(`<div><strong>Telefone:</strong> ${data.phone}</div>`);
-      if (data.address) c.push(`<div><strong>Endereço/Retirada:</strong> ${data.address}</div>`);
-      if (data.notes) c.push(`<div><strong>Obs:</strong> ${data.notes}</div>`);
-      document.getElementById("client").innerHTML = c.length ? c.join("") : "<div class='muted'>Sem dados do cliente.</div>";
+  if (!payload){
+    brandLine.textContent = "Nenhum pedido encontrado.";
+    return;
+  }
 
-      document.getElementById("items").innerHTML = (data.items || []).map(it => `
-        <div class="item">
-          <strong>${it.qty}x ${it.name}</strong>
-          <div class="muted">${it.desc || ""}</div>
-          <div>${money((it.qty||0) * (it.price||0))}</div>
+  brandLine.textContent = payload.brand || "LP Grill";
+  dateLine.textContent  = new Date(payload.createdAt || Date.now()).toLocaleString("pt-BR");
+
+  custLine.textContent = (payload.name || "") + (payload.phone ? " • " + payload.phone : "");
+  addrLine.textContent = payload.address ? ("Endereço/Retirada: " + payload.address) : "";
+  notesLine.textContent = payload.notes ? ("Obs: " + payload.notes) : "";
+
+  itemsBox.innerHTML = (payload.items || []).map(it => {
+    const totalIt = (it.qty || 0) * (it.price || 0);
+    return `
+      <div class="it">
+        <div class="row">
+          <div><b>${it.qty}x</b> ${it.name}</div>
+          <div><b>${money(totalIt)}</b></div>
         </div>
-      `).join("");
+        ${it.desc ? `<div class="small" style="margin-top:6px;">${it.desc}</div>` : ``}
+      </div>
+    `;
+  }).join("");
 
-      document.getElementById("totals").innerHTML = `
-        <div class="row"><span>Subtotal</span><strong>${money(data.subtotal)}</strong></div>
-        <div class="row"><span>Entrega</span><strong>${money(data.fee)}</strong></div>
-        <div class="row"><span>Total</span><strong>${money(data.total)}</strong></div>
-      `;
+  document.getElementById("subtotal").textContent = money(payload.subtotal || 0);
 
-      // auto print opcional:
-      setTimeout(()=>window.print(), 350);
-    }
-  </script>
+  const fee = Number(payload.fee || 0);
+  if (fee > 0){
+    document.getElementById("feeRow").style.display = "flex";
+    document.getElementById("fee").textContent = money(fee);
+  }
+
+  document.getElementById("total").textContent = money(payload.total || ((payload.subtotal||0) + fee));
+})();
+</script>
 </body>
 </html>
