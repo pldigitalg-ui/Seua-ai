@@ -1,7 +1,4 @@
 /* css/estilo.css */
-/* =========================
-   TEMA CLARO PREMIUM (ROXO CROMADO)
-   ========================= */
 :root{
   --bg:#F7F7FB;
   --bg2:#FFFFFF;
@@ -34,9 +31,6 @@ body{
 
 .container{ width:min(1120px, 92%); margin:0 auto; }
 
-/* =========================
-   TOPO
-   ========================= */
 .topbar{
   position: sticky;
   top: 0;
@@ -47,9 +41,7 @@ body{
 }
 
 .nav{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display:flex; align-items:center; justify-content:space-between;
   gap: 14px;
   padding: 12px 0;
 }
@@ -68,7 +60,8 @@ body{
 .brand .t strong{ font-size:14px; font-weight: 900; }
 .brand .t span{ font-size:12px; color: var(--muted); font-weight: 700; }
 
-/* MENU DESKTOP */
+.menu-wrap{ display:flex; align-items:center; gap:8px; }
+
 .menu{
   display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end;
 }
@@ -82,16 +75,12 @@ body{
   border:1px solid rgba(11,11,18,.10);
   background: rgba(255,255,255,.65);
 }
-.menu a:hover{ border-color: rgba(124,58,237,.35); outline: none; }
 .menu a.active{
   color:#fff;
   border-color: transparent;
   background: linear-gradient(135deg, var(--chrome1), var(--chrome2));
 }
 
-/* =========================
-   MENU MOBILE (☰)
-   ========================= */
 .menu-toggle{
   display:none;
   width:44px; height:44px;
@@ -102,66 +91,15 @@ body{
   cursor:pointer;
 }
 
-.menu-wrap{
-  display:flex;
-  align-items:center;
-  gap:8px;
+.menu-overlay{
+  display:none;
 }
 
-@media (max-width: 860px){
-  .nav{ align-items:flex-start; }
-
-  .menu-toggle{ display:inline-flex; align-items:center; justify-content:center; }
-
-  /* esconde menu “grande” e vira gaveta */
-  .menu{
-    display:none;
-    position: fixed;
-    top: 72px;
-    left: 12px;
-    right: 12px;
-    z-index: 70;
-    padding: 12px;
-    border-radius: 18px;
-    border: 1px solid rgba(11,11,18,.12);
-    background: rgba(255,255,255,.96);
-    box-shadow: var(--shadow);
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  body.menu-open .menu{ display:flex; }
-
-  /* overlay para fechar */
-  .menu-overlay{
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index: 65;
-    background: rgba(11,11,18,.35);
-  }
-  body.menu-open .menu-overlay{ display:block; }
-
-  .menu a{
-    display:flex;
-    justify-content:space-between;
-    font-size: 14px;
-    padding: 12px 14px;
-    border-radius: 14px;
-  }
-}
-
-/* =========================
-   TITULOS / SEÇÕES
-   ========================= */
 .section{ padding: 18px 0 28px; }
 h1,h2,h3{ margin:0; }
 .muted{ color: var(--muted); font-weight: 700; }
 p{ margin: 0; }
 
-/* =========================
-   HERO HOME
-   ========================= */
 .hero{ padding: 18px 0 10px; }
 .hero-box{
   background: rgba(255,255,255,.78);
@@ -183,6 +121,7 @@ p{ margin: 0; }
   line-height: 1.45;
   max-width: 820px;
 }
+
 .hero-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px; }
 .chiprow{ display:flex; gap:8px; flex-wrap:wrap; margin-top: 12px; }
 .chip{
@@ -195,9 +134,6 @@ p{ margin: 0; }
   border-radius:999px;
 }
 
-/* =========================
-   BOTÕES
-   ========================= */
 .btn{
   display:inline-flex; align-items:center; justify-content:center;
   gap: 8px;
@@ -214,18 +150,12 @@ p{ margin: 0; }
   border: 1px solid rgba(11,11,18,.12);
   color: var(--text);
 }
-.btn-outline:hover{ border-color: rgba(124,58,237,.35); }
 .btn-chrome{
   color: #fff;
   background: linear-gradient(135deg, var(--chrome1), var(--chrome2));
   box-shadow: 0 16px 28px rgba(124,58,237,.22);
 }
-.btn-chrome:hover{ filter: brightness(1.02); }
-.btn:disabled{ opacity:.55; cursor:not-allowed; }
 
-/* =========================
-   CARDS
-   ========================= */
 .grid{
   display:grid;
   grid-template-columns: repeat(4, 1fr);
@@ -281,7 +211,6 @@ p{ margin: 0; }
   padding-top: 10px;
 }
 .price{ font-weight: 980; font-size: 14px; }
-.price.ghost{ color: rgba(11,11,18,.70); }
 .tap{ font-size: 11px; font-weight: 950; color: rgba(124,58,237,.90); }
 .badge{
   font-size: 11px;
@@ -292,9 +221,7 @@ p{ margin: 0; }
   background: linear-gradient(135deg, var(--chrome1), var(--chrome2));
 }
 
-/* =========================
-   AÇAÍ BUILDER
-   ========================= */
+/* Builder */
 .builder{
   background: rgba(255,255,255,.92);
   border: 1px solid rgba(11,11,18,.10);
@@ -327,9 +254,7 @@ p{ margin: 0; }
   padding: 12px;
 }
 .checkout{ grid-column: span 6; }
-@media (max-width: 900px){
-  .card{ grid-column: span 12; }
-}
+@media (max-width: 900px){ .card{ grid-column: span 12; } }
 
 .card h2{ font-size: 14px; font-weight: 980; margin-bottom: 10px; }
 
@@ -386,17 +311,15 @@ p{ margin: 0; }
   font-weight: 850;
   outline:none;
 }
+
 .total-row{
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid rgba(11,11,18,.10);
   display:flex; align-items:center; justify-content:space-between;
 }
-.total-row strong{ font-weight: 980; }
 
-/* =========================
-   MODAL / CART
-   ========================= */
+/* Cart modal */
 .no-scroll{ overflow:hidden; }
 .modal.hidden{ display:none; }
 .modal{ position:fixed; inset:0; z-index: 80; }
@@ -429,6 +352,16 @@ p{ margin: 0; }
   justify-content:space-between;
   gap: 12px;
 }
+
+.icon-btn{
+  width: 40px; height: 40px;
+  border-radius: 14px;
+  border: 1px solid rgba(11,11,18,.12);
+  background: rgba(255,255,255,.9);
+  font-weight: 980;
+  cursor:pointer;
+}
+
 .cart-list{ display:flex; flex-direction:column; gap:10px; margin-bottom: 12px; }
 .cart-item{
   display:flex; justify-content:space-between; gap: 12px;
@@ -442,15 +375,6 @@ p{ margin: 0; }
 .cart-item__right{ text-align:right; min-width: 160px; display:flex; flex-direction:column; gap:8px; }
 .cart-item__price{ font-weight: 980; }
 
-.icon-btn{
-  width: 40px; height: 40px;
-  border-radius: 14px;
-  border: 1px solid rgba(11,11,18,.12);
-  background: rgba(255,255,255,.9);
-  font-weight: 980;
-  cursor:pointer;
-}
-
 .qty{ display:flex; align-items:center; justify-content:flex-end; gap:8px; }
 .qty__btn{
   width: 36px; height: 36px;
@@ -461,6 +385,7 @@ p{ margin: 0; }
   cursor:pointer;
 }
 .qty__num{ font-weight: 980; min-width: 20px; text-align:center; }
+
 .link{
   border:0; background: transparent;
   font-weight: 980;
@@ -491,9 +416,7 @@ p{ margin: 0; }
 
 .total{ display:flex; flex-direction:column; gap: 4px; }
 
-/* =========================
-   FLOATING BUTTONS
-   ========================= */
+/* Floating buttons */
 .cart-fab{
   position: fixed;
   right: 16px;
@@ -547,13 +470,45 @@ p{ margin: 0; }
 }
 .toast.hidden{ display:none; }
 
-/* ============================= */
-/* MOBILE FIRST (sheet carrinho) */
-/* ============================= */
-@media (max-width: 768px){
-  .container{ width:min(1120px, 92%); margin:0 auto; padding: 16px; }
+/* MOBILE: menu gaveta + carrinho sheet + total sempre visível */
+@media (max-width: 860px){
+  .menu-toggle{ display:inline-flex; align-items:center; justify-content:center; }
+  .menu{
+    display:none;
+    position: fixed;
+    top: 72px;
+    left: 12px;
+    right: 12px;
+    z-index: 70;
+    padding: 12px;
+    border-radius: 18px;
+    border: 1px solid rgba(11,11,18,.12);
+    background: rgba(255,255,255,.96);
+    box-shadow: var(--shadow);
+    flex-direction: column;
+    gap: 10px;
+  }
+  body.menu-open .menu{ display:flex; }
 
-  /* carrinho vira “sheet” */
+  .menu-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index: 65;
+    background: rgba(11,11,18,.35);
+  }
+  body.menu-open .menu-overlay{ display:block; }
+
+  .menu a{
+    display:flex;
+    justify-content:space-between;
+    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+
+  body{ padding-bottom: 120px; }
+
   .modal__panel{
     width: 100%;
     margin: 0;
@@ -570,15 +525,19 @@ p{ margin: 0; }
     align-items: stretch;
     gap: 10px;
   }
-  #btn-finalizar{
-    width: 100%;
-    font-size: 14px;
-    padding: 12px 14px;
-    border-radius: 14px;
-  }
 
   .cart-fab{ right: 12px; bottom: 12px; }
   .wa-fab{ right: 12px; bottom: 66px; }
 
-  body{ padding-bottom: 120px; }
+  /* total do açaí sempre visível */
+  .builder-head .total-row{
+    position: sticky;
+    bottom: 8px;
+    background: rgba(255,255,255,.96);
+    border: 1px solid rgba(11,11,18,.10);
+    border-radius: 16px;
+    padding: 10px 12px;
+    box-shadow: var(--shadow);
+    width: 100%;
+  }
 }
