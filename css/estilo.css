@@ -84,20 +84,6 @@ body{
   border-color: transparent;
   background: linear-gradient(135deg, var(--chrome1), var(--chrome2));
 }
-
-/* botão hamburguer: DESKTOP escondido */
-.menu-toggle{
-  display:none;
-  align-items:center;
-  justify-content:center;
-  width:44px;
-  height:44px;
-  border-radius:12px;
-  background:#ffffff;
-  border:1px solid #e5e7eb;
-  position:relative;
-  cursor:pointer;
-}
 .menu-overlay{ display:none; }
 
 /* ===== TIPOS / SEÇÕES ===== */
