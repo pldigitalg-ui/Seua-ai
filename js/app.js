@@ -77,7 +77,10 @@
     const a = document.createElement("a");
     a.id = "wa-fab";
     a.className = "wa-fab";
-    a.href = `https://wa.me/${cfg().whatsapp}`;
+  const msg = (typeof buildWhatsAppMessage === "function")
+  ? buildWhatsAppMessage()
+  : "Olá! Quero fazer um pedido.";
+a.href = `https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(msg)}`;
     a.target = "_blank";
     a.rel = "noopener";
     a.innerHTML = `<span class="wa-ic">💬</span><span class="wa-t">WhatsApp</span>`;
