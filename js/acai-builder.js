@@ -2,7 +2,7 @@
 (function () {
   const $ = (s, r=document) => r.querySelector(s);
   const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-  const cfg = () => window.APP_CONFIG || { brand:"LP Grill", whatsapp:"", deliveryFee:0 };
+  const cfg = () => window.APP_CONFIG || { brand:"LP Grill", whatsapp:"" };
 
   function money(v){
     try { return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v); }
@@ -16,23 +16,23 @@
     const sizeBox = $("#acai-sizes", root);
     const fruitBox = $("#acai-fruits", root);
     const addBox = $("#acai-addons", root);
-
     const totalEl = $("#acai-total", root);
-    const infoEl = $("#acai-info", root);
-    const warnEl = $("#acai-warning", root);
+    const infoEl  = $("#acai-info", root);
+    const warnEl  = $("#acai-warning", root);
+    const btnAdd  = $("#acai-add-cart", root);
+    const btnWhats= $("#acai-whats", root);
+    const notes   = $("#acai-notes", root);
 
-    const btnAdd = $("#acai-add-cart", root);
-    const btnWhats = $("#acai-whats", root);
-    const notes = $("#acai-notes", root);
+    const sizes = window.ACAI_MENU.sizes.map(norm);
+    const fruits = (window.ACAI_MENU.fruits||[]).map(norm);
+    const addOns = (window.ACAI_MENU.addOns||[]).map(norm);
 
-    const sizes = window.ACAI_MENU.sizes.map(s => ensureItem(s));
-    const fruits = (window.ACAI_MENU.fruits || []).map(s => ensureItem(s));
-    const addOns = (window.ACAI_MENU.addOns || []).map(s => ensureItem(s));
+    function norm(x){
+      return { id:String(x.id), label:String(x.label||x.id), price:Number(x.price||0), default:!!x.default };
+    }
 
+    // render sizes
     sizeBox.innerHTML = "";
-    fruitBox.innerHTML = "";
-    addBox.innerHTML = "";
-
     sizes.forEach(s => {
       const el = document.createElement("label");
       el.className = "pick";
@@ -46,39 +46,23 @@
       sizeBox.appendChild(el);
     });
 
-    function tile(item){
-      const p = Number(item.price || 0);
-      return `
-        <input type="checkbox" data-kind="extra" value="${item.id}">
-        <span class="tile__body">
-          <span class="tile__title">${item.label}</span>
-          <span class="pick__price">${money(p)}</span>
-        </span>
-      `;
+    function renderTile(list, box){
+      box.innerHTML = "";
+      list.forEach(it => {
+        const el = document.createElement("label");
+        el.className = "tile";
+        el.innerHTML = `
+          <input type="checkbox" data-kind="extra" value="${it.id}">
+          <span class="tile__body">
+            <span class="tile__title">${it.label}</span>
+            <span class="pick__price">${money(it.price)}</span>
+          </span>
+        `;
+        box.appendChild(el);
+      });
     }
-
-    fruits.forEach(f => {
-      const el = document.createElement("label");
-      el.className = "tile";
-      el.innerHTML = tile(f);
-      fruitBox.appendChild(el);
-    });
-
-    addOns.forEach(a => {
-      const el = document.createElement("label");
-      el.className = "tile";
-      el.innerHTML = tile(a);
-      addBox.appendChild(el);
-    });
-
-    function ensureItem(x){
-      return {
-        id: String(x.id),
-        label: String(x.label || x.id),
-        price: Number(x.price || 0),
-        default: !!x.default
-      };
-    }
+    renderTile(fruits, fruitBox);
+    renderTile(addOns, addBox);
 
     function getSize(){
       const sel = $('input[name="acai-size"]:checked', root);
@@ -86,18 +70,18 @@
       return sizes.find(x => x.id === id) || sizes[0];
     }
 
-    function getSelectedExtras(){
+    function getExtras(){
       const ids = $$('input[type="checkbox"][data-kind="extra"]:checked', root).map(i => i.value);
       const all = [...fruits, ...addOns];
       return ids.map(id => all.find(x => x.id === id)).filter(Boolean);
     }
 
-    // ✅ SOMA INTEIRA: tamanho + todos extras
+    // ✅ soma total: tamanho + todos extras
     function compute(){
       const size = getSize();
-      const extras = getSelectedExtras();
-      const base = Number(size.price || 0);
-      const extrasTotal = extras.reduce((a,b)=> a + Number(b.price || 0), 0);
+      const extras = getExtras();
+      const base = Number(size.price||0);
+      const extrasTotal = extras.reduce((a,b)=>a + Number(b.price||0), 0);
       const total = Number((base + extrasTotal).toFixed(2));
       return { size, extras, base, extrasTotal, total };
     }
@@ -113,17 +97,14 @@
 
     function addToCart(){
       const { size, extras, total } = compute();
-
-      const extrasDesc = extras.length
-        ? extras.map(x => `${x.label} (${money(x.price)})`).join(", ")
-        : "Nenhum";
+      const extrasDesc = extras.length ? extras.map(x => `${x.label} (${money(x.price)})`).join(", ") : "Nenhum";
+      const obs = (notes.value||"").trim();
 
       const id = `acai-${size.id}-${extras.map(x=>x.id).sort().join("-") || "sem"}`;
-
       const item = {
         id,
         name: `Açaí ${size.label}`,
-        desc: `Complementos: ${extrasDesc}${(notes.value||"").trim() ? ` • Obs: ${(notes.value||"").trim()}` : ""}`,
+        desc: `Complementos: ${extrasDesc}${obs ? ` • Obs: ${obs}` : ""}`,
         price: total
       };
 
@@ -132,8 +113,7 @@
       try { cart = JSON.parse(localStorage.getItem(LS_KEY) || "[]"); } catch { cart = []; }
 
       const found = cart.find(x => x.id === item.id);
-      if (found) found.qty += 1;
-      else cart.push({ ...item, qty: 1 });
+      if (found) found.qty += 1; else cart.push({ ...item, qty: 1 });
 
       localStorage.setItem(LS_KEY, JSON.stringify(cart));
 
@@ -160,12 +140,14 @@
       if (extras.length){
         lines.push(`• Complementos:`);
         extras.forEach(x => lines.push(`   - ${x.label} — ${money(x.price)}`));
+        lines.push(`• Total complementos: ${money(extrasTotal)}`);
       } else {
         lines.push(`• Complementos: Nenhum`);
       }
-      const obs = (notes.value || "").trim();
+      const obs = (notes.value||"").trim();
       if (obs) lines.push(`• Obs: ${obs}`);
-      lines.push(`\n💳 Total estimado: *${money(total)}*`);
+      lines.push(`\n💳 Total: *${money(total)}*`);
+
       window.open(`https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
     }
 
