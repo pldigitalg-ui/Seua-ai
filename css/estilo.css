@@ -62,9 +62,18 @@ body{
 
 .menu-wrap{ display:flex; align-items:center; gap:8px; }
 
-.menu{
-  display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end;
+  .menu{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:flex-end;
 }
+
+@media (max-width: 860px){
+  .menu{
+    display:none;   /* ESCONDE no mobile */
+  }
+
 .menu a{
   text-decoration:none;
   color: rgba(11,11,18,.78);
@@ -474,8 +483,6 @@ p{ margin: 0; }
 }
 .toast.hidden{ display:none; }
 
-/* MOBILE: menu gaveta + carrinho sheet + total sempre visível */
-@media (max-width: 860px){
   .menu-toggle{ display:inline-flex; align-items:center; justify-content:center; }
   .menu{
     position: fixed;
@@ -571,9 +578,14 @@ p{ margin: 0; }
     position: relative;
     z-index: 10002;
   }
-}
+  
 /* ===== MENU MOBILE SIMPLES ===== */
 @media (max-width: 860px){
+  #siteMenu{ ... }
+  #siteMenu.ativo{ ... }
+  #menuOverlay.ativo{ ... }
+}
+
 
   #menuToggle{
     display:block !important;
@@ -609,10 +621,13 @@ p{ margin: 0; }
   }
 }
 @media (max-width: 860px){
-  body.menu-open #siteMenu{
-    display:flex !important;
-    z-index: 10001 !important;
-  }
+  #siteMenu{ display:none; }
+  #siteMenu.is-open{ display:flex; }
+  #menuOverlay{ ... }
+  #menuOverlay.is-open{ ... }
+  #siteMenu{ ... }
+  #menuToggle{ ... }
+}
   body.menu-open #menuOverlay{
     display:block !important;
     z-index: 10000 !important;
@@ -621,7 +636,148 @@ p{ margin: 0; }
     z-index: 10002 !important;
     position: relative;
   }
-}
+
 @media (max-width: 860px){
   #siteMenu{ display:flex !important; }
+}
+/* =========================
+   MENU GAVETA — ÚNICO (FINAL)
+   funciona com: body.menu-open
+   ========================= */
+
+/* Desktop: menu normal e sem hamburguer */
+@media (min-width: 861px){
+  #menuToggle{ display:none !important; }
+  #menuOverlay{ display:none !important; }
+
+  /* garante menu visível no desktop */
+  #siteMenu.menu{
+    display:flex !important;
+    position: static !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+  }
+
+/* Mobile: gaveta fechada e abre com body.menu-open */
+@media (max-width: 860px){
+
+  /* garante layout do topo e clique no botão */
+  .nav{ display:flex; align-items:center; justify-content:space-between; gap:14px; }
+  .brand{ flex:1; min-width:0; }
+
+  #menuToggle{
+    display:inline-flex !important;
+    align-items:center; justify-content:center;
+    width:44px; height:44px;
+    border-radius:12px;
+    position: relative;
+    z-index: 10002;
+    pointer-events: auto;
+  }
+
+  /* menu fechado por padrão */
+  #siteMenu.menu{
+    display:none;                 /* fechado */
+    position: fixed;
+    top: 72px;
+    left: 12px;
+    right: 12px;
+    z-index: 10001;
+    padding: 12px;
+    border-radius: 18px;
+    border: 1px solid rgba(11,11,18,.12);
+    background: rgba(255,255,255,.96);
+    box-shadow: var(--shadow);
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* abre quando body tem menu-open */
+  body.menu-open #siteMenu.menu{
+    display:flex !important;
+  }
+
+  /* overlay */
+  #menuOverlay.menu-overlay{
+    display:none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(11,11,18,.35);
+  }
+
+  body.menu-open #menuOverlay.menu-overlay{
+    display:block !important;
+  }
+
+  /* links maiores no mobile */
+  #siteMenu.menu a{
+    display:flex;
+    justify-content:space-between;
+    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    @media (max-width: 860px){
+
+  body.menu-open #siteMenu{
+    display:flex !important;
+    flex-direction:column;
+  }
+/* =========================
+   FIX FINAL — MENU NO CELULAR
+   (cola no FINAL do arquivo)
+   ========================= */
+
+@media (max-width: 860px){
+
+  /* botão aparece e é clicável */
+  #menuToggle{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:44px !important;
+    height:44px !important;
+    position:relative !important;
+    z-index:999999 !important;
+    pointer-events:auto !important;
+  }
+
+  /* menu fechado por padrão */
+  #siteMenu{
+    display:none !important;
+    position:fixed !important;
+    top:72px !important;
+    left:12px !important;
+    right:12px !important;
+    z-index:999998 !important;
+    padding:12px !important;
+    border-radius:18px !important;
+    background:rgba(255,255,255,.96) !important;
+    border:1px solid rgba(11,11,18,.12) !important;
+    box-shadow: var(--shadow) !important;
+    flex-direction:column !important;
+    gap:10px !important;
+  }
+
+  /* abre quando body tem menu-open */
+  body.menu-open #siteMenu{
+    display:flex !important;
+  }
+
+  /* overlay */
+  #menuOverlay{
+    display:none !important;
+    position:fixed !important;
+    inset:0 !important;
+    z-index:999997 !important;
+    background:rgba(11,11,18,.35) !important;
+  }
+
+  body.menu-open #menuOverlay{
+    display:block !important;
+  }
 }
