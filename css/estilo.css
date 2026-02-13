@@ -499,3 +499,74 @@ p{ margin: 0; }
   font-weight: 980;
 }
 .toast.hidden{ display:none; }
+
+/* ============================= */
+/* MOBILE FIRST OTIMIZADO */
+/* ============================= */
+
+@media (max-width: 768px){
+
+  .container{
+    padding:16px;
+  }
+
+  .cardx{
+    border-radius:16px;
+    box-shadow:0 8px 22px rgba(0,0,0,.08);
+  }
+
+  .cardx__body h3{
+    font-size:16px;
+  }
+
+  .price{
+    font-weight:700;
+    font-size:15px;
+  }
+
+  .tap{
+    font-size:12px;
+  }
+
+  .modal__panel{
+    width:100%;
+    max-height:95vh;
+    border-radius:16px 16px 0 0;
+  }
+
+  .modal__footer{
+    padding:12px;
+  }
+
+  #btn-finalizar{
+    font-size:14px;
+    padding:12px;
+  }
+
+  .wa-fab{
+    bottom:85px;
+  }
+
+  .cart-fab{
+    bottom:20px;
+  }
+
+/* ============================= */
+/* CARD PREMIUM */
+/* ============================= */
+
+.cardx{
+  transition:.25s ease;
+}
+
+.cardx:hover{
+  transform:translateY(-4px);
+  box-shadow:0 16px 35px rgba(0,0,0,.12);
+}
+
+.thumb{
+  background-size:cover;
+  background-position:center;
+  border-radius:14px 14px 0 0;
+}
+
