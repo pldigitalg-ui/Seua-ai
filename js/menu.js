@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
 /* =========================
    ✅ WHATSAPP (LP Grill Açaí)
    ========================= */
-const WA_PHONE = "553198832407"; // ✅ 55 + DDD + número
+const WA_PHONE = "553198832407"; // ✅ 5553198832407
 
 function getCartFromStorage(){
   try { return JSON.parse(localStorage.getItem("lp_cart") || "[]"); }
@@ -26,7 +26,7 @@ function cartTotal(cart){
   return cart.reduce((sum, it) => sum + (Number(it.price||0) * Number(it.qty||1)), 0);
 }
 
-function buildWhatsAppMessage(){
+function buildWhatsAppMessage(553198832407){
   const cart = getCartFromStorage();
   const total = cartTotal(cart);
 
@@ -65,7 +65,7 @@ const obs = (document.querySelector("#obs")?.value || "").trim();
 function refreshWhatsAppLink(){
   const a = document.querySelector("#waFloat");
   if(!a) return;
-  a.href = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(buildWhatsAppMessage())}`;
+  a.href = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(buildWhatsAppMessage(553198832407))}`;
 }
 
 // atualiza ao abrir e sempre que mexer no carrinho
