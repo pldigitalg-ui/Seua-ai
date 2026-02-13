@@ -131,6 +131,52 @@
       t.classList.remove("hidden");
       setTimeout(()=>t.classList.add("hidden"), 1400);
     }
+/* =========================
+   ✅ IMPRESSÃO (CUPOM)
+   ========================= */
+function printOrder(){
+  const cart = getCartFromStorage();
+  const total = cartTotal(cart);
+
+  let html = `
+  <html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Pedido — LP Grill Açaí</title>
+    <style>
+      body{ font-family: Arial; padding: 16px; }
+      h1{ font-size: 18px; margin:0 0 8px; }
+      .line{ border-top:1px dashed #999; margin:10px 0; }
+      .it{ display:flex; justify-content:space-between; margin:6px 0; font-size:14px; }
+      .t{ font-weight:700; font-size:16px; display:flex; justify-content:space-between; }
+      small{ color:#555; }
+    </style>
+  </head>
+  <body>
+    <h1>LP Grill Açaí — Pedido</h1>
+    <small>${new Date().toLocaleString()}</small>
+    <div class="line"></div>
+  `;
+
+  cart.forEach(it=>{
+    const q = Number(it.qty||1);
+    const p = Number(it.price||0);
+    const sub = (q*p).toFixed(2).replace(".", ",");
+    html += `<div class="it"><span>${q}x ${it.name}</span><span>R$ ${sub}</span></div>`;
+  });
+
+  html += `
+    <div class="line"></div>
+    <div class="t"><span>Total</span><span>R$ ${total.toFixed(2).replace(".", ",")}</span></div>
+    <script>window.onload=()=>{window.print();}</script>
+  </body>
+  </html>`;
+
+  const w = window.open("", "_blank", "width=420,height=600");
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
 
     function sendWhats(){
       const { size, extras, base, extrasTotal, total } = compute();
