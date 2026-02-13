@@ -781,3 +781,41 @@ p{ margin: 0; }
     display:block !important;
   }
 }
+@media (max-width: 860px){
+  /* Esconde o menu no celular até abrir */
+  #siteMenu{ display:none; }
+
+  /* Abre quando body tem menu-open */
+  body.menu-open #siteMenu{ display:flex; }
+
+  /* Overlay */
+  .menu-overlay{ display:none; }
+  body.menu-open .menu-overlay{ display:block; }
+
+  /* Gaveta */
+  #siteMenu{
+    position:fixed;
+    top:72px;
+    left:12px;
+    right:12px;
+    z-index:10001;
+    padding:12px;
+    border-radius:18px;
+    background:rgba(255,255,255,.96);
+    box-shadow: var(--shadow);
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .menu-overlay{
+    position:fixed;
+    inset:0;
+    z-index:10000;
+    background:rgba(11,11,18,.35);
+  }
+
+  #menuToggle{
+    position:relative;
+    z-index:10002;
+  }
+}
