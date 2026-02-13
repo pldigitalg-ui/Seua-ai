@@ -3,8 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#ffffff" />
-  <title>LP Grill — Pedidos</title>
+  <title>LP Grill — Açaí</title>
   <link rel="stylesheet" href="css/estilo.css" />
 </head>
 <body>
@@ -13,22 +12,25 @@
   <div class="container">
     <div class="nav">
       <a class="brand" href="index.html">
-        <img src="img/logo.png" alt="LP Grill" />
-        <span class="t">
-          <strong>LP Grill</strong>
-          <span>Pedidos rápidos</span>
-        </span>
+        <img src="img/logo.png" alt="LP Grill">
+        <div class="t">
+          <strong>LP Grill Açaí</strong>
+          <span>Pedidos rápidos • WhatsApp</span>
+        </div>
       </a>
 
-      <div class="menu-wrap">
-        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu">☰</button>
-        <div class="menu-overlay" id="menuOverlay"></div>
+      <button class="menu-toggle" id="menuToggle" type="button">☰</button>
+      <div class="menu-overlay" id="menuOverlay"></div>
 
-        <nav class="menu" id="siteMenu">
-          <a class="active" href="index.html">Início</a>
-          <a href="acai.html">Monte seu Açaí</a>
-        </nav>
-      </div>
+      <nav class="menu" id="siteMenu">
+        <a class="active" href="index.html">Início</a>
+        <a href="acai.html">Açaí</a>
+        <a href="bebidas.html">Bebidas</a>
+        <a href="combos.html">Combos</a>
+        <a href="sorvetes.html">Sorvetes</a>
+        <a href="contato.html">Contato</a>
+        <a href="entrega.html">Entrega</a>
+      </nav>
     </div>
   </div>
 </header>
@@ -37,32 +39,25 @@
   <section class="hero">
     <div class="hero-box">
       <div>
-        <h1>Escolha e finalize no WhatsApp</h1>
-        <p>
-          Monte seu açaí com complementos e mande o pedido certinho.
-          No final, você imprime um comprovante automático.
-        </p>
+        <h1>Escolha seu açaí</h1>
+        <p>Toque em um card para adicionar ao carrinho. Quer personalizar? Clique em <b>Monte seu Açaí</b>.</p>
 
         <div class="hero-actions">
-          <a class="btn btn-chrome" href="acai.html">🥣 Monte seu Açaí</a>
-          <a class="btn btn-outline" href="#cardapio">Ver opções</a>
+          <a class="btn btn-chrome" href="acai.html">Monte seu Açaí</a>
         </div>
 
         <div class="chiprow">
-          <span class="chip">✅ Carrinho</span>
           <span class="chip">✅ Total automático</span>
+          <span class="chip">✅ Carrinho em todas as páginas</span>
           <span class="chip">✅ Impressão</span>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section" id="cardapio">
-    <h2 style="font-size:16px; font-weight:980;">Destaques</h2>
-    <p class="muted" style="margin-top:6px;">
-      Toque para adicionar ao carrinho ou abra o Monte seu Açaí.
-    </p>
-
+  <section class="section">
+    <h2 style="font-size:16px; font-weight:980;">Açaís em destaque</h2>
+    <p class="muted" style="margin-top:6px;">7 opções prontas + 1 opção de personalização.</p>
     <div class="grid" id="home-acai-grid" style="margin-top:12px;"></div>
   </section>
 </main>
