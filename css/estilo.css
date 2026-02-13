@@ -572,3 +572,39 @@ p{ margin: 0; }
     z-index: 10002;
   }
 }
+/* ===== MENU MOBILE SIMPLES ===== */
+@media (max-width: 860px){
+
+  #menuToggle{
+    display:block !important;
+  }
+
+  #siteMenu{
+    display:none;
+    position:fixed;
+    top:70px;
+    left:0;
+    right:0;
+    background:#fff;
+    padding:20px;
+    flex-direction:column;
+    gap:10px;
+    z-index:9999;
+  }
+
+  #siteMenu.ativo{
+    display:flex;
+  }
+
+  #menuOverlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.4);
+    z-index:9998;
+  }
+
+  #menuOverlay.ativo{
+    display:block;
+  }
+}
