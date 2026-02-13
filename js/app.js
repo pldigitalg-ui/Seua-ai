@@ -73,7 +73,7 @@
   // Whats flutuante
   function ensureFloatingWhats(){
     if ($("#wa-fab")) return;
-    if (!cfg().whatsapp) return;
+    if (!().whatsapp) return;
     const a = document.createElement("a");
     a.id = "wa-fab";
     a.className = "wa-fab";
@@ -222,8 +222,8 @@ a.href = `https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(msg)}`;
   // ✅ BLOQUEIO obrigatório + impressão
   function finalizeWhatsApp(){
     if (cart.length === 0){ toast("Seu carrinho está vazio."); return; }
-    if (!cfg().whatsapp){ toast("WhatsApp não configurado."); return; }
-
+    const WA = (window.CONFIGURACAO_DO_APLICATIVO && window.CONFIGURACAO_DO_APLICATIVO.whatsapp) || (cfg0().whatsapp);
+    if (!WA) { toast("WhatsApp não configurado."); return; }
     const name = ($("#ck-name")?.value || "").trim();
     const phone = ($("#ck-phone")?.value || "").trim();
     const address = ($("#ck-address")?.value || "").trim();
