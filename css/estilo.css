@@ -82,12 +82,16 @@ body{
 }
 
 .menu-toggle{
-  display:none;
-  width:44px; height:44px;
-  border-radius: 14px;
-  border:1px solid rgba(11,11,18,.12);
-  background: rgba(255,255,255,.85);
-  font-weight: 980;
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  position:relative;
+  z-index:9999;
   cursor:pointer;
 }
 
@@ -474,7 +478,6 @@ p{ margin: 0; }
 @media (max-width: 860px){
   .menu-toggle{ display:inline-flex; align-items:center; justify-content:center; }
   .menu{
-    display:none;
     position: fixed;
     top: 72px;
     left: 12px;
