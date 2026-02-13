@@ -589,16 +589,33 @@ p{ margin: 0; }
 @media (max-width: 860px){
   #siteMenu,
   .menu{
-    justify-content:flex-start !important;
-    flex-wrap:nowrap !important;
-    overflow-x:auto !important;
-    -webkit-overflow-scrolling:touch;
-    padding:8px 0 !important;
+    display:flex;
+    gap:10px !important;
+    justify-content:center !important;
+    flex-wrap:wrap !important;        /* ✅ quebra linha */
+    overflow:visible !important;      /* ✅ tira scroll horizontal */
+    white-space:normal !important;    /* ✅ libera quebrar texto/linha */
+    padding:8px !important;
   }
 
   #siteMenu a,
   .menu a{
-    white-space:nowrap !important;
+    white-space:normal !important;
     flex:0 0 auto !important;
+  }
+
+  /* se tiver "barra rolável" no header */
+  .topbar, .nav{
+    overflow:visible !important;
+  }
+}
+
+#siteMenu a,
+.menu a{
+  white-space:normal !important;
+  flex:0 0 auto !important;
+  padding:10px 14px !important;
+  border-radius:14px !important;
+  
   }
 }
