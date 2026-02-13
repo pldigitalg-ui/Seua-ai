@@ -608,3 +608,17 @@ p{ margin: 0; }
     display:block;
   }
 }
+@media (max-width: 860px){
+  body.menu-open #siteMenu{
+    display:flex !important;
+    z-index: 10001 !important;
+  }
+  body.menu-open #menuOverlay{
+    display:block !important;
+    z-index: 10000 !important;
+  }
+  #menuToggle{
+    z-index: 10002 !important;
+    position: relative;
+  }
+}
