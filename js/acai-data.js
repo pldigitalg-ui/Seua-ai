@@ -6,14 +6,12 @@ window.ACAI_MENU = {
     { id:"700", label:"700ml", price:22.90 },
     { id:"1000", label:"1 Litro", price:29.90 }
   ],
-
   fruits: [
     { id:"banana", label:"Banana", price:2.00 },
     { id:"morango", label:"Morango", price:3.00 },
     { id:"uva", label:"Uva", price:3.00 },
     { id:"manga", label:"Manga", price:3.00 }
   ],
-
   addOns: [
     { id:"granola", label:"Granola", price:2.00 },
     { id:"leitecond", label:"Leite condensado", price:2.00 },
