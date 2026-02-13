@@ -14,9 +14,24 @@
     }[s]));
   }
 
-  // =====================
-  // CART STORAGE
-  // =====================
+  /* MENU MOBILE */
+  function initMobileMenu(){
+    const toggle = $("#menuToggle");
+    const overlay = $("#menuOverlay");
+    const menu = $("#siteMenu");
+    if (!toggle || !overlay || !menu) return;
+
+    const open = () => document.body.classList.add("menu-open");
+    const close = () => document.body.classList.remove("menu-open");
+    const isOpen = () => document.body.classList.contains("menu-open");
+
+    toggle.addEventListener("click", () => isOpen() ? close() : open());
+    overlay.addEventListener("click", close);
+    $$("a", menu).forEach(a => a.addEventListener("click", close));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+  }
+
+  /* CART */
   const LS_KEY = "lpgrill_cart_v2";
   let cart = loadCart();
 
@@ -57,13 +72,10 @@
     saveCart();
   }
 
-  // =====================
-  // GLOBAL FLOATING BUTTONS
-  // =====================
+  /* FLOATING BUTTONS */
   function ensureFloatingWhats(){
     if ($("#wa-fab")) return;
-    if (!cfg().whatsapp) return; // se vazio, não cria
-
+    if (!cfg().whatsapp) return;
     const a = document.createElement("a");
     a.id = "wa-fab";
     a.className = "wa-fab";
@@ -97,7 +109,7 @@
         <div class="modal__head">
           <div>
             <h3>Seu carrinho</h3>
-            <p class="muted">Finalize e envie tudo certinho no WhatsApp.</p>
+            <p class="muted">Preencha os dados obrigatórios e finalize no WhatsApp.</p>
           </div>
           <button class="icon-btn" type="button" data-close="1" aria-label="Fechar">✕</button>
         </div>
@@ -113,19 +125,19 @@
 
           <div class="form-grid">
             <div>
-              <label class="label">Nome (opcional)</label>
+              <label class="label">Nome <b>(obrigatório)</b></label>
               <input id="ck-name" class="input" placeholder="Seu nome" />
             </div>
             <div>
-              <label class="label">Telefone (opcional)</label>
+              <label class="label">Telefone <b>(obrigatório)</b></label>
               <input id="ck-phone" class="input" placeholder="(31) 9xxxx-xxxx" />
             </div>
             <div class="col-2">
-              <label class="label">Endereço / Retirada</label>
+              <label class="label">Endereço / Retirada <b>(obrigatório)</b></label>
               <input id="ck-address" class="input" placeholder="Rua, número, bairro, referência..." />
             </div>
             <div class="col-2">
-              <label class="label">Observações</label>
+              <label class="label">Observações (opcional)</label>
               <textarea id="ck-notes" class="textarea" rows="3" placeholder="Ex: sem gelo, pouco granola..."></textarea>
             </div>
           </div>
@@ -172,7 +184,7 @@
     const totalEl = $("#cart-total");
     if (!list || !empty || !totalEl) return;
 
-    const fee = cfg().deliveryFee || 0;
+    const fee = Number(cfg().deliveryFee || 0);
     totalEl.textContent = money(cartTotal() + fee);
 
     if (cart.length === 0){
@@ -205,18 +217,28 @@
     $$("[data-rm]", list).forEach(b => b.addEventListener("click", ()=>rm(b.dataset.rm)));
   }
 
+  /* ✅ BLOQUEIO: não envia sem dados obrigatórios */
   function finalizeWhatsApp(){
     if (cart.length === 0){ toast("Seu carrinho está vazio."); return; }
+    if (!cfg().whatsapp){ toast("WhatsApp não configurado."); return; }
 
     const name = ($("#ck-name")?.value || "").trim();
     const phone = ($("#ck-phone")?.value || "").trim();
     const address = ($("#ck-address")?.value || "").trim();
     const notes = ($("#ck-notes")?.value || "").trim();
 
-    const subtotal = cartTotal();
-    const fee = cfg().deliveryFee || 0;
+    if (!name || !phone || !address){
+      toast("Preencha Nome, Telefone e Endereço ✅");
+      // dá um “focus” no primeiro vazio
+      if (!name) $("#ck-name")?.focus();
+      else if (!phone) $("#ck-phone")?.focus();
+      else $("#ck-address")?.focus();
+      return;
+    }
 
-    // 1) salva para impressão (pedido.html)
+    const subtotal = cartTotal();
+    const fee = Number(cfg().deliveryFee || 0);
+
     const printPayload = {
       brand: cfg().brand,
       name, phone, address, notes,
@@ -228,7 +250,6 @@
     };
     localStorage.setItem("lpgrill_last_order_print_v1", JSON.stringify(printPayload));
 
-    // 2) mensagem premium
     const lines = [];
     lines.push(`🧾 *PEDIDO - ${cfg().brand}*`);
     lines.push("");
@@ -243,31 +264,28 @@
     if (fee > 0) lines.push(`🚚 Entrega: ${money(fee)}`);
     lines.push(`💳 Total: *${money(subtotal + fee)}*`);
 
-    if (name) lines.push(`\n👤 Nome: ${name}`);
-    if (phone) lines.push(`📞 Telefone: ${phone}`);
-    if (address) lines.push(`📍 Endereço/Retirada: ${address}`);
+    lines.push(`\n👤 Nome: ${name}`);
+    lines.push(`📞 Telefone: ${phone}`);
+    lines.push(`📍 Endereço/Retirada: ${address}`);
     if (notes) lines.push(`📝 Obs: ${notes}`);
 
-    // 3) abre impressão + WhatsApp
     window.open("pedido.html", "_blank");
     window.open(`https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
   }
 
-  // =====================
-  // HOME: cards
-  // =====================
+  /* HOME GRID */
   function mountHomeAcai(){
     const grid = $("#home-acai-grid");
     if (!grid || !window.CATALOG?.home_acai) return;
 
     grid.innerHTML = window.CATALOG.home_acai.map(p => {
       const hasPrice = typeof p.price === "number";
-      const priceHtml = hasPrice ? `<div class="price">${money(p.price)}</div>` : `<div class="price ghost">Personalizar</div>`;
+      const priceHtml = hasPrice ? `<div class="price">${money(p.price)}</div>` : `<div class="price">Personalizar</div>`;
       const badge = p.badge ? `<span class="badge">${esc(p.badge)}</span>` : "";
       const link = p.link ? `data-link="${esc(p.link)}"` : "";
       return `
         <article class="cardx" data-home-card="1" data-id="${esc(p.id)}" ${link}>
-          <div class="thumb" style="background-image:url('${esc(p.img)}')">
+          <div class="thumb" style="background-image:url('${esc(p.img || "")}')">
             <span class="thumb__fallback">Imagem</span>
           </div>
           <div class="cardx__body">
@@ -275,7 +293,7 @@
               <h3>${esc(p.name)}</h3>
               ${badge}
             </div>
-            <p>${esc(p.desc)}</p>
+            <p>${esc(p.desc || "")}</p>
             <div class="bottom-row">
               ${priceHtml}
               <div class="tap">Toque para ${p.link ? "abrir" : "adicionar"}</div>
@@ -294,57 +312,13 @@
 
         const p = window.CATALOG.home_acai.find(x => x.id === id);
         if (!p || typeof p.price !== "number") return;
+
         addItem({ id: p.id, name: p.name, desc: p.desc, price: p.price });
       });
     });
   }
 
-  // =====================
-  // CATALOG PAGES
-  // =====================
-  function mountCatalog(){
-    const root = document.querySelector("[data-catalog]");
-    if (!root || !window.CATALOG?.categories) return;
-
-    const catId = root.getAttribute("data-catalog");
-    const cat = window.CATALOG.categories.find(c => c.id === catId);
-    if (!cat) return;
-
-    const grid = $("#catalog-grid", root);
-    if (!grid) return;
-
-    grid.innerHTML = cat.items.map(it => `
-      <article class="cardx" data-add-card="1" data-id="${esc(it.id)}">
-        <div class="thumb" style="background-image:url('${esc(it.img || "")}')">
-          <span class="thumb__fallback">Imagem</span>
-        </div>
-        <div class="cardx__body">
-          <div class="title-row">
-            <h3>${esc(it.name)}</h3>
-            ${it.badge ? `<span class="badge">${esc(it.badge)}</span>` : ""}
-          </div>
-          <p>${esc(it.desc || "")}</p>
-          <div class="bottom-row">
-            <div class="price">${money(it.price)}</div>
-            <div class="tap">Clique no card para adicionar</div>
-          </div>
-        </div>
-      </article>
-    `).join("");
-
-    $$("[data-add-card='1']", grid).forEach(card => {
-      card.addEventListener("click", () => {
-        const id = card.dataset.id;
-        const it = cat.items.find(x => x.id === id);
-        if (!it) return;
-        addItem({ id: it.id, name: it.name, desc: it.desc, price: it.price });
-      });
-    });
-  }
-
-  // =====================
-  // TOAST
-  // =====================
+  /* TOAST */
   let toastTimer = null;
   function toast(msg){
     let el = $("#toast");
@@ -357,13 +331,13 @@
     el.textContent = msg;
     el.classList.remove("hidden");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(()=>el.classList.add("hidden"), 1600);
+    toastTimer = setTimeout(()=>el.classList.add("hidden"), 1800);
   }
 
   document.addEventListener("DOMContentLoaded", () => {
+    initMobileMenu();
     ensureFloatingWhats();
     ensureCartUI();
     mountHomeAcai();
-    mountCatalog();
   });
 })();
