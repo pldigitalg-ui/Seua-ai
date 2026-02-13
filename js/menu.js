@@ -65,9 +65,15 @@ const obs = (document.querySelector("#obs")?.value || "").trim();
 function refreshWhatsAppLink(){
   const a = document.querySelector("#waFloat");
   if(!a) return;
-  a.href = `https://wa.me/${WA_PHONE}?text=${buildWhatsAppMessage()}`;
+  a.href = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(buildWhatsAppMessage())}`;
 }
 
 // atualiza ao abrir e sempre que mexer no carrinho
 document.addEventListener("DOMContentLoaded", refreshWhatsAppLink);
 window.addEventListener("storage", refreshWhatsAppLink);
+
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("#waFloat");
+  if(!a) return;
+  refreshWhatsAppLink();
+});
