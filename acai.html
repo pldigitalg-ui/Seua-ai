@@ -3,85 +3,88 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#ffffff" />
   <title>LP Grill — Monte seu Açaí</title>
-
   <link rel="stylesheet" href="css/estilo.css" />
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="container">
-      <div class="nav">
-        <a class="brand" href="index.html">
-          <img src="img/logo.png" alt="LP Grill" />
-          <span class="t">
-            <strong>LP Grill Açaí</strong>
-            <span>Monte seu açaí</span>
-          </span>
-        </a>
+<header class="topbar">
+  <div class="container">
+    <div class="nav">
+      <a class="brand" href="index.html">
+        <img src="img/logo.png" alt="LP Grill" />
+        <span class="t">
+          <strong>LP Grill</strong>
+          <span>Monte seu Açaí</span>
+        </span>
+      </a>
 
-        <nav class="menu">
+      <div class="menu-wrap">
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu">☰</button>
+        <div class="menu-overlay" id="menuOverlay"></div>
+
+        <nav class="menu" id="siteMenu">
           <a href="index.html">Início</a>
-          <a class="active" href="acai.html">Açaí</a>
-          <a href="bebidas.html">Bebidas</a>
-          <a href="combos.html">Combos</a>
-          <a href="sorvetes.html">Sorvetes</a>
-          <a href="contato.html">Contato</a>
+          <a class="active" href="acai.html">Monte seu Açaí</a>
         </nav>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main class="container section">
-    <div id="acai-builder" class="builder">
-      <div class="builder-head">
-        <div>
-          <h1>Monte seu Açaí</h1>
-          <p>Escolha o tamanho e adicione frutas e complementos. Tudo soma automaticamente.</p>
-          <div id="acai-warning" class="warning"></div>
-        </div>
-        <div class="total-row" style="min-width:240px;">
-          <span class="muted">Total</span>
-          <strong id="acai-total">R$ 0,00</strong>
-        </div>
+<main class="container section">
+  <section class="builder" id="acai-builder">
+    <div class="builder-head">
+      <div>
+        <h1>Monte seu Açaí</h1>
+        <p>Escolha o tamanho + complementos. O total soma tudo automaticamente (mobile e PC).</p>
+        <div id="acai-warning" class="warning"></div>
       </div>
 
-      <div class="builder-grid">
-        <div class="card">
-          <h2>1) Tamanho</h2>
-          <div id="acai-sizes" class="picks"></div>
-        </div>
-
-        <div class="card">
-          <h2>2) Frutas</h2>
-          <div id="acai-fruits" class="tiles"></div>
-        </div>
-
-        <div class="card">
-          <h2>3) Complementos</h2>
-          <div id="acai-addons" class="tiles"></div>
-        </div>
-
-        <div class="card checkout">
-          <h2>Finalizar</h2>
-          <p class="muted" id="acai-info">Carregando...</p>
-
-          <label class="label">Observações</label>
-          <textarea id="acai-notes" class="textarea" rows="3" placeholder="Ex: pouco leite condensado, sem gelo..."></textarea>
-
-          <div class="hero-actions" style="margin-top:12px;">
-            <button id="acai-add-cart" class="btn btn-chrome" type="button">Adicionar ao carrinho</button>
-            <button id="acai-whats" class="btn btn-outline" type="button">Enviar no WhatsApp</button>
-          </div>
-        </div>
+      <div class="total-row" style="min-width: 260px;">
+        <span class="muted" id="acai-info">Carregando...</span>
+        <strong id="acai-total">R$ 0,00</strong>
       </div>
     </div>
-  </main>
 
-  <script src="js/config.js" defer></script>
-  <script src="js/acai-data.js" defer></script>
-  <script src="js/acai-builder.js" defer></script>
-  <script src="js/app.js" defer></script>
+    <div class="builder-grid">
+      <div class="card">
+        <h2>1) Tamanho</h2>
+        <div class="picks" id="acai-sizes"></div>
+      </div>
+
+      <div class="card">
+        <h2>2) Frutas</h2>
+        <div class="tiles" id="acai-fruits"></div>
+      </div>
+
+      <div class="card">
+        <h2>3) Complementos</h2>
+        <div class="tiles" id="acai-addons"></div>
+      </div>
+
+      <div class="card checkout">
+        <h2>4) Observações</h2>
+        <label class="label">Observações (opcional)</label>
+        <textarea id="acai-notes" class="textarea" rows="3" placeholder="Ex: sem leite condensado, pouco granola..."></textarea>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+          <button id="acai-add-cart" class="btn btn-chrome" type="button">Adicionar ao carrinho</button>
+          <button id="acai-whats" class="btn btn-outline" type="button">Enviar no WhatsApp</button>
+        </div>
+
+        <p class="muted" style="margin-top:10px; font-size:12px;">
+          Para finalizar o pedido, use o carrinho (🛒) e preencha Nome, Telefone e Endereço.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="js/app-config.js"></script>
+<script src="js/acai-data.js"></script>
+<script src="js/acai-builder.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
