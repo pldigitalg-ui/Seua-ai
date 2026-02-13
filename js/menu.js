@@ -6,11 +6,11 @@ document.addEventListener("DOMContentLoaded", function(){
   if(!botao || !overlay) return;
 
   botao.addEventListener("click", function(){
-    document.body.classList.toggle("corpo-menu-abrir");
+    document.body.classList.toggle("menu-open");
   });
 
   overlay.addEventListener("click", function(){
-    document.body.classList.remove("corpo-menu-abrir");
+    document.body.classList.remove("menu-open");
   });
 
 });
