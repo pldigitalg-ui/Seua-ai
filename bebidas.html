@@ -3,37 +3,38 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#FFFFFF" />
   <title>LP Grill — Bebidas</title>
   <link rel="stylesheet" href="css/estilo.css" />
 </head>
 <body>
-<header class="topbar">
-  <div class="container nav">
-    <a class="brand" href="index.html">
-      <img src="LOGO.PNG" alt="LP Grill" onerror="this.style.display='none'">
-      <span class="t"><strong>LP Grill Açaí</strong><span>Bebidas</span></span>
-    </a>
-    <nav class="menu">
-      <a href="index.html">Início</a>
-      <a href="acai.html">Açaí</a>
-      <a class="active" href="bebidas.html">Bebidas</a>
-      <a href="combos.html">Combos</a>
-      <a href="sorvetes.html">Sorvetes</a>
-      <a href="hamburguer.html">Hambúrguer</a>
-      <a href="contato.html">Contato</a>
-    </nav>
-  </div>
-</header>
+  <header class="topbar">
+    <div class="container">
+      <div class="nav">
+        <a class="brand" href="index.html">
+          <img src="img/logo.png" alt="LP Grill" />
+          <span class="t"><strong>LP Grill Açaí</strong><span>Bebidas</span></span>
+        </a>
+        <nav class="menu">
+          <a href="index.html">Início</a>
+          <a href="acai.html">Açaí</a>
+          <a class="active" href="bebidas.html">Bebidas</a>
+          <a href="combos.html">Combos</a>
+          <a href="sorvetes.html">Sorvetes</a>
+          <a href="hambúrguer.html">Hambúrguer</a>
+          <a href="contato.html">Contato</a>
+        </nav>
+      </div>
+    </div>
+  </header>
 
-<main class="container section" data-catalog="bebidas">
-  <h2 style="font-weight:980;">Bebidas</h2>
-  <p class="muted" style="margin-top:6px;">Clique em um card para adicionar ao carrinho.</p>
-  <div id="catalog-grid" class="grid" style="margin-top:12px;"></div>
-</main>
+  <main class="container section" data-catalog="bebidas">
+    <h2>Bebidas</h2>
+    <p class="muted" style="margin-top:6px;">Clique em um card para adicionar ao carrinho.</p>
+    <div id="catalog-grid" class="grid" style="margin-top:12px;"></div>
+  </main>
 
-<script src="js/config.js"></script>
-<script src="js/data.js"></script>
-<script src="js/app.js"></script>
+  <script src="js/config.js" defer></script>
+  <script src="js/data.js" defer></script>
+  <script src="js/app.js" defer></script>
 </body>
 </html>
