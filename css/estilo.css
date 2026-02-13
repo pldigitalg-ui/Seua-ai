@@ -1,4 +1,4 @@
-/* css/estilo.css */
+/* css/estilo.css (LIMPO E FUNCIONANDO) */
 :root{
   --bg:#F7F7FB;
   --bg2:#FFFFFF;
@@ -62,18 +62,13 @@ body{
 
 .menu-wrap{ display:flex; align-items:center; gap:8px; }
 
-  .menu{
+/* ===== MENU (DESKTOP) ===== */
+.menu{
   display:flex;
   flex-wrap:wrap;
   gap:8px;
   justify-content:flex-end;
 }
-
-@media (max-width: 860px){
-  .menu{
-    display:none;   /* ESCONDE no mobile */
-  }
-
 .menu a{
   text-decoration:none;
   color: rgba(11,11,18,.78);
@@ -90,8 +85,9 @@ body{
   background: linear-gradient(135deg, var(--chrome1), var(--chrome2));
 }
 
+/* botão hamburguer: DESKTOP escondido */
 .menu-toggle{
-  display:flex !important;
+  display:none;
   align-items:center;
   justify-content:center;
   width:44px;
@@ -100,14 +96,11 @@ body{
   background:#ffffff;
   border:1px solid #e5e7eb;
   position:relative;
-  z-index:9999;
   cursor:pointer;
 }
+.menu-overlay{ display:none; }
 
-.menu-overlay{
-  display:none;
-}
-
+/* ===== TIPOS / SEÇÕES ===== */
 .section{ padding: 18px 0 28px; }
 h1,h2,h3{ margin:0; }
 .muted{ color: var(--muted); font-weight: 700; }
@@ -169,6 +162,7 @@ p{ margin: 0; }
   box-shadow: 0 16px 28px rgba(124,58,237,.22);
 }
 
+/* ===== GRID / CARDS ===== */
 .grid{
   display:grid;
   grid-template-columns: repeat(4, 1fr);
@@ -234,7 +228,7 @@ p{ margin: 0; }
   background: linear-gradient(135deg, var(--chrome1), var(--chrome2));
 }
 
-/* Builder */
+/* ===== Builder ===== */
 .builder{
   background: rgba(255,255,255,.92);
   border: 1px solid rgba(11,11,18,.10);
@@ -332,7 +326,7 @@ p{ margin: 0; }
   display:flex; align-items:center; justify-content:space-between;
 }
 
-/* Cart modal */
+/* ===== Cart modal ===== */
 .no-scroll{ overflow:hidden; }
 .modal.hidden{ display:none; }
 .modal{ position:fixed; inset:0; z-index: 80; }
@@ -429,7 +423,7 @@ p{ margin: 0; }
 
 .total{ display:flex; flex-direction:column; gap: 4px; }
 
-/* Floating buttons */
+/* ===== Floating buttons ===== */
 .cart-fab{
   position: fixed;
   right: 16px;
@@ -483,13 +477,44 @@ p{ margin: 0; }
 }
 .toast.hidden{ display:none; }
 
-  .menu-toggle{ display:inline-flex; align-items:center; justify-content:center; }
-  .menu{
+/* =========================
+   MOBILE (MENU + MODAL)
+   ========================= */
+@media (max-width: 860px){
+
+  /* esconde menu desktop e mostra hamb */
+  #siteMenu{ display:none; }
+  #menuToggle{ display:inline-flex; }
+  #menuOverlay{ display:none; }
+
+  /* botão (garante clique) */
+  #menuToggle{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:44px !important;
+    height:44px !important;
+    border-radius:12px !important;
+    position:relative !important;
+    z-index:10002 !important;
+    pointer-events:auto !important;
+  }
+
+  /* overlay */
+  #menuOverlay{
+    position:fixed;
+    inset:0;
+    z-index:10000;
+    background: rgba(11,11,18,.35);
+  }
+
+  /* menu gaveta */
+  #siteMenu{
     position: fixed;
     top: 72px;
     left: 12px;
     right: 12px;
-    z-index: 70;
+    z-index: 10001;
     padding: 12px;
     border-radius: 18px;
     border: 1px solid rgba(11,11,18,.12);
@@ -498,18 +523,7 @@ p{ margin: 0; }
     flex-direction: column;
     gap: 10px;
   }
-  body.menu-open .menu{ display:flex; }
-
-  .menu-overlay{
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index: 65;
-    background: rgba(11,11,18,.35);
-  }
-  body.menu-open .menu-overlay{ display:block; }
-
-  .menu a{
+  #siteMenu a{
     display:flex;
     justify-content:space-between;
     font-size: 14px;
@@ -517,8 +531,13 @@ p{ margin: 0; }
     border-radius: 14px;
   }
 
+  /* abre/fecha com body.menu-open */
+  body.menu-open #siteMenu{ display:flex; }
+  body.menu-open #menuOverlay{ display:block; }
+
   body{ padding-bottom: 120px; }
 
+  /* modal vira sheet */
   .modal__panel{
     width: 100%;
     margin: 0;
@@ -549,273 +568,5 @@ p{ margin: 0; }
     padding: 10px 12px;
     box-shadow: var(--shadow);
     width: 100%;
-  }
-}
-@media (max-width: 860px){
-  #siteMenu{ display:none; }
-  #siteMenu.is-open{ display:flex; }
-
-  #menuOverlay{
-    display:none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.35);
-    z-index: 10000;
-  }
-  #menuOverlay.is-open{ display:block; }
-
-  #siteMenu{
-    position: fixed;
-    top: 72px;
-    left: 12px;
-    right: 12px;
-    z-index: 10001;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  #menuToggle{
-    position: relative;
-    z-index: 10002;
-  }
-  
-/* ===== MENU MOBILE SIMPLES ===== */
-@media (max-width: 860px){
-  #siteMenu{ ... }
-  #siteMenu.ativo{ ... }
-  #menuOverlay.ativo{ ... }
-}
-
-
-  #menuToggle{
-    display:block !important;
-  }
-
-  #siteMenu{
-    display:none;
-    position:fixed;
-    top:70px;
-    left:0;
-    right:0;
-    background:#fff;
-    padding:20px;
-    flex-direction:column;
-    gap:10px;
-    z-index:9999;
-  }
-
-  #siteMenu.ativo{
-    display:flex;
-  }
-
-  #menuOverlay{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.4);
-    z-index:9998;
-  }
-
-  #menuOverlay.ativo{
-    display:block;
-  }
-}
-@media (max-width: 860px){
-  #siteMenu{ display:none; }
-  #siteMenu.is-open{ display:flex; }
-  #menuOverlay{ ... }
-  #menuOverlay.is-open{ ... }
-  #siteMenu{ ... }
-  #menuToggle{ ... }
-}
-  body.menu-open #menuOverlay{
-    display:block !important;
-    z-index: 10000 !important;
-  }
-  #menuToggle{
-    z-index: 10002 !important;
-    position: relative;
-  }
-
-@media (max-width: 860px){
-  #siteMenu{ display:flex !important; }
-}
-/* =========================
-   MENU GAVETA — ÚNICO (FINAL)
-   funciona com: body.menu-open
-   ========================= */
-
-/* Desktop: menu normal e sem hamburguer */
-@media (min-width: 861px){
-  #menuToggle{ display:none !important; }
-  #menuOverlay{ display:none !important; }
-
-  /* garante menu visível no desktop */
-  #siteMenu.menu{
-    display:flex !important;
-    position: static !important;
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    flex-direction: row !important;
-    gap: 8px !important;
-  }
-
-/* Mobile: gaveta fechada e abre com body.menu-open */
-@media (max-width: 860px){
-
-  /* garante layout do topo e clique no botão */
-  .nav{ display:flex; align-items:center; justify-content:space-between; gap:14px; }
-  .brand{ flex:1; min-width:0; }
-
-  #menuToggle{
-    display:inline-flex !important;
-    align-items:center; justify-content:center;
-    width:44px; height:44px;
-    border-radius:12px;
-    position: relative;
-    z-index: 10002;
-    pointer-events: auto;
-  }
-
-  /* menu fechado por padrão */
-  #siteMenu.menu{
-    display:none;                 /* fechado */
-    position: fixed;
-    top: 72px;
-    left: 12px;
-    right: 12px;
-    z-index: 10001;
-    padding: 12px;
-    border-radius: 18px;
-    border: 1px solid rgba(11,11,18,.12);
-    background: rgba(255,255,255,.96);
-    box-shadow: var(--shadow);
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  /* abre quando body tem menu-open */
-  body.menu-open #siteMenu.menu{
-    display:flex !important;
-  }
-
-  /* overlay */
-  #menuOverlay.menu-overlay{
-    display:none;
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
-    background: rgba(11,11,18,.35);
-  }
-
-  body.menu-open #menuOverlay.menu-overlay{
-    display:block !important;
-  }
-
-  /* links maiores no mobile */
-  #siteMenu.menu a{
-    display:flex;
-    justify-content:space-between;
-    font-size: 14px;
-    padding: 12px 14px;
-    border-radius: 14px;
-    @media (max-width: 860px){
-
-  body.menu-open #siteMenu{
-    display:flex !important;
-    flex-direction:column;
-  }
-/* =========================
-   FIX FINAL — MENU NO CELULAR
-   (cola no FINAL do arquivo)
-   ========================= */
-
-@media (max-width: 860px){
-
-  /* botão aparece e é clicável */
-  #menuToggle{
-    display:inline-flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    width:44px !important;
-    height:44px !important;
-    position:relative !important;
-    z-index:999999 !important;
-    pointer-events:auto !important;
-  }
-
-  /* menu fechado por padrão */
-  #siteMenu{
-    display:none !important;
-    position:fixed !important;
-    top:72px !important;
-    left:12px !important;
-    right:12px !important;
-    z-index:999998 !important;
-    padding:12px !important;
-    border-radius:18px !important;
-    background:rgba(255,255,255,.96) !important;
-    border:1px solid rgba(11,11,18,.12) !important;
-    box-shadow: var(--shadow) !important;
-    flex-direction:column !important;
-    gap:10px !important;
-  }
-
-  /* abre quando body tem menu-open */
-  body.menu-open #siteMenu{
-    display:flex !important;
-  }
-
-  /* overlay */
-  #menuOverlay{
-    display:none !important;
-    position:fixed !important;
-    inset:0 !important;
-    z-index:999997 !important;
-    background:rgba(11,11,18,.35) !important;
-  }
-
-  body.menu-open #menuOverlay{
-    display:block !important;
-  }
-}
-@media (max-width: 860px){
-  /* Esconde o menu no celular até abrir */
-  #siteMenu{ display:none; }
-
-  /* Abre quando body tem menu-open */
-  body.menu-open #siteMenu{ display:flex; }
-
-  /* Overlay */
-  .menu-overlay{ display:none; }
-  body.menu-open .menu-overlay{ display:block; }
-
-  /* Gaveta */
-  #siteMenu{
-    position:fixed;
-    top:72px;
-    left:12px;
-    right:12px;
-    z-index:10001;
-    padding:12px;
-    border-radius:18px;
-    background:rgba(255,255,255,.96);
-    box-shadow: var(--shadow);
-    flex-direction:column;
-    gap:10px;
-  }
-
-  .menu-overlay{
-    position:fixed;
-    inset:0;
-    z-index:10000;
-    background:rgba(11,11,18,.35);
-  }
-
-  #menuToggle{
-    position:relative;
-    z-index:10002;
   }
 }
