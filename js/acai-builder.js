@@ -105,20 +105,23 @@
       return ids.map(id => all.find(x => x.id === id)).filter(Boolean);
     }
 
+    // ✅ SOMA INTEIRA: tamanho + todos extras (com preço)
     function compute(){
       const size = getSize();
       const extras = getSelectedExtras();
+
       const base = Number(size?.price || 0);
-      const extrasTotal = extras.reduce((a,b)=>a + Number(b.price||0), 0);
+      const extrasTotal = extras.reduce((a,b)=> a + Number(b.price || 0), 0);
       const total = Number((base + extrasTotal).toFixed(2));
+
       return { size, extras, base, extrasTotal, total };
     }
 
     function update(){
       const { size, extras, base, extrasTotal, total } = compute();
 
-      infoEl.textContent = `Tamanho: ${size.label} (${money(base)}) • Adicionais: ${extras.length} (${money(extrasTotal)})`;
       warnEl.textContent = "";
+      infoEl.textContent = `Tamanho: ${size.label} (${money(base)}) • Complementos: ${extras.length} (${money(extrasTotal)})`;
       totalEl.textContent = money(total);
 
       btnAdd.disabled = false;
@@ -131,14 +134,14 @@
       const { size, extras, total } = compute();
 
       const extrasDesc = extras.length
-        ? extras.map(x => `${x.label}${x.price ? ` (${money(x.price)})` : ""}`).join(", ")
+        ? extras.map(x => `${x.label} (${money(x.price||0)})`).join(", ")
         : "Nenhum";
 
       const id = `acai-${size.id}-${extras.map(x=>x.id).sort().join("-") || "sem"}`;
       const item = {
         id,
         name: `Açaí ${size.label}`,
-        desc: `Adicionais: ${extrasDesc}`,
+        desc: `Complementos: ${extrasDesc}`,
         price: total
       };
 
@@ -176,21 +179,20 @@
       lines.push(`• Tamanho: ${size.label} — ${money(base)}`);
 
       if (extras.length){
-        lines.push(`• Adicionais:`);
-        extras.forEach(x => lines.push(`   - ${x.label} — ${money(x.price || 0)}`));
+        lines.push(`• Complementos:`);
+        extras.forEach(x => lines.push(`   - ${x.label} — ${money(x.price||0)}`));
       } else {
-        lines.push(`• Adicionais: Nenhum`);
+        lines.push(`• Complementos: Nenhum`);
       }
 
       const obs = (notes.value || "").trim();
       if (obs) { lines.push(""); lines.push(`📝 Obs: ${obs}`); }
 
       lines.push("");
-      lines.push(`💰 Adicionais: ${money(extrasTotal)}`);
+      lines.push(`💰 Complementos: ${money(extrasTotal)}`);
       lines.push(`💳 Total: *${money(total)}*`);
 
-      const url = `https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`;
-      window.open(url, "_blank");
+      window.open(`https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
     }
 
     root.addEventListener("change", update);
