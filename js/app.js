@@ -1,724 +1,521 @@
-// js/app.js
-(function () {
-  const $ = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-  const cfg = () => window.APP_CONFIG || { whatsapp:"", brand:"LP Grill", deliveryFee:0 };
+/* ========= Helpers ========= */
+const money = (v) => (Number(v) || 0).toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
 
-  function money(v){
-    try { return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v); }
-    catch { return `R$ ${Number(v||0).toFixed(2)}`.replace(".",","); }
+function mustConfigWhatsApp(){
+  const ok = window.CONFIG && typeof CONFIG.whatsapp === "string" && CONFIG.whatsapp.trim().length >= 10;
+  return ok;
+}
+
+function waLink(text){
+  const phone = (CONFIG.whatsapp || "").replace(/\D/g,"");
+  return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+}
+
+function $(id){ return document.getElementById(id); }
+
+function loadCart(){
+  try{
+    return JSON.parse(localStorage.getItem("CART_V1") || "[]");
+  }catch(e){ return []; }
+}
+function saveCart(cart){
+  localStorage.setItem("CART_V1", JSON.stringify(cart));
+}
+
+function cartSubtotal(cart){
+  return cart.reduce((sum, it) => sum + (it.precoUnit * it.qtd), 0);
+}
+
+function upsertCartItem(cart, item){
+  // Se for builder, id único por "assinatura" (base + extras)
+  const key = item.key || item.id;
+  const idx = cart.findIndex(x => (x.key || x.id) === key);
+  if(idx >= 0){
+    cart[idx].qtd += item.qtd;
+  }else{
+    cart.push(item);
   }
-  function esc(str){
-    return String(str ?? "").replace(/[&<>"']/g, s => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[s]));
-  }
+  return cart;
+}
 
-  // MENU MOBILE (sem sumir botões no PC)
-  function initMobileMenu(){
-    const toggle = $("#menuToggle");
-    const overlay = $("#menuOverlay");
-    if (!toggle || !overlay) return;
+/* ========= Menu mobile ========= */
+function initMobileMenu(){
+  const btn = $("btnHamb");
+  const mob = $("mobMenu");
+  if(!btn || !mob) return;
 
-    const open = () => document.body.classList.add("menu-open");
-    const close = () => document.body.classList.remove("menu-open");
-    const isOpen = () => document.body.classList.contains("menu-open");
-
-    toggle.addEventListener("click", () => isOpen() ? close() : open());
-    overlay.addEventListener("click", close);
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
-  }
-
-  // CART
-  const LS_KEY = "lpgrill_cart_v2";
-  let cart = loadCart();
-
-  function loadCart(){
-    try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); }
-    catch { return []; }
-  }
-  function saveCart(){
-    localStorage.setItem(LS_KEY, JSON.stringify(cart));
-    updateBadge();
-    renderCart();
-  }
-  function cartCount(){ return cart.reduce((a,b)=>a+(b.qty||0),0); }
-  function cartTotal(){ return cart.reduce((a,b)=>a + (b.qty*b.price),0); }
-
-  function addItem(item){
-    const f = cart.find(x => x.id === item.id);
-    if (f) f.qty += 1;
-    else cart.push({ ...item, qty: 1 });
-    saveCart();
-    toast("Adicionado ao carrinho ✅");
-  }
-  function dec(id){
-    const f = cart.find(x => x.id===id);
-    if (!f) return;
-    f.qty -= 1;
-    if (f.qty<=0) cart = cart.filter(x=>x.id!==id);
-    saveCart();
-  }
-  function inc(id){
-    const f = cart.find(x => x.id===id);
-    if (!f) return;
-    f.qty += 1;
-    saveCart();
-  }
-  function rm(id){
-    cart = cart.filter(x=>x.id!==id);
-    saveCart();
-  }
-
-  // Whats flutuante
-  function ensureFloatingWhats(){
-    if ($("#wa-fab")) return;
-    if (!().whatsapp) return;
-    const a = document.createElement("a");
-    a.id = "wa-fab";
-    a.className = "wa-fab";
-  const msg = (typeof buildWhatsAppMessage === "function")
-  ? buildWhatsAppMessage()
-  : "Olá! Quero fazer um pedido.";
-a.href = `https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(msg)}`;
-    a.target = "_blank";
-    a.rel = "noopener";
-    a.innerHTML = `<span class="wa-ic">💬</span><span class="wa-t">WhatsApp</span>`;
-    document.body.appendChild(a);
-  }
-
-  // Carrinho UI
-  function ensureCartUI(){
-    if ($("#cart-fab")) return;
-
-    const fab = document.createElement("button");
-    fab.id = "cart-fab";
-    fab.className = "cart-fab";
-    fab.type = "button";
-    fab.innerHTML = `
-      <span class="cart-ic">🛒</span>
-      <span class="cart-t">Carrinho</span>
-      <span class="cart-badge" id="cart-badge">0</span>
-    `;
-    document.body.appendChild(fab);
-
-    const modal = document.createElement("div");
-    modal.id = "cart-modal";
-    modal.className = "modal hidden";
-    modal.innerHTML = `
-      <div class="modal__backdrop" data-close="1"></div>
-      <div class="modal__panel" role="dialog" aria-modal="true" aria-label="Carrinho">
-        <div class="modal__head">
-          <div>
-            <h3>Seu carrinho</h3>
-            <p class="muted">Preencha os dados obrigatórios e finalize no WhatsApp.</p>
-          </div>
-          <button class="icon-btn" type="button" data-close="1" aria-label="Fechar">✕</button>
-        </div>
-
-        <div class="modal__body">
-          <div id="cart-empty" class="empty">
-            <div class="empty__emoji">🧾</div>
-            <div class="empty__title">Carrinho vazio</div>
-            <div class="empty__sub">Toque em um item para adicionar.</div>
-          </div>
-
-          <div id="cart-list" class="cart-list"></div>
-
-          <div class="form-grid">
-            <div>
-              <label class="label">Nome <b>(obrigatório)</b></label>
-              <input id="ck-name" class="input" placeholder="Seu nome" />
-            </div>
-            <div>
-              <label class="label">Telefone <b>(obrigatório)</b></label>
-              <input id="ck-phone" class="input" placeholder="(31) 9xxxx-xxxx" />
-            </div>
-            <div class="col-2">
-              <label class="label">Endereço / Retirada <b>(obrigatório)</b></label>
-              <input id="ck-address" class="input" placeholder="Rua, número, bairro, referência..." />
-            </div>
-            <div class="col-2">
-              <label class="label">Observações (opcional)</label>
-              <textarea id="ck-notes" class="textarea" rows="3" placeholder="Ex: sem gelo, pouco granola..."></textarea>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal__footer">
-          <div class="total">
-            <span class="muted">Total</span>
-            <strong id="cart-total">R$ 0,00</strong>
-          </div>
-          <button id="btn-finalizar" class="btn btn-chrome" type="button">
-            Finalizar o pedido
-          </button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-
-    fab.addEventListener("click", () => openModal(true));
-    modal.addEventListener("click", (e) => { if (e.target?.dataset?.close) openModal(false); });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") openModal(false); });
-
-    $("#btn-finalizar").addEventListener("click", finalizeWhatsApp);
-
-    updateBadge();
-    renderCart();
-  }
-
-  function openModal(open){
-    const modal = $("#cart-modal");
-    if (!modal) return;
-    modal.classList.toggle("hidden", !open);
-    document.body.classList.toggle("no-scroll", open);
-  }
-
-  function updateBadge(){
-    const b = $("#cart-badge");
-    if (b) b.textContent = String(cartCount());
-  }
-
-  function renderCart(){
-    const list = $("#cart-list");
-    const empty = $("#cart-empty");
-    const totalEl = $("#cart-total");
-    if (!list || !empty || !totalEl) return;
-
-    const fee = Number(cfg().deliveryFee || 0);
-    totalEl.textContent = money(cartTotal() + fee);
-
-    if (cart.length === 0){
-      empty.classList.remove("hidden");
-      list.innerHTML = "";
-      return;
+  btn.addEventListener("click", () => {
+    const open = mob.hasAttribute("hidden");
+    if(open){
+      mob.removeAttribute("hidden");
+      btn.setAttribute("aria-expanded","true");
+    }else{
+      mob.setAttribute("hidden","");
+      btn.setAttribute("aria-expanded","false");
     }
-
-    empty.classList.add("hidden");
-    list.innerHTML = cart.map(it => `
-      <div class="cart-item">
-        <div class="cart-item__main">
-          <div class="cart-item__title">${esc(it.name)}</div>
-          <div class="cart-item__sub">${esc(it.desc || "")}</div>
-        </div>
-        <div class="cart-item__right">
-          <div class="cart-item__price">${money(it.price)}</div>
-          <div class="qty">
-            <button class="qty__btn" data-dec="${esc(it.id)}" type="button">−</button>
-            <span class="qty__num">${it.qty}</span>
-            <button class="qty__btn" data-inc="${esc(it.id)}" type="button">+</button>
-          </div>
-          <button class="link danger" data-rm="${esc(it.id)}" type="button">remover</button>
-        </div>
-      </div>
-    `).join("");
-
-    $$("[data-dec]", list).forEach(b => b.addEventListener("click", ()=>dec(b.dataset.dec)));
-    $$("[data-inc]", list).forEach(b => b.addEventListener("click", ()=>inc(b.dataset.inc)));
-    $$("[data-rm]", list).forEach(b => b.addEventListener("click", ()=>rm(b.dataset.rm)));
-  }
-
-  // ✅ BLOQUEIO obrigatório + impressão
-  function finalizeWhatsApp(){
-    if (cart.length === 0){ toast("Seu carrinho está vazio."); return; }
-    const WA = (window.CONFIGURACAO_DO_APLICATIVO && window.CONFIGURACAO_DO_APLICATIVO.whatsapp) || (cfg0().whatsapp);
-    if (!WA) { toast("WhatsApp não configurado."); return; }
-    const name = ($("#ck-name")?.value || "").trim();
-    const phone = ($("#ck-phone")?.value || "").trim();
-    const address = ($("#ck-address")?.value || "").trim();
-    const notes = ($("#ck-notes")?.value || "").trim();
-
-    if (!name || !phone || !address){
-      toast("Preencha Nome, Telefone e Endereço ✅");
-      if (!name) $("#ck-name")?.focus();
-      else if (!phone) $("#ck-phone")?.focus();
-      else $("#ck-address")?.focus();
-      return;
-    }
-
-    const subtotal = cartTotal();
-    const fee = Number(cfg().deliveryFee || 0);
-    const total = Number((subtotal + fee).toFixed(2));
-
-    const payload = {
-      brand: cfg().brand,
-      name, phone, address, notes,
-      items: cart.map(it => ({ id: it.id, name: it.name, desc: it.desc, price: it.price, qty: it.qty })),
-      subtotal, fee, total,
-      createdAt: new Date().toISOString()
-    };
-    localStorage.setItem("lpgrill_last_order_print_v1", JSON.stringify(payload));
-
-    const lines = [];
-    lines.push(`🧾 *PEDIDO - ${cfg().brand}*`);
-    lines.push("");
-    cart.forEach(it => {
-      lines.push(`• ${it.qty}x ${it.name} — ${money(it.qty * it.price)}`);
-      if (it.desc) lines.push(`  ${it.desc}`);
-    });
-    lines.push("");
-    lines.push(`Subtotal: ${money(subtotal)}`);
-    if (fee > 0) lines.push(`Taxa: ${money(fee)}`);
-    lines.push(`Total: *${money(total)}*`);
-    lines.push(`\nNome: ${name}`);
-    lines.push(`Telefone: ${phone}`);
-    lines.push(`Endereço/Retirada: ${address}`);
-    if (notes) lines.push(`Obs: ${notes}`);
-
-    window.open("pedido.html", "_blank");
-    window.open(`https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
-  }
-
-  // HOME: grid
-  function mountHome(){
-    const grid = $("#home-acai-grid");
-    if (!grid || !window.CATALOG?.home_acai) return;
-
-    grid.innerHTML = window.CATALOG.home_acai.map(p => {
-      const hasPrice = typeof p.price === "number";
-      const priceHtml = hasPrice ? `<div class="price">${money(p.price)}</div>` : `<div class="price ghost">Personalizar</div>`;
-      const badge = p.badge ? `<span class="badge">${esc(p.badge)}</span>` : "";
-      const link = p.link ? `data-link="${esc(p.link)}"` : "";
-      return `
-        <article class="cardx" data-home-card="1" data-id="${esc(p.id)}" ${link}>
-          <div class="thumb" style="background-image:url('${esc(p.img || "")}')">
-            <span class="thumb__fallback">Imagem</span>
-          </div>
-          <div class="cardx__body">
-            <div class="title-row">
-              <h3>${esc(p.name)}</h3>
-              ${badge}
-            </div>
-            <p>${esc(p.desc || "")}</p>
-            <div class="bottom-row">
-              ${priceHtml}
-              <div class="tap">Toque para ${p.link ? "abrir" : "adicionar"}</div>
-            </div>
-          </div>
-        </article>
-      `;
-    }).join("");
-
-    $$('[data-home-card="1"]', grid).forEach(card => {
-      card.addEventListener("click", () => {
-        const link = card.dataset.link;
-        const id = card.dataset.id;
-
-        if (link) { window.location.href = link; return; }
-
-        const p = window.CATALOG.home_acai.find(x => x.id === id);
-        if (!p || typeof p.price !== "number") return;
-        addItem({ id: p.id, name: p.name, desc: p.desc, price: p.price });
-      });
-    });
-  }
-
-  // PÁGINAS DE CATEGORIA (bebidas/combos/sorvetes)
-  function mountCatalog(){
-    const root = document.querySelector("[data-catalog]");
-    if (!root || !window.CATALOG?.categories) return;
-
-    const catId = root.getAttribute("data-catalog");
-    const cat = window.CATALOG.categories.find(c => c.id === catId);
-    if (!cat) return;
-
-    const grid = $("#catalog-grid", root);
-    if (!grid) return;
-
-    grid.innerHTML = cat.items.map(it => `
-      <article class="cardx" data-add-card="1" data-id="${esc(it.id)}">
-        <div class="thumb" style="background-image:url('${esc(it.img || "")}')">
-          <span class="thumb__fallback">Imagem</span>
-        </div>
-        <div class="cardx__body">
-          <div class="title-row">
-            <h3>${esc(it.name)}</h3>
-            ${it.badge ? `<span class="badge">${esc(it.badge)}</span>` : ""}
-          </div>
-          <p>${esc(it.desc || "")}</p>
-          <div class="bottom-row">
-            <div class="price">${money(it.price)}</div>
-            <div class="tap">Clique no card para adicionar</div>
-          </div>
-        </div>
-      </article>
-    `).join("");
-
-    $$("[data-add-card='1']", grid).forEach(card => {
-      card.addEventListener("click", () => {
-        const id = card.dataset.id;
-        const it = cat.items.find(x => x.id === id);
-        if (!it) return;
-        addItem({ id: it.id, name: it.name, desc: it.desc, price: it.price });
-      });
-    });
-  }
-
-  // TOAST
-  let toastTimer = null;
-  function toast(msg){
-    let el = $("#toast");
-    if (!el){
-      el = document.createElement("div");
-      el.id = "toast";
-      el.className = "toast hidden";
-      document.body.appendChild(el);
-    }
-    el.textContent = msg;
-    el.classList.remove("hidden");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(()=>el.classList.add("hidden"), 1800);
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    initMobileMenu();
-    ensureFloatingWhats();
-    ensureCartUI();
-    mountHome();
-    mountCatalog();
   });
-})();
-// js/app.js
-(function () {
-  const $ = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-  const cfg = () => window.APP_CONFIG || { whatsapp:"", brand:"LP Grill", deliveryFee:0 };
+}
 
-  function money(v){
-    try { return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v); }
-    catch { return `R$ ${Number(v||0).toFixed(2)}`.replace(".",","); }
-  }
-  function esc(str){
-    return String(str ?? "").replace(/[&<>"']/g, s => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[s]));
-  }
+/* ========= WhatsApp flutuante ========= */
+function initWaFloat(){
+  const a = $("waFloat");
+  const msg = $("waFloatMsg");
+  if(!a) return;
 
-  /* MENU MOBILE */
-  function initMobileMenu(){
-    const toggle = $("#menuToggle");
-    const overlay = $("#menuOverlay");
-    const menu = $("#siteMenu");
-    if (!toggle || !overlay || !menu) return;
+  if(msg && CONFIG && CONFIG.waFloatMsg) msg.textContent = CONFIG.waFloatMsg;
 
-    const open = () => document.body.classList.add("menu-open");
-    const close = () => document.body.classList.remove("menu-open");
-    const isOpen = () => document.body.classList.contains("menu-open");
-
-    toggle.addEventListener("click", () => isOpen() ? close() : open());
-    overlay.addEventListener("click", close);
-    $$("a", menu).forEach(a => a.addEventListener("click", close));
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
-  }
-
-  /* CART */
-  const LS_KEY = "lpgrill_cart_v2";
-  let cart = loadCart();
-
-  function loadCart(){
-    try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); }
-    catch { return []; }
-  }
-  function saveCart(){
-    localStorage.setItem(LS_KEY, JSON.stringify(cart));
-    updateBadge();
-    renderCart();
-  }
-  function cartCount(){ return cart.reduce((a,b)=>a+(b.qty||0),0); }
-  function cartTotal(){ return cart.reduce((a,b)=>a + (b.qty*b.price),0); }
-
-  function addItem(item){
-    const f = cart.find(x => x.id === item.id);
-    if (f) f.qty += 1;
-    else cart.push({ ...item, qty: 1 });
-    saveCart();
-    toast("Adicionado ao carrinho ✅");
-  }
-  function dec(id){
-    const f = cart.find(x => x.id===id);
-    if (!f) return;
-    f.qty -= 1;
-    if (f.qty<=0) cart = cart.filter(x=>x.id!==id);
-    saveCart();
-  }
-  function inc(id){
-    const f = cart.find(x => x.id===id);
-    if (!f) return;
-    f.qty += 1;
-    saveCart();
-  }
-  function rm(id){
-    cart = cart.filter(x=>x.id!==id);
-    saveCart();
-  }
-
-  /* FLOATING BUTTONS */
-  function ensureFloatingWhats(){
-    if ($("#wa-fab")) return;
-    if (!cfg().whatsapp) return;
-    const a = document.createElement("a");
-    a.id = "wa-fab";
-    a.className = "wa-fab";
-    a.href = `https://wa.me/${cfg().whatsapp}`;
-    a.target = "_blank";
-    a.rel = "noopener";
-    a.innerHTML = `<span class="wa-ic">💬</span><span class="wa-t">WhatsApp</span>`;
-    document.body.appendChild(a);
-  }
-
-  function ensureCartUI(){
-    if ($("#cart-fab")) return;
-
-    const fab = document.createElement("button");
-    fab.id = "cart-fab";
-    fab.className = "cart-fab";
-    fab.type = "button";
-    fab.innerHTML = `
-      <span class="cart-ic">🛒</span>
-      <span class="cart-t">Carrinho</span>
-      <span class="cart-badge" id="cart-badge">0</span>
-    `;
-    document.body.appendChild(fab);
-
-    const modal = document.createElement("div");
-    modal.id = "cart-modal";
-    modal.className = "modal hidden";
-    modal.innerHTML = `
-      <div class="modal__backdrop" data-close="1"></div>
-      <div class="modal__panel" role="dialog" aria-modal="true" aria-label="Carrinho">
-        <div class="modal__head">
-          <div>
-            <h3>Seu carrinho</h3>
-            <p class="muted">Preencha os dados obrigatórios e finalize no WhatsApp.</p>
-          </div>
-          <button class="icon-btn" type="button" data-close="1" aria-label="Fechar">✕</button>
-        </div>
-
-        <div class="modal__body">
-          <div id="cart-empty" class="empty">
-            <div class="empty__emoji">🧾</div>
-            <div class="empty__title">Carrinho vazio</div>
-            <div class="empty__sub">Toque em um item para adicionar.</div>
-          </div>
-
-          <div id="cart-list" class="cart-list"></div>
-
-          <div class="form-grid">
-            <div>
-              <label class="label">Nome <b>(obrigatório)</b></label>
-              <input id="ck-name" class="input" placeholder="Seu nome" />
-            </div>
-            <div>
-              <label class="label">Telefone <b>(obrigatório)</b></label>
-              <input id="ck-phone" class="input" placeholder="(31) 9xxxx-xxxx" />
-            </div>
-            <div class="col-2">
-              <label class="label">Endereço / Retirada <b>(obrigatório)</b></label>
-              <input id="ck-address" class="input" placeholder="Rua, número, bairro, referência..." />
-            </div>
-            <div class="col-2">
-              <label class="label">Observações (opcional)</label>
-              <textarea id="ck-notes" class="textarea" rows="3" placeholder="Ex: sem gelo, pouco granola..."></textarea>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal__footer">
-          <div class="total">
-            <span class="muted">Total</span>
-            <strong id="cart-total">R$ 0,00</strong>
-          </div>
-          <button id="btn-finalizar" class="btn btn-chrome" type="button">
-            Finalizar o pedido
-          </button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-
-    fab.addEventListener("click", () => openModal(true));
-    modal.addEventListener("click", (e) => { if (e.target?.dataset?.close) openModal(false); });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") openModal(false); });
-
-    $("#btn-finalizar").addEventListener("click", finalizeWhatsApp);
-
-    updateBadge();
-    renderCart();
-  }
-
-  function openModal(open){
-    const modal = $("#cart-modal");
-    if (!modal) return;
-    modal.classList.toggle("hidden", !open);
-    document.body.classList.toggle("no-scroll", open);
-  }
-
-  function updateBadge(){
-    const b = $("#cart-badge");
-    if (b) b.textContent = String(cartCount());
-  }
-
-  function renderCart(){
-    const list = $("#cart-list");
-    const empty = $("#cart-empty");
-    const totalEl = $("#cart-total");
-    if (!list || !empty || !totalEl) return;
-
-    const fee = Number(cfg().deliveryFee || 0);
-    totalEl.textContent = money(cartTotal() + fee);
-
-    if (cart.length === 0){
-      empty.classList.remove("hidden");
-      list.innerHTML = "";
-      return;
-    }
-
-    empty.classList.add("hidden");
-    list.innerHTML = cart.map(it => `
-      <div class="cart-item">
-        <div class="cart-item__main">
-          <div class="cart-item__title">${esc(it.name)}</div>
-          <div class="cart-item__sub">${esc(it.desc || "")}</div>
-        </div>
-        <div class="cart-item__right">
-          <div class="cart-item__price">${money(it.price)}</div>
-          <div class="qty">
-            <button class="qty__btn" data-dec="${esc(it.id)}" type="button">−</button>
-            <span class="qty__num">${it.qty}</span>
-            <button class="qty__btn" data-inc="${esc(it.id)}" type="button">+</button>
-          </div>
-          <button class="link danger" data-rm="${esc(it.id)}" type="button">remover</button>
-        </div>
-      </div>
-    `).join("");
-
-    $$("[data-dec]", list).forEach(b => b.addEventListener("click", ()=>dec(b.dataset.dec)));
-    $$("[data-inc]", list).forEach(b => b.addEventListener("click", ()=>inc(b.dataset.inc)));
-    $$("[data-rm]", list).forEach(b => b.addEventListener("click", ()=>rm(b.dataset.rm)));
-  }
-
-  /* ✅ BLOQUEIO: não envia sem dados obrigatórios */
-  function finalizeWhatsApp(){
-    if (cart.length === 0){ toast("Seu carrinho está vazio."); return; }
-    if (!cfg().whatsapp){ toast("WhatsApp não configurado."); return; }
-
-    const name = ($("#ck-name")?.value || "").trim();
-    const phone = ($("#ck-phone")?.value || "").trim();
-    const address = ($("#ck-address")?.value || "").trim();
-    const notes = ($("#ck-notes")?.value || "").trim();
-
-    if (!name || !phone || !address){
-      toast("Preencha Nome, Telefone e Endereço ✅");
-      // dá um “focus” no primeiro vazio
-      if (!name) $("#ck-name")?.focus();
-      else if (!phone) $("#ck-phone")?.focus();
-      else $("#ck-address")?.focus();
-      return;
-    }
-
-    const subtotal = cartTotal();
-    const fee = Number(cfg().deliveryFee || 0);
-
-    const printPayload = {
-      brand: cfg().brand,
-      name, phone, address, notes,
-      items: cart.map(it => ({ id: it.id, name: it.name, desc: it.desc, price: it.price, qty: it.qty })),
-      subtotal,
-      fee,
-      total: Number((subtotal + fee).toFixed(2)),
-      createdAt: new Date().toISOString()
-    };
-    localStorage.setItem("lpgrill_last_order_print_v1", JSON.stringify(printPayload));
-
-    const lines = [];
-    lines.push(`🧾 *PEDIDO - ${cfg().brand}*`);
-    lines.push("");
-    cart.forEach(it => {
-      lines.push(`▪ ${it.qty}x ${it.name}`);
-      if (it.desc) lines.push(`   ${it.desc}`);
-      lines.push(`   ${money(it.qty * it.price)}`);
+  // Mensagem do flutuante (não é pedido; é atendimento)
+  const text = `Olá! Vim pelo site da ${CONFIG.lojaNome || "loja"}. Preciso de ajuda 🙂`;
+  if(!mustConfigWhatsApp()){
+    a.href = "#";
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("WhatsApp não configurado. Edite js/config.js e coloque seu número em window.CONFIG.whatsapp.");
     });
+    return;
+  }
+  a.href = waLink(text);
+}
 
-    lines.push("");
-    lines.push(`💰 Subtotal: ${money(subtotal)}`);
-    if (fee > 0) lines.push(`🚚 Entrega: ${money(fee)}`);
-    lines.push(`💳 Total: *${money(subtotal + fee)}*`);
+/* ========= Render Carrinho ========= */
+function renderCart(){
+  const cartEl = $("cartItems");
+  const subEl = $("cartSubtotal");
+  if(!cartEl || !subEl) return;
 
-    lines.push(`\n👤 Nome: ${name}`);
-    lines.push(`📞 Telefone: ${phone}`);
-    lines.push(`📍 Endereço/Retirada: ${address}`);
-    if (notes) lines.push(`📝 Obs: ${notes}`);
+  const cart = loadCart();
+  subEl.textContent = money(cartSubtotal(cart));
 
-    window.open("pedido.html", "_blank");
-    window.open(`https://wa.me/${cfg().whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
+  if(cart.length === 0){
+    cartEl.innerHTML = `<div class="muted" style="padding:8px 2px;font-size:13px;line-height:1.4">
+      Seu carrinho está vazio. Toque em um item para marcar e adicionar.
+    </div>`;
+    return;
   }
 
-  /* HOME GRID */
-  function mountHomeAcai(){
-    const grid = $("#home-acai-grid");
-    if (!grid || !window.CATALOG?.home_acai) return;
+  cartEl.innerHTML = cart.map((it, i) => {
+    const extrasLine = it.extras && it.extras.length
+      ? `<div class="meta"><strong>Adicionais:</strong> ${it.extras.join(", ")}</div>`
+      : (it.obs ? `<div class="meta">${it.obs}</div>` : `<div class="meta">${it.desc || ""}</div>`);
 
-    grid.innerHTML = window.CATALOG.home_acai.map(p => {
-      const hasPrice = typeof p.price === "number";
-      const priceHtml = hasPrice ? `<div class="price">${money(p.price)}</div>` : `<div class="price">Personalizar</div>`;
-      const badge = p.badge ? `<span class="badge">${esc(p.badge)}</span>` : "";
-      const link = p.link ? `data-link="${esc(p.link)}"` : "";
-      return `
-        <article class="cardx" data-home-card="1" data-id="${esc(p.id)}" ${link}>
-          <div class="thumb" style="background-image:url('${esc(p.img || "")}')">
-            <span class="thumb__fallback">Imagem</span>
+    return `
+      <div class="cartItem">
+        <div class="head">
+          <div>
+            <div class="name">${it.nome}</div>
+            ${extrasLine}
           </div>
-          <div class="cardx__body">
-            <div class="title-row">
-              <h3>${esc(p.name)}</h3>
-              ${badge}
-            </div>
-            <p>${esc(p.desc || "")}</p>
-            <div class="bottom-row">
-              ${priceHtml}
-              <div class="tap">Toque para ${p.link ? "abrir" : "adicionar"}</div>
-            </div>
+          <div class="price">${money(it.precoUnit)}</div>
+        </div>
+
+        <div class="actions">
+          <div class="qty">
+            <button data-act="minus" data-i="${i}" aria-label="Diminuir">−</button>
+            <strong>${it.qtd}</strong>
+            <button data-act="plus" data-i="${i}" aria-label="Aumentar">+</button>
           </div>
-        </article>
-      `;
-    }).join("");
+          <button class="small danger" data-act="del" data-i="${i}">Remover</button>
+        </div>
+      </div>
+    `;
+  }).join("");
 
-    $$('[data-home-card="1"]', grid).forEach(card => {
-      card.addEventListener("click", () => {
-        const link = card.dataset.link;
-        const id = card.dataset.id;
+  // binds
+  cartEl.querySelectorAll("button[data-act]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const act = btn.getAttribute("data-act");
+      const i = Number(btn.getAttribute("data-i"));
+      const cartNow = loadCart();
+      if(!cartNow[i]) return;
 
-        if (link) { window.location.href = link; return; }
+      if(act === "plus") cartNow[i].qtd += 1;
+      if(act === "minus"){
+        cartNow[i].qtd -= 1;
+        if(cartNow[i].qtd <= 0) cartNow.splice(i,1);
+      }
+      if(act === "del") cartNow.splice(i,1);
 
-        const p = window.CATALOG.home_acai.find(x => x.id === id);
-        if (!p || typeof p.price !== "number") return;
+      saveCart(cartNow);
+      renderCart();
+      syncSelectedCards(); // mantém seleção visual
+    });
+  });
+}
 
-        addItem({ id: p.id, name: p.name, desc: p.desc, price: p.price });
+/* ========= Sincronizar seleção visual (produtos marcados) ========= */
+function syncSelectedCards(){
+  const cart = loadCart();
+  const ids = new Set(cart.filter(x => x.id).map(x => x.id));
+  document.querySelectorAll("[data-prod-id]").forEach(card => {
+    const id = card.getAttribute("data-prod-id");
+    if(ids.has(id)) card.classList.add("selected");
+    else card.classList.remove("selected");
+  });
+}
+
+/* ========= Página Index (cardápio) ========= */
+function initIndex(){
+  const tabsEl = $("tabs");
+  const productsEl = $("products");
+  if(!tabsEl || !productsEl) return;
+
+  const cats = window.DB.categorias;
+  const prods = window.DB.produtos;
+
+  let activeCat = cats[0]?.id || "";
+  let query = "";
+
+  function renderTabs(){
+    tabsEl.innerHTML = cats.map(c => `
+      <div class="tab ${c.id === activeCat ? "active":""}" data-cat="${c.id}">${c.nome}</div>
+    `).join("");
+    tabsEl.querySelectorAll(".tab").forEach(t => {
+      t.addEventListener("click", () => {
+        activeCat = t.getAttribute("data-cat");
+        renderProducts();
+        renderTabs();
       });
     });
   }
 
-  /* TOAST */
-  let toastTimer = null;
-  function toast(msg){
-    let el = $("#toast");
-    if (!el){
-      el = document.createElement("div");
-      el.id = "toast";
-      el.className = "toast hidden";
-      document.body.appendChild(el);
-    }
-    el.textContent = msg;
-    el.classList.remove("hidden");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(()=>el.classList.add("hidden"), 1800);
+  function renderProducts(){
+    const list = prods
+      .filter(p => p.cat === activeCat)
+      .filter(p => {
+        if(!query) return true;
+        const s = (p.nome + " " + (p.desc||"")).toLowerCase();
+        return s.includes(query.toLowerCase());
+      });
+
+    productsEl.innerHTML = list.map(p => `
+      <div class="card" data-prod-id="${p.id}">
+        <div class="top">
+          <strong>${p.nome}</strong>
+          <div class="price">${money(p.preco)}</div>
+        </div>
+        <div class="desc">${p.desc || ""}</div>
+        <div class="badge">
+          <span class="dot"></span>
+          <span>Toque para ${isInCart(p.id) ? "remover" : "adicionar"}</span>
+        </div>
+      </div>
+    `).join("");
+
+    productsEl.querySelectorAll(".card").forEach(card => {
+      card.addEventListener("click", () => {
+        const id = card.getAttribute("data-prod-id");
+        toggleProduct(id);
+        renderCart();
+        syncSelectedCards();
+        // atualiza texto do badge sem re-render completo? simples: re-render
+        renderProducts();
+      });
+    });
+
+    syncSelectedCards();
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    initMobileMenu();
-    ensureFloatingWhats();
-    ensureCartUI();
-    mountHomeAcai();
+  function isInCart(prodId){
+    const cart = loadCart();
+    return cart.some(x => x.id === prodId);
+  }
+
+  function toggleProduct(prodId){
+    const p = prods.find(x => x.id === prodId);
+    if(!p) return;
+
+    const cart = loadCart();
+    const idx = cart.findIndex(x => x.id === prodId);
+
+    if(idx >= 0){
+      cart.splice(idx,1); // ✅ clique de novo remove (toggle)
+    }else{
+      cart.push({
+        id: p.id,
+        nome: p.nome,
+        desc: p.desc,
+        precoUnit: p.preco,
+        qtd: 1,
+        extras: []
+      });
+    }
+    saveCart(cart);
+  }
+
+  const s = $("search");
+  if(s){
+    s.addEventListener("input", () => {
+      query = s.value.trim();
+      renderProducts();
+    });
+  }
+
+  const goCheckout = $("goCheckout");
+  if(goCheckout){
+    goCheckout.addEventListener("click", () => {
+      window.location.href = "checkout.html";
+    });
+  }
+
+  const clear = $("clearCart");
+  if(clear){
+    clear.addEventListener("click", () => {
+      saveCart([]);
+      renderCart();
+      syncSelectedCards();
+      renderProducts();
+    });
+  }
+
+  renderTabs();
+  renderProducts();
+  renderCart();
+}
+
+/* ========= Página Açaí Builder ========= */
+function initBuilder(){
+  const root = $("builder");
+  if(!root) return;
+
+  const B = window.DB.acaiBuilder;
+
+  const state = {
+    base: null,       // {id,nome,preco}
+    creme: null,      // {id,nome,preco}
+    adicionais: []    // array de itens
+  };
+
+  function total(){
+    const base = state.base?.preco || 0;
+    const creme = state.creme?.preco || 0;
+    const add = state.adicionais.reduce((s,a)=> s + a.preco, 0);
+    return base + creme + add;
+  }
+
+  function render(){
+    root.innerHTML = `
+      <div class="group">
+        <h3>1) Escolha o tamanho (obrigatório)</h3>
+        <div class="opts">
+          ${B.base.map(x => `
+            <div class="opt ${state.base?.id===x.id?"selected":""}" data-type="base" data-id="${x.id}">
+              <strong>${x.nome}</strong>
+              <div class="p">${money(x.preco)}</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>2) Creme (opcional)</h3>
+        <div class="opts">
+          ${B.cremes.map(x => `
+            <div class="opt ${state.creme?.id===x.id?"selected":""}" data-type="creme" data-id="${x.id}">
+              <strong>${x.nome}</strong>
+              <div class="p">+ ${money(x.preco)}</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>3) Adicionais (toque para marcar/desmarcar)</h3>
+        <div class="opts">
+          ${B.adicionais.map(x => `
+            <div class="opt ${state.adicionais.some(a=>a.id===x.id)?"selected":""}" data-type="add" data-id="${x.id}">
+              <strong>${x.nome}</strong>
+              <div class="p">+ ${money(x.preco)}</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Total do seu açaí</h3>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px">
+          <div class="muted" style="font-size:13px;line-height:1.35">
+            Tamanho + creme + adicionais
+          </div>
+          <div style="font-weight:900;font-size:18px">${money(total())}</div>
+        </div>
+      </div>
+    `;
+
+    root.querySelectorAll(".opt").forEach(el => {
+      el.addEventListener("click", () => {
+        const type = el.getAttribute("data-type");
+        const id = el.getAttribute("data-id");
+
+        if(type === "base"){
+          state.base = B.base.find(x => x.id === id) || null;
+        }
+
+        if(type === "creme"){
+          // toggle creme: se clicar no mesmo, desmarca
+          if(state.creme?.id === id) state.creme = null;
+          else state.creme = B.cremes.find(x => x.id === id) || null;
+        }
+
+        if(type === "add"){
+          const exists = state.adicionais.find(a => a.id === id);
+          if(exists){
+            state.adicionais = state.adicionais.filter(a => a.id !== id); // ✅ desmarca ao clicar de novo
+          }else{
+            const item = B.adicionais.find(x => x.id === id);
+            if(item) state.adicionais.push(item);
+          }
+        }
+
+        render();
+      });
+    });
+  }
+
+  function builderToCartItem(){
+    if(!state.base) return null;
+
+    const extras = [];
+    if(state.creme) extras.push(state.creme.nome);
+    state.adicionais.forEach(a => extras.push(a.nome));
+
+    const key = `ACAI-${state.base.id}-${state.creme?.id || "0"}-${state.adicionais.map(a=>a.id).sort().join(".") || "0"}`;
+
+    return {
+      key, // usado para juntar itens iguais
+      id: "builder-acai",
+      nome: `Açaí ${state.base.nome.replace("Copo ","")}`,
+      desc: "Monte seu açaí",
+      precoUnit: total(),
+      qtd: 1,
+      extras
+    };
+  }
+
+  const addBtn = $("addBuilderToCart");
+  if(addBtn){
+    addBtn.addEventListener("click", () => {
+      const item = builderToCartItem();
+      if(!item){
+        alert("Escolha o tamanho do açaí para adicionar ao carrinho.");
+        return;
+      }
+      const cart = loadCart();
+      upsertCartItem(cart, item);
+      saveCart(cart);
+      renderCart();
+      alert("Açaí adicionado ao carrinho ✅");
+    });
+  }
+
+  const reset = $("resetBuilder");
+  if(reset){
+    reset.addEventListener("click", () => {
+      state.base = null;
+      state.creme = null;
+      state.adicionais = [];
+      render();
+    });
+  }
+
+  render();
+  renderCart();
+}
+
+/* ========= Checkout (bloqueia sem preencher) ========= */
+function buildOrderText(customer){
+  const cart = loadCart();
+  const total = money(cartSubtotal(cart));
+
+  const lines = [];
+  lines.push(`*🧾 Pedido - ${CONFIG.lojaNome || "Loja"}*`);
+  lines.push(``);
+
+  cart.forEach((it, idx) => {
+    lines.push(`*${idx+1})* ${it.qtd}x ${it.nome} — ${money(it.precoUnit * it.qtd)}`);
+    if(it.extras && it.extras.length){
+      lines.push(`   _Adicionais:_ ${it.extras.join(", ")}`);
+    }else if(it.desc){
+      lines.push(`   _Detalhe:_ ${it.desc}`);
+    }
   });
+
+  lines.push(``);
+  lines.push(`*Total:* ${total}`);
+  lines.push(``);
+  lines.push(`*Cliente:* ${customer.nome}`);
+  lines.push(`*Endereço:* ${customer.endereco}`);
+  lines.push(`*Pagamento:* ${customer.pagamento}`);
+  if(customer.obs) lines.push(`*Obs:* ${customer.obs}`);
+
+  return lines.join("\n");
+}
+
+function initCheckout(){
+  const form = $("checkoutForm");
+  if(!form) return;
+
+  const warn = $("checkoutWarn");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const cart = loadCart();
+    const nome = $("cNome").value.trim();
+    const endereco = $("cEndereco").value.trim();
+    const pagamento = $("cPagamento").value.trim();
+    const obs = $("cObs").value.trim();
+
+    const okCart = cart.length > 0;
+    const okFields = nome && endereco && pagamento;
+
+    if(!okCart || !okFields){
+      if(warn) warn.hidden = false;
+      return;
+    }
+    if(warn) warn.hidden = true;
+
+    if(!mustConfigWhatsApp()){
+      alert("WhatsApp não configurado. Edite js/config.js e coloque seu número em window.CONFIG.whatsapp.");
+      return;
+    }
+
+    const text = buildOrderText({ nome, endereco, pagamento, obs });
+    window.open(waLink(text), "_blank", "noopener");
+  });
+
+  const clear = $("clearCart");
+  if(clear){
+    clear.addEventListener("click", () => {
+      saveCart([]);
+      renderCart();
+    });
+  }
+
+  renderCart();
+}
+
+/* ========= Init Geral ========= */
+(function boot(){
+  initMobileMenu();
+  initWaFloat();
+
+  // botões globais (se existirem)
+  const clear = $("clearCart");
+  if(clear){
+    clear.addEventListener("click", () => {
+      saveCart([]);
+      renderCart();
+      syncSelectedCards();
+    });
+  }
+
+  // Detecta página
+  initIndex();
+  initBuilder();
+  initCheckout();
+
+  // Segurança: se CONFIG inválido, avisa no console
+  if(!mustConfigWhatsApp()){
+    console.warn("WhatsApp não configurado. Edite js/config.js (window.CONFIG.whatsapp).");
+  }
 })();
