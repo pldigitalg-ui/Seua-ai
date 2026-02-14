@@ -595,3 +595,31 @@ textarea:focus-visible{
   .wafloat{ bottom: 90px; max-width: 260px; }
   .main{ padding-bottom: 160px; }
 }
+/* ===== FRUTAS / DETALHES NO MOBILE ===== */
+@media (max-width: 920px){
+
+  /* garante que os decor apareçam e fiquem dentro do viewport */
+  body::before{
+    width: 160px !important;
+    height: 160px !important;
+    left: -18px !important;
+    top: 92px !important;
+    opacity: .26 !important;
+    position: absolute !important; /* 🔥 melhor no mobile que fixed */
+  }
+
+  body::after{
+    width: 190px !important;
+    height: 190px !important;
+    right: -22px !important;
+    bottom: -18px !important;
+    opacity: .22 !important;
+    position: absolute !important; /* 🔥 melhor no mobile que fixed */
+  }
+
+  /* importante: body precisa permitir os decor absolutos */
+  body{
+    position: relative !important;
+    overflow-x: hidden !important;
+  }
+}
