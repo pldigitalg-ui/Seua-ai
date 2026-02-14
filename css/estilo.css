@@ -1,6 +1,6 @@
 :root{
   /* Fundo roxo executivo */
-  --bg:#0b0613;            /* roxo quase preto */
+  --bg:#0b0613;            /* roxo claro */
   --card:#120a1f;          /* roxo profundo */
   --card2:#1a0f2b;         /* roxo mais claro */
   --text:#ffffff;          /* branco */
@@ -12,8 +12,8 @@
   --accent2:#ffffff;       /* branco */
   --danger:#ef4444;        /* vermelho (detalhes/CTA secundário) */
 
-  --shadow: 0 18px 50px rgba(0,0,0,.42);
-  --radius: 18px;
+  --shadow: 0 20px 30px rgba(0,0,0,.42);
+  --radius: 20px;
 }
 
 *{box-sizing:border-box}
@@ -42,7 +42,7 @@ a{color:inherit; text-decoration:none}
 .logo{
   width:40px;height:40px;border-radius:14px;
   display:grid;place-items:center;
-  background: linear-gradient(135deg, rgba(34,197,94,.25), rgba(255,255,255,.08));
+  background: linear-gradient(135deg, rgba(124,58,237,.35), rgba(239,68,68,.14));
   border:1px solid rgba(255,255,255,.10);
   box-shadow: var(--shadow);
   font-weight:800;
@@ -416,4 +416,24 @@ input,select,textarea{
 .menu a.active{
   border-color: rgba(124,58,237,.55);
   background: rgba(124,58,237,.18);
+}
+/* imagem do produto */
+.pimg{
+  width:100%;
+  height:120px;
+  border-radius: 16px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  margin-bottom: 10px;
+}
+.pimg img{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  display:block;
+  transform: scale(1.02);
+}
+.card.selected .pimg{
+  border-color: rgba(124,58,237,.55);
 }
