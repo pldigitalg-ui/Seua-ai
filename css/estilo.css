@@ -225,3 +225,41 @@ body::after{
   position: relative;
   z-index: 2;
 }
+/* ===== esconder topbar ao descer e mostrar ao subir ===== */
+(function hideTopbarOnScroll(){
+  const bar = document.querySelector(".topbar");
+  if(!bar) return;
+
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  function onScroll(){
+    const y = window.scrollY;
+
+    // Não esconder quando está no topo
+    if(y <= 10){
+      bar.classList.remove("is-hidden");
+      lastY = y;
+      ticking = false;
+      return;
+    }
+
+    // Se desceu: esconde
+    // Se subiu: mostra
+    if(y > lastY + 6){
+      bar.classList.add("is-hidden");
+    }else if(y < lastY - 6){
+      bar.classList.remove("is-hidden");
+    }
+
+    lastY = y;
+    ticking = false;
+  }
+
+  window.addEventListener("scroll", () => {
+    if(!ticking){
+      window.requestAnimationFrame(onScroll);
+      ticking = true;
+    }
+  }, { passive: true });
+})();
