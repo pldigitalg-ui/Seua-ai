@@ -1,441 +1,209 @@
-/* ================================
-   PATCH TEMA AÇAÍ (AGÊNCIA GRANDE)
-   Roxo + Branco + Vermelho + Prata
-   + Melhor leitura + Frutas nos cantos
-   (Cole no FINAL do estilo.css)
-   ================================ */
+/* =========================================
+   LP Grill — CSS Premium (Agência Grande)
+   Tema: Roxo Açaí + Branco + Detalhe Vermelho + Cromado
+   Com frutinhas nos cantos (CSS/SVG)
+   ========================================= */
 
-/* 1) Paleta premium (calma + legível) */
+/* --------- Design Tokens --------- */
 :root{
   --bg:#F7F7FB;
   --bg2:#FFFFFF;
 
   --text:#0B0B12;
-  --muted: rgba(11,11,18,.72);
+  --muted: rgba(11,11,18,.70);
 
   --card:#FFFFFF;
-  --line: rgba(11,11,18,.12);
+  --cardGlass: rgba(255,255,255,.72);
+  --line: rgba(11,11,18,.10);
 
-  /* Roxo açaí executivo */
-  --accent: #6D28D9;     /* roxo principal */
-  --accent2:#4C1D95;     /* roxo escuro */
-  --accent3:#A78BFA;     /* lilás suave */
+  /* Açaí roxo executivo */
+  --accent:#6D28D9;     /* roxo principal */
+  --accent2:#4C1D95;    /* roxo escuro */
+  --accent3:#A78BFA;    /* lilás suave */
 
-  /* Vermelho detalhe (sem gritar) */
+  /* Vermelho detalhe */
   --red:#EF4444;
 
-  /* Prata cromado */
-  --silver1: rgba(255,255,255,.95);
-  --silver2: rgba(255,255,255,.55);
-  --silver3: rgba(11,11,18,.12);
-
+  /* Sombras */
   --shadow: 0 18px 45px rgba(17, 17, 26, .12);
+  --shadow2: 0 14px 34px rgba(17, 17, 26, .10);
+
+  --radius: 18px;
 }
 
-/* 2) Fundo MAIS calmo e sofisticado */
+/* --------- Reset básico --------- */
+*{ box-sizing:border-box }
+html,body{ height:100% }
 body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  color: var(--text);
+  letter-spacing: .1px;
+
+  /* fundo calmo */
   background:
-    radial-gradient(900px 520px at 10% 10%, rgba(109,40,217,.16), transparent 58%),
-    radial-gradient(900px 520px at 92% 82%, rgba(167,139,250,.14), transparent 60%),
+    radial-gradient(900px 520px at 10% 12%, rgba(109,40,217,.16), transparent 58%),
+    radial-gradient(900px 520px at 88% 82%, rgba(167,139,250,.14), transparent 60%),
     linear-gradient(180deg, var(--bg2), var(--bg));
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* 3) Barra superior com “glass” mais elegante + texto visível */
-.topbar{
-  background: rgba(255,255,255,.70) !important;
-  border-bottom: 1px solid rgba(11,11,18,.10) !important;
-  backdrop-filter: blur(14px);
-}
-.brand .t span{ color: rgba(11,11,18,.62) !important; }
+a{color:inherit; text-decoration:none}
+img{max-width:100%; display:block}
 
-/* 4) Menus e tabs: remove verde e usa roxo */
-.menu a{
-  border: 1px solid rgba(11,11,18,.10) !important;
-  background: rgba(255,255,255,.55) !important;
-}
-.menu a.active{
-  border-color: rgba(109,40,217,.30) !important;
-  background: rgba(109,40,217,.12) !important;
-  color: #1b0b2d !important;
-}
+.container{max-width:1120px; margin:0 auto; padding:0 14px}
+.main{padding:18px 0 120px}
 
-.tab{
-  border: 1px solid rgba(11,11,18,.10) !important;
-  background: rgba(255,255,255,.65) !important;
-}
-.tab.active{
-  border-color: rgba(109,40,217,.35) !important;
-  background: rgba(109,40,217,.14) !important;
-  color: #1b0b2d !important;
-}
-
-/* 5) Painéis e cards: branco, limpo, cromado leve */
-.panel, .cart{
-  background: rgba(255,255,255,.66) !important;
-  border: 1px solid rgba(11,11,18,.10) !important;
-}
-.panelHead{
-  border-bottom: 1px solid rgba(11,11,18,.08) !important;
-}
-.heroCard{
-  background: linear-gradient(135deg, rgba(255,255,255,.85), rgba(255,255,255,.55)) !important;
-  border: 1px solid rgba(11,11,18,.10) !important;
-}
-
-/* 6) Busca e inputs: mais claros e legíveis */
-.search, input, select, textarea{
-  background: rgba(255,255,255,.82) !important;
-  border: 1px solid rgba(11,11,18,.14) !important;
-  color: var(--text) !important;
-}
-.search::placeholder, input::placeholder, textarea::placeholder{
-  color: rgba(11,11,18,.45) !important;
-}
-
-/* 7) Cards de produto: fundo claro + borda cromada + texto bem visível */
-.card{
-  background: rgba(255,255,255,.80) !important;
-  border: 1px solid rgba(11,11,18,.12) !important;
-  box-shadow: 0 10px 28px rgba(17,17,26,.08);
-}
-.card .desc{ color: rgba(11,11,18,.70) !important; }
-.badge{
-  border: 1px solid rgba(11,11,18,.10) !important;
-  background: rgba(255,255,255,.70) !important;
-}
-.badge .dot{ background: rgba(11,11,18,.28) !important; }
-
-/* 8) Selecionado: roxo premium (tirando o verde) */
-.card.selected{
-  border-color: rgba(109,40,217,.38) !important;
-  background: rgba(109,40,217,.10) !important;
-}
-.card.selected .badge{
-  border-color: rgba(109,40,217,.28) !important;
-  background: rgba(109,40,217,.12) !important;
-}
-.card.selected .badge .dot{ background: var(--accent) !important; }
-
-/* 9) Carrinho: mais clean e menor “peso” */
-.cartItem{
-  background: rgba(255,255,255,.75) !important;
-  border: 1px solid rgba(11,11,18,.10) !important;
-}
-.qty{
-  border: 1px solid rgba(11,11,18,.10) !important;
-  background: rgba(255,255,255,.60) !important;
-}
-.small{
-  border: 1px solid rgba(11,11,18,.10) !important;
-  background: rgba(255,255,255,.65) !important;
-}
-
-/* 10) Botões: roxo principal + vermelho detalhe + cromado leve */
-.btn{
-  border: 1px solid rgba(11,11,18,.12) !important;
-  background: rgba(255,255,255,.70) !important;
-  color: #1b0b2d !important;
-}
-.btn.primary{
-  border-color: rgba(109,40,217,.35) !important;
-  background: linear-gradient(135deg, rgba(109,40,217,.18), rgba(167,139,250,.14)) !important;
-  color: #1b0b2d !important;
-}
-.btn.danger{
-  border-color: rgba(239,68,68,.42) !important;
-  background: rgba(239,68,68,.14) !important;
-  color: #3a0b10 !important;
-}
-
-/* 11) “Prata cromado” sutil: contorno premium nos cards/painéis */
-.panel, .cart, .card, .cartItem, .heroCard{
-  position: relative;
-}
-.panel::before, .cart::before, .card::before, .cartItem::before, .heroCard::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius: inherit;
-  padding: 1px;
-  pointer-events:none;
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,.75),
-    rgba(255,255,255,.20),
-    rgba(11,11,18,.10)
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  opacity: .55;
-}
-
-/* 12) WhatsApp flutuante roxo + cromado (sem verde) */
-.wafloat{
-  border: 1px solid rgba(109,40,217,.30) !important;
-  background: rgba(255,255,255,.78) !important;
-}
-.waIcon{
-  background: rgba(109,40,217,.12) !important;
-  border: 1px solid rgba(109,40,217,.22) !important;
-}
-.waText span{ color: rgba(11,11,18,.62) !important; }
-
-/* 13) Fotos quadradas (mantém teu 1:1) + borda cromada */
-.pimg{
-  border: 1px solid rgba(11,11,18,.10) !important;
-  background: rgba(255,255,255,.65) !important;
-}
-.card.selected .pimg{
-  border-color: rgba(109,40,217,.38) !important;
-}
-
-/* 14) Frutinhas / açaí nos cantos (SEM imagem externa) */
-body::before, body::after{
+/* --------- Frutinhas nos cantos (decor) --------- */
+body::before,
+body::after{
   content:"";
   position: fixed;
   z-index: 0;
   pointer-events:none;
   opacity: .22;
+  background-repeat:no-repeat;
+  background-size: contain;
   filter: blur(.2px);
 }
+
+/* canto esquerdo (bolinhas açaí) */
 body::before{
   width: 260px;
   height: 260px;
   left: -40px;
-  top: 90px;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520' viewBox='0 0 520 520'%3E%3Cdefs%3E%3CradialGradient id='g' cx='30%25' cy='30%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23A78BFA' stop-opacity='1'/%3E%3Cstop offset='60%25' stop-color='%236D28D9' stop-opacity='0.65'/%3E%3Cstop offset='100%25' stop-color='%234C1D95' stop-opacity='0.25'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='175' cy='250' r='120' fill='url(%23g)'/%3E%3Ccircle cx='310' cy='210' r='84' fill='url(%23g)' opacity='0.85'/%3E%3Ccircle cx='300' cy='330' r='56' fill='url(%23g)' opacity='0.75'/%3E%3Ccircle cx='260' cy='265' r='22' fill='%23FFFFFF' opacity='0.55'/%3E%3Ccircle cx='210' cy='200' r='14' fill='%23EF4444' opacity='0.55'/%3E%3Ccircle cx='335' cy='270' r='16' fill='%23FFFFFF' opacity='0.42'/%3E%3C/svg%3E");
+  top: 110px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520' viewBox='0 0 520 520'%3E%3Cdefs%3E%3CradialGradient id='g' cx='30%25' cy='30%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23A78BFA'/%3E%3Cstop offset='65%25' stop-color='%236D28D9' stop-opacity='0.75'/%3E%3Cstop offset='100%25' stop-color='%234C1D95' stop-opacity='0.30'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='175' cy='250' r='120' fill='url(%23g)'/%3E%3Ccircle cx='310' cy='210' r='84' fill='url(%23g)' opacity='0.85'/%3E%3Ccircle cx='300' cy='330' r='56' fill='url(%23g)' opacity='0.75'/%3E%3Ccircle cx='260' cy='265' r='22' fill='%23FFFFFF' opacity='0.55'/%3E%3Ccircle cx='210' cy='200' r='14' fill='%23EF4444' opacity='0.40'/%3E%3Ccircle cx='335' cy='270' r='16' fill='%23FFFFFF' opacity='0.40'/%3E%3C/svg%3E");
 }
+
+/* canto direito inferior (folha/onda) */
 body::after{
-  width: 310px;
-  height: 310px;
-  right: -60px;
-  bottom: -40px;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='620' height='620' viewBox='0 0 620 620'%3E%3Cdefs%3E%3CradialGradient id='g2' cx='35%25' cy='35%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23FFFFFF' stop-opacity='0.95'/%3E%3Cstop offset='40%25' stop-color='%23A78BFA' stop-opacity='0.55'/%3E%3Cstop offset='100%25' stop-color='%236D28D9' stop-opacity='0.18'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath d='M120 330c70-140 210-210 320-170 90 32 120 130 58 200-54 62-158 96-268 70-82-20-140-56-110-100z' fill='url(%23g2)'/%3E%3Ccircle cx='420' cy='230' r='16' fill='%23EF4444' opacity='0.45'/%3E%3Ccircle cx='455' cy='260' r='12' fill='%23FFFFFF' opacity='0.45'/%3E%3Ccircle cx='390' cy='270' r='10' fill='%234C1D95' opacity='0.25'/%3E%3C/svg%3E");
+  width: 320px;
+  height: 320px;
+  right: -70px;
+  bottom: -60px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='620' height='620' viewBox='0 0 620 620'%3E%3Cdefs%3E%3CradialGradient id='g2' cx='35%25' cy='35%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23FFFFFF' stop-opacity='0.95'/%3E%3Cstop offset='45%25' stop-color='%23A78BFA' stop-opacity='0.55'/%3E%3Cstop offset='100%25' stop-color='%236D28D9' stop-opacity='0.18'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath d='M120 330c70-140 210-210 320-170 90 32 120 130 58 200-54 62-158 96-268 70-82-20-140-56-110-100z' fill='url(%23g2)'/%3E%3Ccircle cx='420' cy='230' r='16' fill='%23EF4444' opacity='0.35'/%3E%3Ccircle cx='455' cy='260' r='12' fill='%23FFFFFF' opacity='0.45'/%3E%3Ccircle cx='390' cy='270' r='10' fill='%234C1D95' opacity='0.22'/%3E%3C/svg%3E");
 }
 
-/* 15) Garante que o conteúdo fique acima das frutas */
-.topbar, main, .wafloat{
-  position: relative;
-  z-index: 2;
-}
-/* ===== esconder topbar ao descer e mostrar ao subir ===== */
-(function hideTopbarOnScroll(){
-  const bar = document.querySelector(".topbar");
-  if(!bar) return;
+/* garante conteúdo acima do decor */
+.topbar, main, .wafloat{ position: relative; z-index: 2; }
 
-  let lastY = window.scrollY;
-  let ticking = false;
-
-  function onScroll(){
-    const y = window.scrollY;
-
-    // Não esconder quando está no topo
-    if(y <= 10){
-      bar.classList.remove("is-hidden");
-      lastY = y;
-      ticking = false;
-      return;
-    }
-
-    // Se desceu: esconde
-    // Se subiu: mostra
-    if(y > lastY + 6){
-      bar.classList.add("is-hidden");
-    }else if(y < lastY - 6){
-      bar.classList.remove("is-hidden");
-    }
-
-    lastY = y;
-    ticking = false;
-  }
-
-  window.addEventListener("scroll", () => {
-    if(!ticking){
-      window.requestAnimationFrame(onScroll);
-      ticking = true;
-    }
-  }, { passive: true });
-})();
-/* ===============================
-   PATCH PREMIUM (sem mudar HTML)
-   =============================== */
-
-/* 1) Topbar mais leve (combina com tema claro) */
+/* --------- Topbar / Navegação --------- */
 .topbar{
-  background: rgba(255,255,255,.78) !important;
-  border-bottom: 1px solid rgba(11,11,18,.10) !important;
+  position: sticky;
+  top:0;
+  z-index: 50;
+  background: rgba(255,255,255,.78);
+  backdrop-filter: blur(14px);
+  border-bottom:1px solid rgba(11,11,18,.10);
   box-shadow: 0 10px 30px rgba(17,17,26,.06);
+  transition: transform .22s ease, opacity .22s ease;
+  will-change: transform;
 }
-.brand .t strong{ color: #14141c !important; }
-.brand .t span{ color: rgba(11,11,18,.58) !important; }
-
-/* 2) Ajuste geral de contraste do texto em cards */
-.panelHead p,
-.mini span,
-.card .desc,
-.cartItem .meta{
-  color: rgba(11,11,18,.70) !important;
+.topbar.is-hidden{
+  transform: translateY(-110%);
+  opacity: .98;
 }
 
-/* 3) Busca mais premium */
-.search{
-  background: rgba(255,255,255,.92) !important;
-  border: 1px solid rgba(11,11,18,.12) !important;
-  box-shadow: 0 10px 24px rgba(17,17,26,.06);
+.nav{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 0}
+
+.brand{display:flex; align-items:center; gap:10px}
+.logo{
+  width:34px;height:34px;border-radius:12px;
+  display:grid;place-items:center;
+  background: linear-gradient(135deg, rgba(109,40,217,.25), rgba(239,68,68,.10));
+  border:1px solid rgba(11,11,18,.08);
+  box-shadow: var(--shadow);
+  font-weight:900;
+  color:#1b0b2d;
 }
-.search:focus{
-  border-color: rgba(109,40,217,.35) !important;
-  box-shadow: 0 0 0 4px rgba(109,40,217,.10), 0 12px 26px rgba(17,17,26,.08);
+.brand .t strong{display:block; font-size:13px; letter-spacing:.2px}
+.brand .t span{display:block; font-size:11px; color: rgba(11,11,18,.58)}
+
+.menu{display:flex; gap:10px; align-items:center}
+.menu a{
+  font-size:12px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.62);
+  box-shadow: 0 10px 20px rgba(17,17,26,.04);
+}
+.menu a:hover{ transform: translateY(-1px); }
+.menu a.active{
+  border-color: rgba(109,40,217,.28);
+  background: rgba(109,40,217,.12);
+  color:#1b0b2d;
 }
 
-/* 4) Tabs mais “pílula premium” */
-.tab{
-  background: rgba(255,255,255,.85) !important;
-  border: 1px solid rgba(11,11,18,.10) !important;
-}
-.tab:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 10px 20px rgba(17,17,26,.06);
-}
-.tab.active{
-  background: rgba(109,40,217,.12) !important;
-  border-color: rgba(109,40,217,.28) !important;
+.hamb{
+  display:none;
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.70);
+  color: var(--text);
+  border-radius:12px;
+  padding:8px 10px;
+  cursor:pointer;
+  box-shadow: 0 10px 18px rgba(17,17,26,.04);
 }
 
-/* 5) Cards com profundidade e borda cromada suave */
-.card{
-  background: rgba(255,255,255,.88) !important;
-  border: 1px solid rgba(11,11,18,.12) !important;
-  box-shadow: 0 14px 34px rgba(17,17,26,.08);
+.mobmenu{
+  display:none;
+  padding: 10px 0 14px;
 }
-.card:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 18px 44px rgba(17,17,26,.10);
-}
-
-/* 6) Seleção: roxo mais evidente e elegante */
-.card.selected{
-  background: rgba(109,40,217,.10) !important;
-  border-color: rgba(109,40,217,.35) !important;
+.mobmenu a{
+  display:block;
+  padding:12px 12px;
+  border-radius:14px;
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.70);
+  margin-top:8px;
 }
 
-/* 7) Carrinho mais “clean” (melhor leitura) */
-.cart{
-  background: rgba(255,255,255,.78) !important;
-  border: 1px solid rgba(11,11,18,.10) !important;
-}
-.cartItem{
-  background: rgba(255,255,255,.88) !important;
-  border: 1px solid rgba(11,11,18,.10) !important;
-  box-shadow: 0 10px 22px rgba(17,17,26,.06);
+/* --------- Hero --------- */
+.hero{
+  display:grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap:14px;
+  margin-bottom: 14px;
 }
 
-/* 8) Botões principais mais premium (roxo) */
-.btn.primary{
-  border-color: rgba(109,40,217,.30) !important;
-  background: linear-gradient(135deg, rgba(109,40,217,.20), rgba(167,139,250,.14)) !important;
-}
-.btn.primary:hover{
-  box-shadow: 0 14px 30px rgba(109,40,217,.12);
-}
-
-/* 9) Badge mais discreto (menos “ruído”) */
-.badge{
-  background: rgba(255,255,255,.80) !important;
-}
-.badge .dot{
-  background: rgba(11,11,18,.22) !important;
-}
-.card.selected .badge .dot{
-  background: rgba(109,40,217,.95) !important;
-}
-
-/* 10) WhatsApp flutuante: não atrapalhar carrinho */
-.wafloat{
-  right: 16px !important;
-  bottom: 16px !important;
-  max-width: 280px;
-}
-@media (min-width: 921px){
-  /* empurra o botão pra não cobrir o carrinho no desktop */
-  .wafloat{ bottom: 22px !important; }
-}
-
-/* 11) Dá “respiro” no final da página (evita sobreposição) */
-.main{
-  padding-bottom: 120px !important;
-}
-
-/* 12) Hero: texto com mais cara premium */
-.heroCard h1{
-  font-size: 24px !important;
-  letter-spacing: .1px !important;
-}
-.heroCard p{
-  font-size: 14px !important;
-}
-/* =========================================
-   PATCH NÍVEL 11+ (AGÊNCIA GRANDE / APP)
-   - Ícones automáticos nos mini cards
-   - Cromado premium sutil
-   - Carrinho sticky interno (head/foot)
-   - Micro animações finas
-   - Visual mais calmo, mais leitura
-   ========================================= */
-
-/* Tipografia mais “calma” e premium */
-body{
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-.heroCard h1{ line-height: 1.15 !important; }
-.heroCard p{ line-height: 1.55 !important; }
-
-/* Micro animações (suaves, sem tremedeira) */
-.card, .tab, .btn, .cartItem, .mini, .heroCard{
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
-}
-
-/* Cromado premium sutil (sem exagero) */
-.panel::before,
-.cart::before,
-.card::before,
-.cartItem::before,
-.heroCard::before,
-.mini::before{
-  opacity: .38 !important;
-}
-
-/* HERO: mais “app”, com brilho roxo controlado */
 .heroCard{
-  position: relative;
-  overflow: hidden;
+  border-radius: 22px;
+  padding: 16px;
+  border:1px solid rgba(11,11,18,.10);
+  background: linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,255,255,.62));
+  box-shadow: var(--shadow);
+  overflow:hidden;
+  position:relative;
 }
 .heroCard::after{
   content:"";
   position:absolute;
-  inset:-60px -40px auto auto;
-  width:220px; height:220px;
-  background: radial-gradient(circle at 30% 30%, rgba(109,40,217,.18), transparent 60%);
+  inset:-80px -60px auto auto;
+  width:240px;height:240px;
+  background: radial-gradient(circle at 30% 30%, rgba(109,40,217,.18), transparent 62%);
   pointer-events:none;
-  filter: blur(2px);
 }
+.heroCard h1{margin:0; font-size:24px; letter-spacing:.2px; line-height:1.15}
+.heroCard p{margin:8px 0 0; color: rgba(11,11,18,.70); line-height:1.55; font-size:14px}
+.heroActions{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
 
-/* Mini cards: ícones automáticos (sem editar HTML) */
+.miniCards{display:grid; gap:10px}
 .mini{
-  position: relative;
-  padding-left: 44px !important;
-  background: rgba(255,255,255,.72) !important;
-  border: 1px solid rgba(11,11,18,.10) !important;
+  border-radius: 18px;
+  padding: 14px 14px 14px 44px;
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.72);
   box-shadow: 0 10px 24px rgba(17,17,26,.06);
+  position: relative;
 }
+.mini strong{display:block; font-size:13px}
+.mini span{display:block; margin-top:6px; font-size:12px; color: rgba(11,11,18,.70); line-height:1.35}
+
+/* ícones (sem editar HTML) */
 .mini::after{
   content:"";
   position:absolute;
@@ -451,168 +219,379 @@ body{
   position:absolute;
   left:19px; top:19px;
   width:12px; height:12px;
-  opacity:.9;
+  opacity:.95;
   background: rgba(109,40,217,.95);
   border-radius: 3px;
 }
+.miniCards .mini:nth-child(1)::before{ clip-path: polygon(10% 55%, 20% 45%, 42% 66%, 82% 20%, 92% 30%, 42% 86%); }
+.miniCards .mini:nth-child(2)::before{ border-radius:0; clip-path: polygon(10% 30%, 92% 30%, 84% 70%, 18% 70%); }
+.miniCards .mini:nth-child(3)::before{ border-radius:999px; clip-path: circle(48% at 50% 50%); }
 
-/* cada mini recebe um “ícone” diferente via nth-child */
-.miniCards .mini:nth-child(1)::before{
-  /* check */
-  clip-path: polygon(10% 55%, 20% 45%, 42% 66%, 82% 20%, 92% 30%, 42% 86%);
-}
-.miniCards .mini:nth-child(2)::before{
-  /* carrinho */
-  border-radius: 0;
-  clip-path: polygon(10% 30%, 92% 30%, 84% 70%, 18% 70%);
-}
-.miniCards .mini:nth-child(3)::before{
-  /* bolinha whatsapp */
-  border-radius: 999px;
-  clip-path: circle(48% at 50% 50%);
+/* --------- Layout 2 colunas --------- */
+.grid2{
+  display:grid;
+  grid-template-columns: 1fr 360px;
+  gap: 14px;
+  align-items:start;
 }
 
-/* Tabs e menu: “pílula premium” */
-.tab, .menu a{
+/* --------- Painel --------- */
+.panel{
+  border-radius: 22px;
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.66);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+.panelHead{
+  padding:14px;
+  border-bottom:1px solid rgba(11,11,18,.08);
+}
+.panelHead h2{margin:0; font-size:18px}
+.panelHead p{margin:6px 0 0; color: rgba(11,11,18,.70); font-size:13px}
+
+.muted{color: rgba(11,11,18,.70)}
+
+/* --------- Busca --------- */
+.searchWrap{margin-top:10px}
+.search{
+  width:100%;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border:1px solid rgba(11,11,18,.12);
+  background: rgba(255,255,255,.92);
+  color: var(--text);
+  outline:none;
+  box-shadow: 0 10px 24px rgba(17,17,26,.06);
+}
+.search::placeholder{ color: rgba(11,11,18,.45) }
+.search:focus{
+  border-color: rgba(109,40,217,.35);
+  box-shadow: 0 0 0 4px rgba(109,40,217,.10), 0 12px 26px rgba(17,17,26,.08);
+}
+
+/* --------- Tabs --------- */
+.tabs{
+  display:flex;
+  gap:8px;
+  padding: 12px 14px 0;
+  flex-wrap: wrap;
+}
+.tab{
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.85);
+  font-size:12px;
+  cursor:pointer;
+  user-select:none;
   box-shadow: 0 10px 20px rgba(17,17,26,.04);
 }
-.tab:hover, .menu a:hover{
-  transform: translateY(-1px);
+.tab:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(17,17,26,.06); }
+.tab.active{
+  border-color: rgba(109,40,217,.28);
+  background: rgba(109,40,217,.14);
+  color:#1b0b2d;
 }
 
-/* Produtos: mais “grid app” */
+/* --------- Produtos --------- */
 .products{
-  gap: 12px !important;
-}
-.card strong{
-  font-size: 14px !important;
-}
-.price{
-  font-size: 14px !important;
+  padding: 12px 14px 14px;
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
 }
 
-/* Imagens: borda e brilho mais premium */
+.card{
+  border-radius: 18px;
+  padding: 12px;
+  border:1px solid rgba(11,11,18,.12);
+  background: rgba(255,255,255,.88);
+  cursor:pointer;
+  user-select:none;
+  box-shadow: var(--shadow2);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+}
+.card:hover{ transform: translateY(-2px); box-shadow: 0 18px 44px rgba(17,17,26,.10); }
+
+.card .top{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+.card strong{font-size:14px; line-height:1.25}
+.card .desc{margin-top:6px; font-size:12px; color: rgba(11,11,18,.70); line-height:1.3}
+.price{font-weight:900; font-size:14px}
+
+.badge{
+  margin-top:10px;
+  display:inline-flex; gap:8px; align-items:center;
+  font-size:12px;
+  padding:8px 11px;
+  border-radius:999px;
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.80);
+}
+.badge .dot{
+  width:8px; height:8px; border-radius:50%;
+  background: rgba(11,11,18,.22);
+}
+
+/* Selecionado (roxo premium) */
+.card.selected{
+  border-color: rgba(109,40,217,.35);
+  background: rgba(109,40,217,.10);
+}
+.card.selected .badge{
+  border-color: rgba(109,40,217,.22);
+  background: rgba(109,40,217,.12);
+}
+.card.selected .badge .dot{ background: rgba(109,40,217,.95) }
+
+/* --------- Imagem do produto (quadrada 1:1) --------- */
 .pimg{
+  width:100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  overflow:hidden;
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.70);
+  margin-bottom: 10px;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.35);
 }
 .pimg img{
-  transform: scale(1.01);
+  width:100%;
+  height:100%;
+  object-fit: cover;
 }
 
-/* Badge: mais elegante */
-.badge{
-  padding: 8px 11px !important;
-  border-radius: 999px !important;
-}
-
-/* ======================================
-   CARRINHO NÍVEL APP: head/foot sticky
-   ====================================== */
+/* --------- Carrinho (app real) --------- */
 .cart{
+  border-radius: 22px;
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.78);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+  position: sticky;
+  top: 74px;
+
   display:flex;
   flex-direction: column;
   min-height: 520px;
 }
+
 .cartHead{
+  padding: 12px 14px;
+  border-bottom:1px solid rgba(11,11,18,.08);
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+
   position: sticky;
   top: 0;
   z-index: 2;
-  background: rgba(255,255,255,.85) !important;
+  background: rgba(255,255,255,.88);
   backdrop-filter: blur(10px);
 }
+.cartHead h3{margin:0; font-size:14px}
+.link{font-size:12px; color: rgba(239,68,68,.95)} /* vermelho detalhe */
+
 .cartBody{
-  flex: 1;
-  max-height: none !important;  /* deixa o flex cuidar */
-  padding-bottom: 12px !important;
+  padding: 10px 12px;
+  flex:1;
+  overflow:auto;
 }
+
 .cartFoot{
+  padding: 12px 14px;
+  border-top:1px solid rgba(11,11,18,.08);
+  background: rgba(255,255,255,.90);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 -10px 26px rgba(17,17,26,.06);
+
   position: sticky;
   bottom: 0;
   z-index: 2;
-  background: rgba(255,255,255,.88) !important;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 -10px 26px rgba(17,17,26,.06);
+}
+.row{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px}
+.row span{color: rgba(11,11,18,.70); font-size:12px}
+.row strong{font-size:14px}
+
+.cartItem{
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.88);
+  border-radius: 16px;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 10px 22px rgba(17,17,26,.06);
+}
+.cartItem .head{
+  display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
+}
+.cartItem .name{font-weight:900; font-size:13px; line-height:1.25}
+.cartItem .meta{margin-top:6px; color: rgba(11,11,18,.70); font-size:12px; line-height:1.35}
+.cartItem .actions{
+  margin-top:10px;
+  display:flex; gap:8px; align-items:center; justify-content:space-between;
+}
+.qty{
+  display:flex; align-items:center; gap:10px;
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.72);
+  padding:6px 10px;
+  border-radius: 999px;
+}
+.qty button{
+  border:0; background:transparent; color:var(--text);
+  cursor:pointer; font-weight:900; font-size:14px;
+}
+.small{
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.78);
+  color: var(--text);
+  border-radius: 12px;
+  padding:8px 10px;
+  font-size:12px;
+  cursor:pointer;
+}
+.small.danger{
+  border-color: rgba(239,68,68,.35);
+  background: rgba(239,68,68,.12);
 }
 
-/* Botões do carrinho mais “fintech” */
-.cartFoot .btn{
-  border-radius: 18px !important;
+/* --------- Botões --------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border:1px solid rgba(11,11,18,.12);
+  background: rgba(255,255,255,.80);
+  color: #1b0b2d;
+  cursor:pointer;
+  font-weight:900;
+  font-size:13px;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+}
+.btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 26px rgba(17,17,26,.08); }
+
+.btn.primary{
+  border-color: rgba(109,40,217,.28);
+  background: linear-gradient(135deg, rgba(109,40,217,.20), rgba(167,139,250,.14));
+}
+.btn.ghost{
+  background: rgba(255,255,255,.70);
+}
+.btn.danger{
+  border-color: rgba(239,68,68,.40);
+  background: rgba(239,68,68,.14);
+  color: #3a0b10;
+}
+.btn.full{width:100%}
+
+/* --------- Builder / Form --------- */
+.builderWrap{
+  display:grid;
+  grid-template-columns: 1fr 360px;
+  gap: 14px;
+  align-items:start;
+}
+.builder{padding: 14px}
+.group{
+  margin-bottom: 14px;
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.75);
+  border-radius: 18px;
+  padding: 12px;
+  box-shadow: 0 10px 22px rgba(17,17,26,.06);
+}
+.group h3{margin:0; font-size:14px}
+.opts{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap:10px;
+}
+.opt{
+  border-radius: 16px;
+  padding: 12px;
+  border:1px solid rgba(11,11,18,.10);
+  background: rgba(255,255,255,.82);
+  cursor:pointer;
+  user-select:none;
+  box-shadow: 0 10px 20px rgba(17,17,26,.04);
+}
+.opt strong{font-size:13px}
+.opt .p{margin-top:6px; font-size:12px; color: rgba(11,11,18,.70)}
+.opt.selected{
+  border-color: rgba(109,40,217,.30);
+  background: rgba(109,40,217,.12);
 }
 
-/* ======================================
-   WhatsApp flutuante: smart + clean
-   ====================================== */
-.wafloat{
-  border-radius: 999px !important;
-  box-shadow: 0 18px 40px rgba(17,17,26,.10);
+/* Form */
+.form{padding:14px}
+.field{margin-bottom:12px}
+label{display:block; font-size:12px; color: rgba(11,11,18,.70); margin-bottom:6px}
+input,select,textarea{
+  width:100%;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border:1px solid rgba(11,11,18,.12);
+  background: rgba(255,255,255,.92);
+  color: var(--text);
+  outline:none;
 }
-.wafloat:hover{ transform: translateY(-1px); }
-
-/* no mobile, evita cobrir botões */
-@media (max-width: 920px){
-  .wafloat{
-    bottom: 90px !important; /* deixa espaço pro dedo e pro fim da página */
-    max-width: 260px;
-  }
-  .main{ padding-bottom: 160px !important; }
+.notice{
+  padding: 12px;
+  border-radius: 14px;
+  border:1px solid rgba(245,158,11,.35);
+  background: rgba(245,158,11,.12);
+  color: var(--text);
+  font-size: 13px;
+  margin: 10px 0;
 }
 
-/* ======================================
-   Foco acessível (fica com cara premium)
-   ====================================== */
+/* Focus premium */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible{
-  outline: none !important;
-  box-shadow: 0 0 0 4px rgba(109,40,217,.12) !important;
-  border-color: rgba(109,40,217,.28) !important;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(109,40,217,.12);
+  border-color: rgba(109,40,217,.28);
 }
 
-/* ======================================
-   “Calma mental”: reduz contraste agressivo
-   ====================================== */
-.card, .cartItem{
-  border-color: rgba(11,11,18,.10) !important;
+/* --------- WhatsApp flutuante --------- */
+.wafloat{
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 60;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border:1px solid rgba(109,40,217,.24);
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 18px 40px rgba(17,17,26,.10);
+  transition: transform .18s ease, box-shadow .18s ease;
 }
-     /* ===== topbar inteligente (nível 11) ===== */
-(function hideTopbarOnScrollPro(){
-  const bar = document.querySelector(".topbar");
-  const mob = document.getElementById("mobMenu");
-  if(!bar) return;
+.wafloat:hover{ transform: translateY(-1px); box-shadow: 0 22px 46px rgba(17,17,26,.12); }
 
-  let lastY = window.scrollY;
-  let ticking = false;
+.waIcon{
+  width:34px; height:34px; border-radius: 999px;
+  display:grid; place-items:center;
+  background: rgba(109,40,217,.12);
+  border:1px solid rgba(109,40,217,.22);
+}
+.waText strong{display:block; font-size:12px}
+.waText span{display:block; font-size:11px; color: rgba(11,11,18,.62); margin-top:2px}
 
-  function isMobileMenuOpen(){
-    return mob && !mob.hasAttribute("hidden");
-  }
-
-  function onScroll(){
-    const y = window.scrollY;
-
-    if(y <= 10 || isMobileMenuOpen()){
-      bar.classList.remove("is-hidden");
-      lastY = y;
-      ticking = false;
-      return;
-    }
-
-    if(y > lastY + 8){
-      bar.classList.add("is-hidden");
-    }else if(y < lastY - 8){
-      bar.classList.remove("is-hidden");
-    }
-
-    lastY = y;
-    ticking = false;
-  }
-
-  window.addEventListener("scroll", () => {
-    if(!ticking){
-      window.requestAnimationFrame(onScroll);
-      ticking = true;
-    }
-  }, { passive: true });
-})();
+/* --------- Responsivo --------- */
+@media (max-width: 920px){
+  .grid2,.builderWrap{grid-template-columns: 1fr}
+  .cart{position: relative; top:0; min-height: auto}
+  .products{grid-template-columns: 1fr}
+  .hero{grid-template-columns: 1fr}
+  .menu{display:none}
+  .hamb{display:inline-flex}
+  .mobmenu{display:block}
+  .wafloat{ bottom: 90px; max-width: 260px; }
+  .main{ padding-bottom: 160px; }
+}
