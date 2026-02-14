@@ -3,81 +3,109 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>LP Grill — Açaí</title>
-
-  <!-- ✅ ATENÇÃO: sua pasta é "CSS" (maiúsculo) -->
-  <link rel="stylesheet" href="css/estilo.css?v=2" />
+  <meta name="theme-color" content="#0b0b0c" />
+  <title>LP Grill — Pedidos</title>
+  <link rel="stylesheet" href="css/estilo.css" />
 </head>
-
 <body>
 
-  <!-- ✅ WhatsApp flutuante -->
-  <a id="waFloat" class="wa-float" href="#" target="_blank" aria-label="WhatsApp">
-    <span class="wa-ico">✆</span>
-  </a>
+<header class="topbar">
+  <div class="container nav">
+    <a class="brand" href="index.html" aria-label="LP Grill">
+      <div class="logo">LP</div>
+      <div class="t">
+        <strong>LP Grill</strong>
+        <span>Pedidos rápidos • WhatsApp</span>
+      </div>
+    </a>
 
-    <header class="topbar">
-    <div class="container">
-      <div class="nav">
-        <a class="brand" href="index.html">
-          <img src="img/logo.png" alt="LP Grill">
-          <div class="t">
-            <strong>LP Grill Açaí</strong>
-            <span>Pedidos rápidos • WhatsApp</span>
-          </div>
-        </a>
+    <nav class="menu">
+      <a class="active" href="index.html">Cardápio</a>
+      <a href="acai.html">Monte seu Açaí</a>
+      <a href="checkout.html">Finalizar</a>
+    </nav>
 
-        <!-- ✅ MENU ÚNICO (não duplica) -->
-        <nav class="menu" id="siteMenu">
-          <a class="active" href="index.html">Início</a>
-          <a href="acai.html">Açaí</a>
-          <a href="bebidas.html">Bebidas</a>
-          <a href="combos.html">Combos</a>
-          <a href="sorvetes.html">Sorvetes</a>
-          <a href="contato.html">Contato</a>
-          <a href="entrega.html">Entrega</a>
-        </nav>
+    <button class="hamb" id="btnHamb" aria-label="Abrir menu" aria-expanded="false">☰</button>
+  </div>
 
+  <div class="container mobmenu" id="mobMenu" hidden>
+    <a class="active" href="index.html">Cardápio</a>
+    <a href="acai.html">Monte seu Açaí</a>
+    <a href="checkout.html">Finalizar</a>
+  </div>
+</header>
+
+<main class="container main">
+  <section class="hero">
+    <div class="heroCard">
+      <h1>Peça como app — sem iFood.</h1>
+      <p>Toque nos itens para marcar, adicione ao carrinho e finalize no WhatsApp.</p>
+      <div class="heroActions">
+        <a class="btn primary" href="acai.html">🍧 Monte seu Açaí</a>
+        <a class="btn ghost" href="#cardapio">📋 Ver cardápio</a>
       </div>
     </div>
-  </header>
 
-  <main class="container section">
-    <section class="hero">
-      <div class="hero-box">
-        <div>
-          <h1>Escolha seu açaí</h1>
-          <p>
-            Toque em um card para adicionar ao carrinho.
-            Quer personalizar? Clique em <b>Monte seu Açaí</b>.
-          </p>
+    <div class="miniCards">
+      <div class="mini">
+        <strong>✅ Seleção fácil</strong>
+        <span>Clicou, marcou. Clicou de novo, desmarca.</span>
+      </div>
+      <div class="mini">
+        <strong>🛒 Carrinho na tela</strong>
+        <span>Compacto no celular e no PC.</span>
+      </div>
+      <div class="mini">
+        <strong>📲 WhatsApp pronto</strong>
+        <span>Pedido sai formatado e completo.</span>
+      </div>
+    </div>
+  </section>
 
-          <div class="hero-actions">
-            <a class="btn btn-chrome" href="acai.html">Monte seu Açaí</a>
-          </div>
-
-          <div class="chiprow">
-            <span class="chip">✅ Total automático</span>
-            <span class="chip">✅ Carrinho em todas as páginas</span>
-            <span class="chip">✅ Impressão</span>
-          </div>
+  <section class="grid2" id="cardapio">
+    <div class="panel">
+      <div class="panelHead">
+        <h2>Cardápio</h2>
+        <div class="searchWrap">
+          <input id="search" class="search" type="search" placeholder="Buscar item (ex: açaí, coca, burger)..." />
         </div>
       </div>
-    </section>
 
-    <section class="section">
-      <h2 style="font-size:16px; font-weight:980;">Açaís em destaque</h2>
-      <p class="muted" style="margin-top:6px;">7 opções prontas + 1 opção de personalização.</p>
-      <div class="grid" id="home-acai-grid" style="margin-top:12px;"></div>
-    </section>
-  </main>
+      <div class="tabs" id="tabs"></div>
+      <div class="products" id="products"></div>
+    </div>
 
-  <!-- Scripts -->
-  
-<script src="js/config.js?v=4"></script>
-<script src="js/data.js?v=4"></script>
-<script src="js/app.js?v=4"></script>
-<script src="js/menu.js?v=4"></script
-                               
+    <aside class="cart" id="cart">
+      <div class="cartHead">
+        <h3>Seu carrinho</h3>
+        <a class="link" href="checkout.html">Finalizar →</a>
+      </div>
+
+      <div class="cartBody" id="cartItems"></div>
+
+      <div class="cartFoot">
+        <div class="row">
+          <span>Subtotal</span>
+          <strong id="cartSubtotal">R$ 0,00</strong>
+        </div>
+        <button class="btn primary full" id="goCheckout">Finalizar no WhatsApp</button>
+        <button class="btn danger full" id="clearCart">Limpar carrinho</button>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<!-- WhatsApp flutuante -->
+<a class="wafloat" id="waFloat" href="#" target="_blank" rel="noopener">
+  <div class="waIcon">🟢</div>
+  <div class="waText">
+    <strong>WhatsApp</strong>
+    <span id="waFloatMsg">Precisa de ajuda? Fala com a gente!</span>
+  </div>
+</a>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
