@@ -1,78 +1,51 @@
-// js/data.js
-window.CATALOG = {
-  home_acai: [
-    {
-      id:"acai-300",
-      name:"Açaí 300ml",
-      desc:"Clássico e rápido. Ideal pra matar a vontade com um preço leve.",
-      price: 14.90,
-      img:"img/home-acai-1.jpg",
-      badge:"Mais pedido"
-    },
-    {
-      id:"acai-500",
-      name:"Açaí 500ml",
-      desc:"Mais energia e mais sabor. Ótimo para o dia a dia.",
-      price: 18.90,
-      img:"img/home-acai-2.jpg",
-      badge:"Popular"
-    },
-    {
-      id:"acai-700",
-      name:"Açaí 700ml",
-      desc:"Bem servido, perfeito pra quem quer caprichar nos complementos.",
-      price: 22.90,
-      img:"img/home-acai-3.jpg"
-    },
-    {
-      id:"acai-1l",
-      name:"Açaí 1 Litro",
-      desc:"Família/casal. Melhor custo-benefício para dividir.",
-      price: 29.90,
-      img:"img/home-acai-4.jpg",
-      badge:"Top"
-    },
-    {
-      id:"monte-acai",
-      name:"Monte seu Açaí",
-      desc:"Escolha tamanho + complementos e some tudo automaticamente.",
-      price: null,
-      img:"img/home-acai-5.jpg",
-      link:"acai.html",
-      badge:"Personalizado"
-    }
+window.DB = {
+  categorias: [
+    { id: "acai", nome: "Açaí" },
+    { id: "lanches", nome: "Lanches" },
+    { id: "bebidas", nome: "Bebidas" },
+    { id: "porcoes", nome: "Porções" },
   ],
 
-  // ✅ categorias (as páginas existem no seu repo)
-  categories: [
-    {
-      id:"bebidas",
-      name:"Bebidas",
-      page:"bebidas.html",
-      items:[
-        { id:"coca-350", name:"Coca-Cola Lata", desc:"350ml", price:6.00, img:"img/bebidas-coca.jpg", badge:"Gelada" },
-        { id:"guarana-350", name:"Guaraná Lata", desc:"350ml", price:6.00, img:"img/bebidas-guarana.jpg" },
-        { id:"agua-500", name:"Água", desc:"500ml", price:3.00, img:"img/bebidas-agua.jpg" },
-        { id:"suco", name:"Suco Natural", desc:"Copo", price:7.00, img:"img/bebidas-suco.jpg" }
-      ]
-    },
-    {
-      id:"combos",
-      name:"Combos",
-      page:"combos.html",
-      items:[
-        { id:"combo-1", name:"Combo Açaí + Bebida", desc:"Açaí 500ml + bebida lata", price:24.90, img:"img/combos-1.jpg", badge:"Economia" },
-        { id:"combo-2", name:"Combo Casal 1L", desc:"1 Litro + 2 complementos", price:34.90, img:"img/combos-2.jpg" }
-      ]
-    },
-    {
-      id:"sorvetes",
-      name:"Sorvetes",
-      page:"sorvetes.html",
-      items:[
-        { id:"sorv-choc", name:"Sorvete Chocolate", desc:"Pote", price:12.90, img:"img/sorvetes-choc.jpg" },
-        { id:"sorv-mor", name:"Sorvete Morango", desc:"Pote", price:12.90, img:"img/sorvetes-mor.jpg", badge:"Novo" }
-      ]
-    }
-  ]
+  produtos: [
+    // AÇAÍ PRONTO
+    { id: "a1", cat: "acai", nome: "Açaí 300ml", desc: "Açaí tradicional", preco: 12.90 },
+    { id: "a2", cat: "acai", nome: "Açaí 500ml", desc: "Açaí tradicional", preco: 16.90 },
+    { id: "a3", cat: "acai", nome: "Açaí 700ml", desc: "Açaí tradicional", preco: 21.90 },
+
+    // LANCHES
+    { id: "l1", cat: "lanches", nome: "X-Burger", desc: "Carne, queijo e molho", preco: 14.90 },
+    { id: "l2", cat: "lanches", nome: "X-Salada", desc: "Carne, queijo e salada", preco: 16.90 },
+    { id: "l3", cat: "lanches", nome: "X-Bacon", desc: "Carne, queijo e bacon", preco: 19.90 },
+
+    // BEBIDAS
+    { id: "b1", cat: "bebidas", nome: "Coca-Cola Lata", desc: "350ml", preco: 6.00 },
+    { id: "b2", cat: "bebidas", nome: "Guaraná Lata", desc: "350ml", preco: 5.50 },
+    { id: "b3", cat: "bebidas", nome: "Água", desc: "500ml", preco: 3.00 },
+
+    // PORÇÕES
+    { id: "p1", cat: "porcoes", nome: "Batata Frita", desc: "Porção média", preco: 18.90 },
+    { id: "p2", cat: "porcoes", nome: "Frango a Passarinho", desc: "Porção média", preco: 29.90 },
+  ],
+
+  // BUILDER DO AÇAÍ (Monte o seu)
+  acaiBuilder: {
+    base: [
+      { id: "300", nome: "Copo 300ml", preco: 12.90 },
+      { id: "500", nome: "Copo 500ml", preco: 16.90 },
+      { id: "700", nome: "Copo 700ml", preco: 21.90 },
+    ],
+    cremes: [
+      { id: "c1", nome: "Creme de Ninho", preco: 3.00 },
+      { id: "c2", nome: "Creme de Paçoca", preco: 3.00 },
+      { id: "c3", nome: "Creme de Morango", preco: 3.00 },
+    ],
+    adicionais: [
+      { id: "ad1", nome: "Leite em pó", preco: 2.50 },
+      { id: "ad2", nome: "Granola", preco: 2.00 },
+      { id: "ad3", nome: "Confete", preco: 2.00 },
+      { id: "ad4", nome: "Ovomaltine", preco: 3.50 },
+      { id: "ad5", nome: "Banana", preco: 2.00 },
+      { id: "ad6", nome: "Morango", preco: 3.00 },
+    ],
+  }
 };
