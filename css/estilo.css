@@ -263,3 +263,121 @@ body::after{
     }
   }, { passive: true });
 })();
+/* ===============================
+   PATCH PREMIUM (sem mudar HTML)
+   =============================== */
+
+/* 1) Topbar mais leve (combina com tema claro) */
+.topbar{
+  background: rgba(255,255,255,.78) !important;
+  border-bottom: 1px solid rgba(11,11,18,.10) !important;
+  box-shadow: 0 10px 30px rgba(17,17,26,.06);
+}
+.brand .t strong{ color: #14141c !important; }
+.brand .t span{ color: rgba(11,11,18,.58) !important; }
+
+/* 2) Ajuste geral de contraste do texto em cards */
+.panelHead p,
+.mini span,
+.card .desc,
+.cartItem .meta{
+  color: rgba(11,11,18,.70) !important;
+}
+
+/* 3) Busca mais premium */
+.search{
+  background: rgba(255,255,255,.92) !important;
+  border: 1px solid rgba(11,11,18,.12) !important;
+  box-shadow: 0 10px 24px rgba(17,17,26,.06);
+}
+.search:focus{
+  border-color: rgba(109,40,217,.35) !important;
+  box-shadow: 0 0 0 4px rgba(109,40,217,.10), 0 12px 26px rgba(17,17,26,.08);
+}
+
+/* 4) Tabs mais “pílula premium” */
+.tab{
+  background: rgba(255,255,255,.85) !important;
+  border: 1px solid rgba(11,11,18,.10) !important;
+}
+.tab:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(17,17,26,.06);
+}
+.tab.active{
+  background: rgba(109,40,217,.12) !important;
+  border-color: rgba(109,40,217,.28) !important;
+}
+
+/* 5) Cards com profundidade e borda cromada suave */
+.card{
+  background: rgba(255,255,255,.88) !important;
+  border: 1px solid rgba(11,11,18,.12) !important;
+  box-shadow: 0 14px 34px rgba(17,17,26,.08);
+}
+.card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 18px 44px rgba(17,17,26,.10);
+}
+
+/* 6) Seleção: roxo mais evidente e elegante */
+.card.selected{
+  background: rgba(109,40,217,.10) !important;
+  border-color: rgba(109,40,217,.35) !important;
+}
+
+/* 7) Carrinho mais “clean” (melhor leitura) */
+.cart{
+  background: rgba(255,255,255,.78) !important;
+  border: 1px solid rgba(11,11,18,.10) !important;
+}
+.cartItem{
+  background: rgba(255,255,255,.88) !important;
+  border: 1px solid rgba(11,11,18,.10) !important;
+  box-shadow: 0 10px 22px rgba(17,17,26,.06);
+}
+
+/* 8) Botões principais mais premium (roxo) */
+.btn.primary{
+  border-color: rgba(109,40,217,.30) !important;
+  background: linear-gradient(135deg, rgba(109,40,217,.20), rgba(167,139,250,.14)) !important;
+}
+.btn.primary:hover{
+  box-shadow: 0 14px 30px rgba(109,40,217,.12);
+}
+
+/* 9) Badge mais discreto (menos “ruído”) */
+.badge{
+  background: rgba(255,255,255,.80) !important;
+}
+.badge .dot{
+  background: rgba(11,11,18,.22) !important;
+}
+.card.selected .badge .dot{
+  background: rgba(109,40,217,.95) !important;
+}
+
+/* 10) WhatsApp flutuante: não atrapalhar carrinho */
+.wafloat{
+  right: 16px !important;
+  bottom: 16px !important;
+  max-width: 280px;
+}
+@media (min-width: 921px){
+  /* empurra o botão pra não cobrir o carrinho no desktop */
+  .wafloat{ bottom: 22px !important; }
+}
+
+/* 11) Dá “respiro” no final da página (evita sobreposição) */
+.main{
+  padding-bottom: 120px !important;
+}
+
+/* 12) Hero: texto com mais cara premium */
+.heroCard h1{
+  font-size: 24px !important;
+  letter-spacing: .1px !important;
+}
+.heroCard p{
+  font-size: 14px !important;
+}
