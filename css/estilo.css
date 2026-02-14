@@ -400,3 +400,20 @@ input,select,textarea{
   .hamb{display:inline-flex}
   .mobmenu{display:block}
 }
+
+/* detalhes vermelhos (sem virar "promoção") */
+.btn.danger{
+  border-color: rgba(239,68,68,.55);
+  background: rgba(239,68,68,.16);
+}
+.link{
+  color: rgba(239,68,68,.95);
+}
+.tab.active{
+  border-color: rgba(124,58,237,.55);
+  background: rgba(124,58,237,.18);
+}
+.menu a.active{
+  border-color: rgba(124,58,237,.55);
+  background: rgba(124,58,237,.18);
+}
