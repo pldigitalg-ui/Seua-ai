@@ -188,18 +188,22 @@ function initIndex(){
       });
 
     productsEl.innerHTML = list.map(p => `
-      <div class="card" data-prod-id="${p.id}">
-        <div class="top">
-          <strong>${p.nome}</strong>
-          <div class="price">${money(p.preco)}</div>
-        </div>
-        <div class="desc">${p.desc || ""}</div>
-        <div class="badge">
-          <span class="dot"></span>
-          <span>Toque para ${isInCart(p.id) ? "remover" : "adicionar"}</span>
-        </div>
-      </div>
-    `).join("");
+  <div class="card" data-prod-id="${p.id}">
+    ${p.img ? `<div class="pimg"><img src="${p.img}" alt="${p.nome}" loading="lazy"></div>` : ``}
+
+    <div class="top">
+      <strong>${p.nome}</strong>
+      <div class="price">${money(p.preco)}</div>
+    </div>
+
+    <div class="desc">${p.desc || ""}</div>
+
+    <div class="badge">
+      <span class="dot"></span>
+      <span>Toque para ${isInCart(p.id) ? "remover" : "adicionar"}</span>
+    </div>
+  </div>
+`).join("");
 
     productsEl.querySelectorAll(".card").forEach(card => {
       card.addEventListener("click", () => {
