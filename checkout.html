@@ -1,1 +1,112 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b0b0c" />
+  <title>LP Grill — Finalizar Pedido</title>
+  <link rel="stylesheet" href="css/estilo.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container nav">
+    <a class="brand" href="index.html" aria-label="LP Grill">
+      <div class="logo">LP</div>
+      <div class="t">
+        <strong>LP Grill</strong>
+        <span>Finalizar • WhatsApp</span>
+      </div>
+    </a>
+
+    <nav class="menu">
+      <a href="index.html">Cardápio</a>
+      <a href="acai.html">Monte seu Açaí</a>
+      <a class="active" href="checkout.html">Finalizar</a>
+    </nav>
+
+    <button class="hamb" id="btnHamb" aria-label="Abrir menu" aria-expanded="false">☰</button>
+  </div>
+
+  <div class="container mobmenu" id="mobMenu" hidden>
+    <a href="index.html">Cardápio</a>
+    <a href="acai.html">Monte seu Açaí</a>
+    <a class="active" href="checkout.html">Finalizar</a>
+  </div>
+</header>
+
+<main class="container main">
+  <section class="grid2">
+    <div class="panel">
+      <div class="panelHead">
+        <h2>✅ Finalizar pedido</h2>
+        <p class="muted">Preencha para liberar o envio no WhatsApp.</p>
+      </div>
+
+      <form class="form" id="checkoutForm">
+        <div class="field">
+          <label>Nome*</label>
+          <input type="text" id="cNome" placeholder="Seu nome" required />
+        </div>
+
+        <div class="field">
+          <label>Endereço completo*</label>
+          <input type="text" id="cEndereco" placeholder="Rua, número, bairro" required />
+        </div>
+
+        <div class="field">
+          <label>Forma de pagamento*</label>
+          <select id="cPagamento" required>
+            <option value="">Selecione…</option>
+            <option>Pix</option>
+            <option>Dinheiro</option>
+            <option>Cartão</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Observações</label>
+          <textarea id="cObs" rows="3" placeholder="Ex: sem gelo, troco para 50, sem cebola..."></textarea>
+        </div>
+
+        <div class="notice" id="checkoutWarn" hidden>
+          ⚠️ Preencha os campos obrigatórios e tenha itens no carrinho.
+        </div>
+
+        <button class="btn primary full" type="submit">Enviar pedido no WhatsApp</button>
+        <a class="btn ghost full" href="index.html">Voltar ao cardápio</a>
+      </form>
+    </div>
+
+    <aside class="cart" id="cart">
+      <div class="cartHead">
+        <h3>Seu carrinho</h3>
+        <a class="link" href="index.html">Adicionar mais →</a>
+      </div>
+      <div class="cartBody" id="cartItems"></div>
+      <div class="cartFoot">
+        <div class="row">
+          <span>Subtotal</span>
+          <strong id="cartSubtotal">R$ 0,00</strong>
+        </div>
+        <button class="btn danger full" id="clearCart">Limpar carrinho</button>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<!-- WhatsApp flutuante -->
+<a class="wafloat" id="waFloat" href="#" target="_blank" rel="noopener">
+  <div class="waIcon">🟢</div>
+  <div class="waText">
+    <strong>WhatsApp</strong>
+    <span id="waFloatMsg">Já tem pedido? Envia aqui 👇</span>
+  </div>
+</a>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
 
