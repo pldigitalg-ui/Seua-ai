@@ -1,5 +1,8 @@
-window.CONFIGURACAO_DO_APLICATIVO = {
-  marca: "LP Grill Açaí",
-  whatsapp: "553198832407",   // 55 + DDD + número (só números)
-  taxa_de_entrega: 0
+window.CONFIG = {
+  // ✅ Coloque seu WhatsApp com DDI + DDD (sem espaços e sem +)
+  // Ex: 55319983551138
+  whatsapp: "5531990000000",
+
+  lojaNome: "LP Grill",
+  waFloatMsg: "Precisa de ajuda? Me chama aqui 👇",
 };
