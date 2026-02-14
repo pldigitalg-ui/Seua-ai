@@ -27,7 +27,6 @@ function cartSubtotal(cart){
 }
 
 function upsertCartItem(cart, item){
-  // Se for builder, id único por "assinatura" (base + extras)
   const key = item.key || item.id;
   const idx = cart.findIndex(x => (x.key || x.id) === key);
   if(idx >= 0){
@@ -64,7 +63,6 @@ function initWaFloat(){
 
   if(msg && CONFIG && CONFIG.waFloatMsg) msg.textContent = CONFIG.waFloatMsg;
 
-  // Mensagem do flutuante (não é pedido; é atendimento)
   const text = `Olá! Vim pelo site da ${CONFIG.lojaNome || "loja"}. Preciso de ajuda 🙂`;
   if(!mustConfigWhatsApp()){
     a.href = "#";
@@ -120,7 +118,6 @@ function renderCart(){
     `;
   }).join("");
 
-  // binds
   cartEl.querySelectorAll("button[data-act]").forEach(btn => {
     btn.addEventListener("click", () => {
       const act = btn.getAttribute("data-act");
@@ -137,12 +134,12 @@ function renderCart(){
 
       saveCart(cartNow);
       renderCart();
-      syncSelectedCards(); // mantém seleção visual
+      syncSelectedCards();
     });
   });
 }
 
-/* ========= Sincronizar seleção visual (produtos marcados) ========= */
+/* ========= Sincronizar seleção visual ========= */
 function syncSelectedCards(){
   const cart = loadCart();
   const ids = new Set(cart.filter(x => x.id).map(x => x.id));
@@ -153,7 +150,7 @@ function syncSelectedCards(){
   });
 }
 
-/* ========= Página Index (cardápio) ========= */
+/* ========= Página Index ========= */
 function initIndex(){
   const tabsEl = $("tabs");
   const productsEl = $("products");
@@ -178,47 +175,6 @@ function initIndex(){
     });
   }
 
-  function renderProducts(){
-    const list = prods
-      .filter(p => p.cat === activeCat)
-      .filter(p => {
-        if(!query) return true;
-        const s = (p.nome + " " + (p.desc||"")).toLowerCase();
-        return s.includes(query.toLowerCase());
-      });
-
-    productsEl.innerHTML = list.map(p => `
-  <div class="card" data-prod-id="${p.id}">
-    ${p.img ? `<div class="pimg"><img src="${p.img}" alt="${p.nome}" loading="lazy"></div>` : ``}
-
-    <div class="top">
-      <strong>${p.nome}</strong>
-      <div class="price">${money(p.preco)}</div>
-    </div>
-
-    <div class="desc">${p.desc || ""}</div>
-
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Toque para ${isInCart(p.id) ? "remover" : "adicionar"}</span>
-    </div>
-  </div>
-`).join("");
-
-    productsEl.querySelectorAll(".card").forEach(card => {
-      card.addEventListener("click", () => {
-        const id = card.getAttribute("data-prod-id");
-        toggleProduct(id);
-        renderCart();
-        syncSelectedCards();
-        // atualiza texto do badge sem re-render completo? simples: re-render
-        renderProducts();
-      });
-    });
-
-    syncSelectedCards();
-  }
-
   function isInCart(prodId){
     const cart = loadCart();
     return cart.some(x => x.id === prodId);
@@ -232,7 +188,7 @@ function initIndex(){
     const idx = cart.findIndex(x => x.id === prodId);
 
     if(idx >= 0){
-      cart.splice(idx,1); // ✅ clique de novo remove (toggle)
+      cart.splice(idx,1); // toggle remove
     }else{
       cart.push({
         id: p.id,
@@ -244,6 +200,46 @@ function initIndex(){
       });
     }
     saveCart(cart);
+  }
+
+  function renderProducts(){
+    const list = prods
+      .filter(p => p.cat === activeCat)
+      .filter(p => {
+        if(!query) return true;
+        const s = (p.nome + " " + (p.desc||"")).toLowerCase();
+        return s.includes(query.toLowerCase());
+      });
+
+    productsEl.innerHTML = list.map(p => `
+      <div class="card" data-prod-id="${p.id}">
+        ${p.img ? `<div class="pimg"><img src="${p.img}" alt="${p.nome}" loading="lazy"></div>` : ``}
+
+        <div class="top">
+          <strong>${p.nome}</strong>
+          <div class="price">${money(p.preco)}</div>
+        </div>
+
+        <div class="desc">${p.desc || ""}</div>
+
+        <div class="badge">
+          <span class="dot"></span>
+          <span>Toque para ${isInCart(p.id) ? "remover" : "adicionar"}</span>
+        </div>
+      </div>
+    `).join("");
+
+    productsEl.querySelectorAll(".card").forEach(card => {
+      card.addEventListener("click", () => {
+        const id = card.getAttribute("data-prod-id");
+        toggleProduct(id);
+        renderCart();
+        syncSelectedCards();
+        renderProducts(); // atualiza badge texto
+      });
+    });
+
+    syncSelectedCards();
   }
 
   const s = $("search");
@@ -283,11 +279,7 @@ function initBuilder(){
 
   const B = window.DB.acaiBuilder;
 
-  const state = {
-    base: null,       // {id,nome,preco}
-    creme: null,      // {id,nome,preco}
-    adicionais: []    // array de itens
-  };
+  const state = { base:null, creme:null, adicionais:[] };
 
   function total(){
     const base = state.base?.preco || 0;
@@ -355,7 +347,6 @@ function initBuilder(){
         }
 
         if(type === "creme"){
-          // toggle creme: se clicar no mesmo, desmarca
           if(state.creme?.id === id) state.creme = null;
           else state.creme = B.cremes.find(x => x.id === id) || null;
         }
@@ -363,7 +354,7 @@ function initBuilder(){
         if(type === "add"){
           const exists = state.adicionais.find(a => a.id === id);
           if(exists){
-            state.adicionais = state.adicionais.filter(a => a.id !== id); // ✅ desmarca ao clicar de novo
+            state.adicionais = state.adicionais.filter(a => a.id !== id);
           }else{
             const item = B.adicionais.find(x => x.id === id);
             if(item) state.adicionais.push(item);
@@ -385,7 +376,7 @@ function initBuilder(){
     const key = `ACAI-${state.base.id}-${state.creme?.id || "0"}-${state.adicionais.map(a=>a.id).sort().join(".") || "0"}`;
 
     return {
-      key, // usado para juntar itens iguais
+      key,
       id: "builder-acai",
       nome: `Açaí ${state.base.nome.replace("Copo ","")}`,
       desc: "Monte seu açaí",
@@ -425,7 +416,7 @@ function initBuilder(){
   renderCart();
 }
 
-/* ========= Checkout (bloqueia sem preencher) ========= */
+/* ========= Checkout ========= */
 function buildOrderText(customer){
   const cart = loadCart();
   const total = money(cartSubtotal(cart));
@@ -498,12 +489,11 @@ function initCheckout(){
   renderCart();
 }
 
-/* ========= Init Geral ========= */
+/* ========= Init ========= */
 (function boot(){
   initMobileMenu();
   initWaFloat();
 
-  // botões globais (se existirem)
   const clear = $("clearCart");
   if(clear){
     clear.addEventListener("click", () => {
@@ -513,12 +503,10 @@ function initCheckout(){
     });
   }
 
-  // Detecta página
   initIndex();
   initBuilder();
   initCheckout();
 
-  // Segurança: se CONFIG inválido, avisa no console
   if(!mustConfigWhatsApp()){
     console.warn("WhatsApp não configurado. Edite js/config.js (window.CONFIG.whatsapp).");
   }
